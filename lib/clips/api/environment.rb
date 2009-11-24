@@ -5,33 +5,34 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :AddClearFunction, [], :void 
-      # attach_function :AddPeriodicFunction, [], :void 
-      # attach_function :AddResetFunction, [], :void 
-      # attach_function :BatchStar, [], :void 
-      # attach_function :Bload, [], :void 
-      # attach_function :Bsave, [], :void 
-      # attach_function :Build, [], :void 
-      attach_function :Clear, [], :void 
-      # attach_function :Eval, [], :void 
-      # attach_function :FunctionCall, [], :void 
-      # attach_function :GetAutoFloatDividend, [], :void 
-      # attach_function :GetDynamicConstraintChecking, [], :void 
-      # attach_function :GetSequenceOperatorRecognition, [], :void 
-      # attach_function :GetStaticConstraintChecking, [], :void 
-      attach_function :InitializeEnvironment, [], :void 
-      attach_function :Load, [:string], :int 
-      # attach_function :RemoveClearFunction, [], :void 
-      # attach_function :RemovePeriodicFunction, [], :void 
-      # attach_function :RemoveResetFunction, [], :void 
-      attach_function :Reset, [], :void 
-      attach_function :Save, [:string], :int
-      # attach_function :SetAutoFloatDividend, [], :void 
-      # attach_function :SetDynamicConstraintChecking, [], :void 
-      # attach_function :SetSequenceOperator, [], :void 
-      # attach_function :SetStaticConstraintChecking, [], :void 
+      # attach_function :EnvAddClearFunction, [:pointer], :void 
+      # attach_function :EnvAddPeriodicFunction, [:pointer], :void 
+      # attach_function :EnvAddResetFunction, [:pointer], :void 
+      # attach_function :EnvBatchStar, [:pointer], :void 
+      # attach_function :EnvBload, [:pointer], :void 
+      # attach_function :EnvBsave, [:pointer], :void 
+      # attach_function :EnvBuild, [:pointer], :void 
+      attach_function :EnvClear, [:pointer], :void 
+      # attach_function :EnvEval, [:pointer], :void 
+      # attach_function :EnvFunctionCall, [:pointer], :void 
+      # attach_function :EnvGetAutoFloatDividend, [:pointer], :void 
+      # attach_function :EnvGetDynamicConstraintChecking, [:pointer], :void 
+      # attach_function :EnvGetSequenceOperatorRecognition, [:pointer], :void 
+      # attach_function :EnvGetStaticConstraintChecking, [:pointer], :void 
       
-      attach_function :GetCurrentEnvironment, [], :pointer
+      attach_function :EnvLoad, [:pointer, :string], :int
+      # attach_function :EnvRemoveClearFunction, [:pointer], :void 
+      # attach_function :EnvRemovePeriodicFunction, [:pointer], :void 
+      # attach_function :EnvRemoveResetFunction, [:pointer], :void 
+      attach_function :EnvReset, [:pointer], :void 
+      attach_function :EnvSave, [:pointer, :string], :int
+      # attach_function :EnvSetAutoFloatDividend, [:pointer], :void 
+      # attach_function :EnvSetDynamicConstraintChecking, [:pointer], :void 
+      # attach_function :EnvSetSequenceOperator, [:pointer], :void 
+      # attach_function :EnvSetStaticConstraintChecking, [:pointer], :void 
+      
+      # attach_function :InitializeEnvironment, [], :void 
+      attach_function :CreateEnvironment, [], :pointer
     end
   end
 end

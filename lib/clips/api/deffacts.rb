@@ -5,15 +5,15 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :DeffactsModule, [], :void 
-      # attach_function :FindDeffacts, [], :void 
-      # attach_function :GetDeffactsList, [], :void 
-      # attach_function :GetDeffactsName, [], :void 
-      # attach_function :GetDeffactsPPForm, [], :void 
-      # attach_function :GetNextDeffacts, [], :void 
-      # attach_function :IsDeffactsDeletable, [], :void 
-      # attach_function :ListDeffacts, [], :void 
-      # attach_function :Undeffacts, [], :void 
+      # attach_function :EnvDeffactsModule, [:pointer], :void 
+      # attach_function :EnvFindDeffacts, [:pointer], :void 
+      # attach_function :EnvGetDeffactsList, [:pointer], :void 
+      # attach_function :EnvGetDeffactsName, [:pointer], :void 
+      # attach_function :EnvGetDeffactsPPForm, [:pointer], :void 
+      # attach_function :EnvGetNextDeffacts, [:pointer], :void 
+      # attach_function :EnvIsDeffactsDeletable, [:pointer], :void 
+      # attach_function :EnvListDeffacts, [:pointer], :void 
+      # attach_function :EnvUndeffacts, [:pointer], :void 
     end
   end
 end

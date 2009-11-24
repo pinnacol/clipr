@@ -5,25 +5,25 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :DefglobalModule, [], :void 
-      # attach_function :FindDefglobal, [], :void 
-      # attach_function :GetDefglobalList, [], :void 
-      # attach_function :GetDefglobalName, [], :void 
-      # attach_function :GetDefglobalPPForm, [], :void 
-      # attach_function :GetDefglobalValue, [], :void 
-      # attach_function :GetDefglobalValueForm, [], :void 
-      # attach_function :GetDefglobalWatch, [], :void 
-      # attach_function :GetGlobalsChanged, [], :void 
-      # attach_function :GetNextDefglobal, [], :void 
-      # attach_function :GetResetGlobals, [], :void 
-      # attach_function :IsDefglobalDeletable, [], :void 
-      # attach_function :ListDefglobals, [], :void 
-      # attach_function :SetDefglobalValue, [], :void 
-      # attach_function :SetDefglobalWatch, [], :void 
-      # attach_function :SetGlobalsChanged, [], :void 
-      # attach_function :SetResetGlobals, [], :void 
-      # attach_function :ShowDefglobals, [], :void 
-      # attach_function :Undefglobal, [], :void 
+      # attach_function :EnvDefglobalModule, [:pointer], :void 
+      # attach_function :EnvFindDefglobal, [:pointer], :void 
+      # attach_function :EnvGetDefglobalList, [:pointer], :void 
+      # attach_function :EnvGetDefglobalName, [:pointer], :void 
+      # attach_function :EnvGetDefglobalPPForm, [:pointer], :void 
+      # attach_function :EnvGetDefglobalValue, [:pointer], :void 
+      # attach_function :EnvGetDefglobalValueForm, [:pointer], :void 
+      # attach_function :EnvGetDefglobalWatch, [:pointer], :void 
+      # attach_function :EnvGetGlobalsChanged, [:pointer], :void 
+      # attach_function :EnvGetNextDefglobal, [:pointer], :void 
+      # attach_function :EnvGetResetGlobals, [:pointer], :void 
+      # attach_function :EnvIsDefglobalDeletable, [:pointer], :void 
+      # attach_function :EnvListDefglobals, [:pointer], :void 
+      # attach_function :EnvSetDefglobalValue, [:pointer], :void 
+      # attach_function :EnvSetDefglobalWatch, [:pointer], :void 
+      # attach_function :EnvSetGlobalsChanged, [:pointer], :void 
+      # attach_function :EnvSetResetGlobals, [:pointer], :void 
+      # attach_function :EnvShowDefglobals, [:pointer], :void 
+      # attach_function :EnvUndefglobal, [:pointer], :void 
     end
   end
 end

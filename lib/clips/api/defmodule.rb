@@ -5,14 +5,14 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :FindDefmodule, [], :void 
-      # attach_function :GetCurrentModule, [], :void 
-      # attach_function :GetDefmoduleList, [], :void 
-      # attach_function :GetDefmoduleName, [], :void 
-      # attach_function :GetDefmodulePPForm, [], :void 
-      # attach_function :GetNextDefmodule, [], :void 
-      # attach_function :ListDefmodules, [], :void 
-      # attach_function :SetCurrentModule, [], :void 
+      # attach_function :EnvFindDefmodule, [:pointer], :void 
+      # attach_function :EnvGetCurrentModule, [:pointer], :void 
+      # attach_function :EnvGetDefmoduleList, [:pointer], :void 
+      # attach_function :EnvGetDefmoduleName, [:pointer], :void 
+      # attach_function :EnvGetDefmodulePPForm, [:pointer], :void 
+      # attach_function :EnvGetNextDefmodule, [:pointer], :void 
+      # attach_function :EnvListDefmodules, [:pointer], :void 
+      # attach_function :EnvSetCurrentModule, [:pointer], :void 
     end
   end
 end

@@ -5,34 +5,32 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :Assert, [], :void 
-      # attach_function :AssertString, [], :void 
-      # attach_function :AssignFactSlotDefaults, [], :void 
-      # attach_function :CreateFact, [], :void 
-      # attach_function :DecrementFactCount, [], :void 
-      # attach_function :FactDeftemplate, [], :void 
-      # attach_function :FactExistp, [], :void 
-      # attach_function :FactIndex, [], :void 
-      # attach_function :Facts, [], :void 
-      # attach_function :FactSlotNames, [], :void 
-      # attach_function :GetFactDuplication, [], :void 
-      # attach_function :GetFactList, [], :void 
-      # attach_function :GetFactListChanged, [], :void 
-      # attach_function :GetFactPPForm, [], :void 
-      # attach_function :GetFactSlot, [], :void 
-      # attach_function :GetNextFact, [], :void 
-      # attach_function :GetNextFactInTemplate, [], :void 
-      # attach_function :IncrementFactCount, [], :void 
-      # attach_function :LoadFacts, [], :void 
-      # attach_function :LoadFactsFromString, [], :void 
-      # attach_function :PPFact, [], :void 
-      # attach_function :PutFactSlot, [], :void 
-      # attach_function :Retract, [], :void 
-      # attach_function :SaveFacts, [], :void 
-      # attach_function :SetFactDuplication, [], :void 
-      # attach_function :SetFactListChanged, [], :void 
-      
+      # attach_function :EnvAssert, [:pointer], :void 
+      # attach_function :EnvAssertString, [:pointer], :void 
+      # attach_function :EnvAssignFactSlotDefaults, [:pointer], :void 
+      # attach_function :EnvCreateFact, [:pointer], :void 
+      # attach_function :EnvDecrementFactCount, [:pointer], :void 
+      # attach_function :EnvFactDeftemplate, [:pointer], :void 
+      # attach_function :EnvFactExistp, [:pointer], :void 
+      # attach_function :EnvFactIndex, [:pointer], :void 
+      # attach_function :EnvFacts, [:pointer], :void 
+      # attach_function :EnvFactSlotNames, [:pointer], :void 
+      # attach_function :EnvGetFactDuplication, [:pointer], :void 
+      # attach_function :EnvGetFactList, [:pointer], :void 
+      # attach_function :EnvGetFactListChanged, [:pointer], :void 
+      # attach_function :EnvGetFactPPForm, [:pointer], :void 
+      # attach_function :EnvGetFactSlot, [:pointer], :void 
+      # attach_function :EnvGetNextFact, [:pointer], :void 
+      # attach_function :EnvGetNextFactInTemplate, [:pointer], :void 
+      # attach_function :EnvIncrementFactCount, [:pointer], :void 
+      # attach_function :EnvLoadFacts, [:pointer], :void 
+      # attach_function :EnvLoadFactsFromString, [:pointer], :void 
+      # attach_function :EnvPPFact, [:pointer], :void 
+      # attach_function :EnvPutFactSlot, [:pointer], :void 
+      # attach_function :EnvRetract, [:pointer], :void 
       attach_function :EnvSaveFacts, [:pointer, :string, :int, :pointer], :int
+      # attach_function :EnvSetFactDuplication, [:pointer], :void 
+      # attach_function :EnvSetFactListChanged, [:pointer], :void 
     end
   end
 end

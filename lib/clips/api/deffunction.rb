@@ -5,17 +5,17 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :DeffunctionModule, [], :void 
-      # attach_function :FindDeffunction, [], :void 
-      # attach_function :GetDeffunctionList, [], :void 
-      # attach_function :GetDeffunctionName, [], :void 
-      # attach_function :GetDeffunctionPPForm, [], :void 
-      # attach_function :GetDeffunctionWatch, [], :void 
-      # attach_function :GetNextDeffunction, [], :void 
-      # attach_function :IsDeffunctionDeletable, [], :void 
-      # attach_function :ListDeffunctions, [], :void 
-      # attach_function :SetDeffunctionWatch, [], :void 
-      # attach_function :Undeffunction, [], :void 
+      # attach_function :EnvDeffunctionModule, [:pointer], :void 
+      # attach_function :EnvFindDeffunction, [:pointer], :void 
+      # attach_function :EnvGetDeffunctionList, [:pointer], :void 
+      # attach_function :EnvGetDeffunctionName, [:pointer], :void 
+      # attach_function :EnvGetDeffunctionPPForm, [:pointer], :void 
+      # attach_function :EnvGetDeffunctionWatch, [:pointer], :void 
+      # attach_function :EnvGetNextDeffunction, [:pointer], :void 
+      # attach_function :EnvIsDeffunctionDeletable, [:pointer], :void 
+      # attach_function :EnvListDeffunctions, [:pointer], :void 
+      # attach_function :EnvSetDeffunctionWatch, [:pointer], :void 
+      # attach_function :EnvUndeffunction, [:pointer], :void 
     end
   end
 end

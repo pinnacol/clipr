@@ -5,15 +5,15 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :DefinstancesModule, [], :void 
-      # attach_function :FindDefinstances, [], :void 
-      # attach_function :GetDefinstancesList, [], :void 
-      # attach_function :GetDefinstancesName, [], :void 
-      # attach_function :GetDefinstancesPPForm, [], :void 
-      # attach_function :GetNextDefinstances, [], :void 
-      # attach_function :IsDefinstancesDeletable, [], :void 
-      # attach_function :ListDefinstances, [], :void 
-      # attach_function :Undefinstances, [], :void 
+      # attach_function :EnvDefinstancesModule, [:pointer], :void 
+      # attach_function :EnvFindDefinstances, [:pointer], :void 
+      # attach_function :EnvGetDefinstancesList, [:pointer], :void 
+      # attach_function :EnvGetDefinstancesName, [:pointer], :void 
+      # attach_function :EnvGetDefinstancesPPForm, [:pointer], :void 
+      # attach_function :EnvGetNextDefinstances, [:pointer], :void 
+      # attach_function :EnvIsDefinstancesDeletable, [:pointer], :void 
+      # attach_function :EnvListDefinstances, [:pointer], :void 
+      # attach_function :EnvUndefinstances, [:pointer], :void 
     end
   end
 end

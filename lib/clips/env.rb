@@ -5,8 +5,7 @@ module Clips
     include Api
     
     def initialize
-      Environment.InitializeEnvironment
-      @current = Environment.GetCurrentEnvironment
+      @current = Environment.CreateEnvironment
     end
     
     def save(file)

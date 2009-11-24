@@ -5,27 +5,27 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :DeftemplateModule, [], :void 
-      # attach_function :DeftemplateSlotAllowedValues, [], :void 
-      # attach_function :DeftemplateSlotCardinality, [], :void 
-      # attach_function :DeftemplateSlotDefaultP, [], :void 
-      # attach_function :DeftemplateSlotDefaultValue, [], :void 
-      # attach_function :DeftemplateSlotExistP, [], :void 
-      # attach_function :DeftemplateSlotMultiP, [], :void 
-      # attach_function :DeftemplateSlotNames, [], :void 
-      # attach_function :DeftemplateSlotRange, [], :void 
-      # attach_function :DeftemplateSlotSingleP, [], :void 
-      # attach_function :DeftemplateSlotTypes, [], :void 
-      # attach_function :FindDeftemplate, [], :void 
-      # attach_function :GetDeftemplateList, [], :void 
-      # attach_function :GetDeftemplateName, [], :void 
-      # attach_function :GetDeftemplatePPForm, [], :void 
-      # attach_function :GetDeftemplateWatch, [], :void 
-      # attach_function :GetNextDeftemplate, [], :void 
-      # attach_function :IsDeftemplateDeletable, [], :void 
-      # attach_function :ListDeftemplates, [], :void 
-      # attach_function :SetDeftemplateWatch, [], :void 
-      # attach_function :Undeftemplate, [], :void 
+      # attach_function :EnvDeftemplateModule, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotAllowedValues, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotCardinality, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotDefaultP, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotDefaultValue, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotExistP, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotMultiP, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotNames, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotRange, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotSingleP, [:pointer], :void 
+      # attach_function :EnvDeftemplateSlotTypes, [:pointer], :void 
+      # attach_function :EnvFindDeftemplate, [:pointer], :void 
+      # attach_function :EnvGetDeftemplateList, [:pointer], :void 
+      # attach_function :EnvGetDeftemplateName, [:pointer], :void 
+      # attach_function :EnvGetDeftemplatePPForm, [:pointer], :void 
+      # attach_function :EnvGetDeftemplateWatch, [:pointer], :void 
+      # attach_function :EnvGetNextDeftemplate, [:pointer], :void 
+      # attach_function :EnvIsDeftemplateDeletable, [:pointer], :void 
+      # attach_function :EnvListDeftemplates, [:pointer], :void 
+      # attach_function :EnvSetDeftemplateWatch, [:pointer], :void 
+      # attach_function :EnvUndeftemplate, [:pointer], :void 
     end
   end
 end

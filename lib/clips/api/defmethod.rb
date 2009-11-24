@@ -5,16 +5,16 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :GetDefmethodDescription, [], :void 
-      # attach_function :GetDefmethodList, [], :void 
-      # attach_function :GetDefmethodPPForm, [], :void 
-      # attach_function :GetDefmethodWatch, [], :void 
-      # attach_function :GetMethodRestrictions, [], :void 
-      # attach_function :GetNextDefmethod, [], :void 
-      # attach_function :IsDefmethodDeletable, [], :void 
-      # attach_function :ListDefmethods, [], :void 
-      # attach_function :SetDefmethodWatch, [], :void 
-      # attach_function :Undefmethod, [], :void 
+      # attach_function :EnvGetDefmethodDescription, [:pointer], :void 
+      # attach_function :EnvGetDefmethodList, [:pointer], :void 
+      # attach_function :EnvGetDefmethodPPForm, [:pointer], :void 
+      # attach_function :EnvGetDefmethodWatch, [:pointer], :void 
+      # attach_function :EnvGetMethodRestrictions, [:pointer], :void 
+      # attach_function :EnvGetNextDefmethod, [:pointer], :void 
+      # attach_function :EnvIsDefmethodDeletable, [:pointer], :void 
+      # attach_function :EnvListDefmethods, [:pointer], :void 
+      # attach_function :EnvSetDefmethodWatch, [:pointer], :void 
+      # attach_function :EnvUndefmethod, [:pointer], :void 
     end
   end
 end

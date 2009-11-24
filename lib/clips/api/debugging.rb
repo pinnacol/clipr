@@ -5,12 +5,12 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       
-      # attach_function :DribbleActive, [], :void 
-      # attach_function :DribbleOff, [], :void 
-      # attach_function :DribbleOn, [], :void 
-      # attach_function :GetWatchItem, [], :void 
-      # attach_function :Unwatch, [], :void 
-      # attach_function :Watch, [], :void 
+      # attach_function :EnvDribbleActive, [:pointer], :void 
+      # attach_function :EnvDribbleOff, [:pointer], :void 
+      # attach_function :EnvDribbleOn, [:pointer], :void 
+      # attach_function :EnvGetWatchItem, [:pointer], :void 
+      # attach_function :EnvUnwatch, [:pointer], :void 
+      # attach_function :EnvWatch, [:pointer], :void 
     end
   end
 end

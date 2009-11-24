@@ -5,7 +5,7 @@ module Clips
       extend FFI::Library
       ffi_lib DYLIB
       <% clips_methods.each do |meth| %>
-      # attach_function :<%= meth %>, [], :void <% end %>
+      # attach_function :Env<%= meth %>, [:pointer], :void <% end %>
     end
   end
 end
