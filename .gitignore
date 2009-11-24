@@ -2,3 +2,5 @@
 pkg
 rdoc
 vendor/gems
+src/*.o
+bin/clips.*

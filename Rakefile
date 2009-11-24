@@ -62,6 +62,30 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
 end
 
 #
+# Compile tasks
+#
+
+require 'lib/clips/constants'
+
+source_files = Dir.glob("src/*.c")
+object_files = source_files.collect do |src|
+  target = src.chomp(".c") + ".o"
+  file(target => src) { sh("gcc -c #{src} -o #{target}") }
+  target
+end
+
+file Clips::DYLIB => object_files do
+  unless File.exists?("bin")
+    FileUtils.mkdir("bin")
+  end
+  
+  sh("gcc -dynamiclib -o #{Clips::DYLIB} #{object_files.join(' ')}")
+end
+
+desc "compile the clips binary"
+task :compile => Clips::DYLIB
+
+#
 # Test tasks
 #
 
@@ -69,7 +93,7 @@ desc 'Default: Run tests.'
 task :default => :test
 
 desc 'Run the tests'
-task :test => :check_bundle do  
+task :test => [Clips::DYLIB, :check_bundle] do  
   tests = Dir.glob('test/**/*_test.rb')
   cmd = ['ruby', "-w", '-rvendor/gems/environment.rb', "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
@@ -98,4 +122,3 @@ end
 
 desc 'Run the cc tests'
 task :cc => [:cc_bundle, :test]
-
