@@ -1,0 +1,2 @@
+class Clips
+end
