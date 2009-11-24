@@ -1,0 +1,11 @@
+module Clips
+  module Api
+    # <%= const %> Documentation
+    module <%= const %>
+      extend FFI::Library
+      ffi_lib DYLIB
+      <% clips_methods.each do |meth| %>
+      # attach_function :<%= meth %>, [], :void <% end %>
+    end
+  end
+end

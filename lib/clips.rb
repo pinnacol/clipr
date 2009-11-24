@@ -1,2 +1,1 @@
-class Clips
-end
+require 'clips/api'

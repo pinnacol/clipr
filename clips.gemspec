@@ -10,7 +10,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = ""
   
   # add dependencies
-  # s.add_dependency("x", "= 1.0")
+  s.add_dependency("ffi", "= 0.5.0")
+  s.add_dependency("tap-test", ">= 0.2.0")
   
   s.has_rdoc = true
   s.rdoc_options.concat %W{--main README -S -N --title Clips}
