@@ -11,4 +11,4 @@ module WarnFilter
   end
 end unless Object.const_defined?(:WarnFilter)
 
-require 'test/unit'
+require 'tap/test/unit'

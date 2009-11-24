@@ -31,6 +31,8 @@ module Clips
       # attach_function :SaveFacts, [], :void 
       # attach_function :SetFactDuplication, [], :void 
       # attach_function :SetFactListChanged, [], :void 
+      
+      attach_function :EnvSaveFacts, [:pointer, :string, :int, :pointer], :int
     end
   end
 end
