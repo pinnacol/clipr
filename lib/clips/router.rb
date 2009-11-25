@@ -81,27 +81,27 @@ module Clips
     
     # Returns either 1 or 0 depending upon whether this router recognizes the
     # logical name.
-    def query(name)
+    def query(ptr, name)
       device(name) ? 1 : 0
     end
     
     # Prints the string to the device specified by the logical name.
-    def print(name, str)
+    def print(ptr, name, str)
       device(name).print(str)
     end
     
     # Gets a char from the device specified by the logical name.
-    def getc(name)
+    def getc(ptr, name)
       device(name).getc
     end
     
     # Ungets the char onto the device specified by the logical name.
-    def ungetc(c, name)
+    def ungetc(ptr, c, name)
       device(name).ungetc(c)
     end
     
     # Closes all the devices.  Accepts an exit code.
-    def exit(code)
+    def exit(ptr, code)
       devices.each_value do |device|
         device.close
       end

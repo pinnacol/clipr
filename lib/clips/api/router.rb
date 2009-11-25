@@ -6,11 +6,11 @@ module Clips
       ffi_lib DYLIB
       
       # router callbacks
-      callback :queryFunction,  [:string], :int
-      callback :printFunction,  [:string, :string], :int
-      callback :getcFunction,   [:string], :int
-      callback :ungetcFunction, [:int, :string], :int
-      callback :exitFunction,   [:int], :int
+      callback :queryFunction,  [:pointer, :string], :int
+      callback :printFunction,  [:pointer, :string, :string], :int
+      callback :getcFunction,   [:pointer, :string], :int
+      callback :ungetcFunction, [:pointer, :int, :string], :int
+      callback :exitFunction,   [:pointer, :int], :int
       
       # attach_function :EnvActivateRouter, [:pointer], :void 
       attach_function :EnvAddRouter, [:pointer, :string, :int, :queryFunction, :printFunction, :getcFunction, :ungetcFunction, :exitFunction], :int 

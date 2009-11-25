@@ -81,7 +81,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   #
   
   def test_facts_prints_facts_to_device
-    assert_equal "(initial-fact)\n", env.facts.string
+    assert_equal "f-0     (initial-fact)\nFor a total of 1 fact.\n", env.facts.string
   end
   
   #
