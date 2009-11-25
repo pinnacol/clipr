@@ -19,7 +19,7 @@ module Clips
       # attach_function :EnvGetDynamicConstraintChecking, [:pointer], :void 
       # attach_function :EnvGetSequenceOperatorRecognition, [:pointer], :void 
       # attach_function :EnvGetStaticConstraintChecking, [:pointer], :void 
-      
+      # attach_function :InitializeEnvironment, [], :void 
       attach_function :EnvLoad, [:pointer, :string], :int
       # attach_function :EnvRemoveClearFunction, [:pointer], :void 
       # attach_function :EnvRemovePeriodicFunction, [:pointer], :void 
@@ -31,10 +31,17 @@ module Clips
       # attach_function :EnvSetSequenceOperator, [:pointer], :void 
       # attach_function :EnvSetStaticConstraintChecking, [:pointer], :void 
       
-      # attach_function :InitializeEnvironment, [], :void 
+      # attach_function :AddEnvironmentCleanupFunction, [:pointer], :void 
+      # attach_function :AllocateEnvironmentData, [:pointer], :void 
       attach_function :CreateEnvironment, [], :pointer
+      # attach_function :DeallocateEnvironmentData, [:pointer], :void 
       attach_function :DestroyEnvironment, [:pointer], :bool
-      
+      # attach_function :GetCurrentEnvironment, [:pointer], :void 
+      # attach_function :GetEnvironmentByIndex, [:pointer], :void 
+      # attach_function :GetEnvironmentData, [:pointer], :void 
+      # attach_function :GetEnvironmentIndex, [:pointer], :void 
+      # attach_function :SetCurrentEnvironment, [:pointer], :void 
+      # attach_function :SetCurrentEnvironmentByIndex, [:pointer], :void
     end
   end
 end

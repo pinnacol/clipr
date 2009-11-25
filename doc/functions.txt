@@ -27,6 +27,17 @@ Section 4 - Embedding CLIPS 43
 4.1.23 SetDynamicConstraintChecking 52 
 4.1.24 SetSequenceOperator Recognition 52 
 4.1.25 SetStaticConstraintChecking 53 
+9.3.1 AddEnvironmentCleanupFunction 178 
+9.3.2 AllocateEnvironmentData 179 
+9.3.3 CreateEnvironment 180 
+9.3.4 DeallocateEnvironmentData 180 
+9.3.5 DestroyEnvironment 181 
+9.3.6 GetCurrentEnvironment 181 
+9.3.7 GetEnvironmentByIndex 181 
+9.3.8 GetEnvironmentData 182 
+9.3.9 GetEnvironmentIndex 182 
+9.3.10 SetCurrentEnvironment 182 
+9.3.11 SetCurrentEnvironmentByIndex 182
 
 4.2 Debugging Functions 53 
 4.2.1 DribbleActive 53 
