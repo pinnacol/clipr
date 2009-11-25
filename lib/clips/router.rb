@@ -33,7 +33,6 @@ module Clips
     
     # Returns an array of methods suitable for adding self as a router to via
     # the Api::Router.EnvAddRouter method.
-    #
     attr_reader :functions
     
     def initialize(devices={})
