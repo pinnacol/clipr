@@ -33,6 +33,8 @@ module Clips
       
       # attach_function :InitializeEnvironment, [], :void 
       attach_function :CreateEnvironment, [], :pointer
+      attach_function :DestroyEnvironment, [:pointer], :bool
+      
     end
   end
 end
