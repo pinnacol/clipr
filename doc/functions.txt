@@ -308,3 +308,23 @@ Section 4 - Embedding CLIPS 43
 4.16.6 GetNextDefmodule 147 
 4.16.7 ListDefmodules 147 
 4.16.8 SetCurrentModule 147
+
+7.5 Io Functions 163 
+7.5.1 ExitRouter 163 
+7.5.2 GetcRouter 164 
+7.5.3 PrintRouter 164 
+7.5.4 UngetcRouter 164 
+
+7.6 Router Functions 165 
+7.6.1 ActivateRouter 165 
+7.6.2 AddRouter 166 
+7.6.3 DeactivateRouter 167 
+7.6.4 DeleteRouter 167 
+
+8.2 Memory Functions 170 
+8.2.1 GetConserveMemory 170 
+8.2.2 MemRequests 170 
+8.2.3 MemUsed 171 
+8.2.4 ReleaseMem 171 
+8.2.5 SetConserveMemory 172 
+8.2.6 SetOutOfMemoryFunction 172

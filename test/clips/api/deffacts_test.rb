@@ -1,5 +1,5 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'lib/clips/api'
+require 'clips/api'
 
 # class ApiDeffactsTest < Test::Unit::TestCase
 #   

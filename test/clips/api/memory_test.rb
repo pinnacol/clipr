@@ -1,8 +1,8 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clips/api'
 
-# class ApiDebuggingTest < Test::Unit::TestCase
+# class ApiMemoryTest < Test::Unit::TestCase
 #   
-#   def test_debugging
+#   def test_memory
 #   end
 # end
