@@ -1,0 +1,11 @@
+--- 
+at: 327c7b0391c98b6c431bf7e38eab37e730169de2
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1259173921.97699
+state: open
+title: Closing an env
+type: issue
+--- 
+Environments are not supposed to be destroyed when running (see DestroyEnvironment).  This means they need to be stopped before close.
+
+There appears to be no stop method.  A rule with priority can be added such that if you assert a stop fact, then the rhs of the rule calls halt.  Halt is supposed to stop any more rules from being evaluated.
