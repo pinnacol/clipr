@@ -66,6 +66,25 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
+  # initialize test
+  #
+  
+  def test_initialize_sets_up_default_strio_router
+    routers = env.routers
+    assert routers.list.include?('default')
+    assert routers['default'].kind_of?(Clips::Router)
+    assert routers['default']['stdout'].kind_of?(StringIO)
+  end
+  
+  #
+  # facts test
+  #
+  
+  def test_facts_prints_facts_to_device
+    assert_equal "(initial-fact)\n", env.facts.string
+  end
+  
+  #
   # save test
   #
   

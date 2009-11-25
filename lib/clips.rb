@@ -1,1 +1,1 @@
-require 'clips/api'
+require 'clips/env'

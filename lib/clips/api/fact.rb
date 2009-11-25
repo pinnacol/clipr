@@ -6,14 +6,14 @@ module Clips
       ffi_lib DYLIB
       
       # attach_function :EnvAssert, [:pointer], :void 
-      # attach_function :EnvAssertString, [:pointer], :void 
+      attach_function :EnvAssertString, [:pointer, :string], :pointer 
       # attach_function :EnvAssignFactSlotDefaults, [:pointer], :void 
       # attach_function :EnvCreateFact, [:pointer], :void 
       # attach_function :EnvDecrementFactCount, [:pointer], :void 
       # attach_function :EnvFactDeftemplate, [:pointer], :void 
       # attach_function :EnvFactExistp, [:pointer], :void 
       # attach_function :EnvFactIndex, [:pointer], :void 
-      # attach_function :EnvFacts, [:pointer], :void 
+      attach_function :EnvFacts, [:pointer, :string, :pointer, :long_long, :long_long, :long_long], :void 
       # attach_function :EnvFactSlotNames, [:pointer], :void 
       # attach_function :EnvGetFactDuplication, [:pointer], :void 
       # attach_function :EnvGetFactList, [:pointer], :void 
