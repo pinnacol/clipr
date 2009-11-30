@@ -12,6 +12,15 @@ class RouterTest < Test::Unit::TestCase
   end
   
   #
+  # device test
+  #
+  
+  def test_device_raises_an_error_for_unknown_device
+    err = assert_raises(RuntimeError) { router.device('unknown') }
+    assert_equal "unknown device: \"unknown\"", err.message
+  end
+  
+  #
   # capture test
   #
   

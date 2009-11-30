@@ -69,11 +69,18 @@ class ClipsEnvTest < Test::Unit::TestCase
   # initialize test
   #
   
-  def test_initialize_sets_up_default_strio_router
+  def test_initialize_sets_up_default_router
     routers = env.routers
     assert routers.list.include?('default')
     assert routers['default'].kind_of?(Clips::Router)
-    assert routers['default']['stdout'].kind_of?(StringIO)
+  end
+  
+  #
+  # router test
+  #
+  
+  def test_router_returns_the_DEFAULT_ROUTER_router
+    assert_equal env.routers[Env::DEFAULT_ROUTER], env.router
   end
   
   #
@@ -120,7 +127,7 @@ ERROR:
   #
   
   def test_facts_prints_facts_to_device
-    assert_equal "f-0     (initial-fact)\nFor a total of 1 fact.\n", env.facts.string
+    assert_equal "f-0     (initial-fact)\nFor a total of 1 fact.\n", env.facts
   end
   
   #

@@ -69,7 +69,7 @@ module Clips
     end
     
     def device(name)
-      self[name] or raise("no such device: #{name}")
+      self[name] or raise("unknown device: #{name.inspect}")
     end
     
     # Captures any output to the specified device for the duration of the

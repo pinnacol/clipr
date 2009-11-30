@@ -9,7 +9,7 @@ module Clips
       end
       
       def [](name)
-        router(name)
+        router(name) or raise("unknown router: #{name.inspect}")
       end
       
       def router(name)
@@ -22,7 +22,7 @@ module Clips
         priority
       end
       
-      def has_router?(name)
+      def has?(name)
         @routers.has_key?(name.to_s)
       end
       

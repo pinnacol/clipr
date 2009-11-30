@@ -26,6 +26,9 @@ module Clips
     
     include Api
     
+    DEFAULT_ROUTER = 'default'
+    DEFAULT_DEVICE = 'device'
+    
     attr_reader :routers
     
     # Initializes a new Env.
@@ -33,8 +36,8 @@ module Clips
       @pointer = Environment.CreateEnvironment
       @routers = Routers.new(self)
       
-      unless options[:no_default_router]
-        @routers.add('default', Router.new(Router.strio_devices))
+      unless @routers.has?(DEFAULT_ROUTER)
+        @routers.add(DEFAULT_ROUTER, Router.new)
       end
     end
     
@@ -44,8 +47,9 @@ module Clips
       @pointer or raise("closed env")
     end
     
-    def router(name='default')
-      routers[name]
+    # Returns the specified router; raises an error if no such router exists.
+    def router(router_name=DEFAULT_ROUTER)
+      routers[router_name]
     end
     
     # Closes self and deallocates all memory associated with self.
@@ -84,21 +88,13 @@ module Clips
       options = options.merge(
         :start => -1,
         :end => -1,
-        :max => -1,
-        :router => 'default',
-        :device => 'stdout'
+        :max => -1
       )
       
-      unless router = routers[options[:router]]
-        raise "unknown router: #{options[:router]}"
+      router.capture(DEFAULT_DEVICE) do |dev|
+        Fact.EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
+        dev.string
       end
-      
-      unless device = router[options[:device]]
-        raise "unknown device: #{options[:device]} (router: #{options[:router]})"
-      end
-      
-      Fact.EnvFacts(pointer, options[:device], nil, options[:start], options[:end], options[:max])
-      device
     end
     
     def save(file)
