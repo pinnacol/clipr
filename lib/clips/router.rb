@@ -31,7 +31,7 @@ module Clips
     
     STANDARD_DEVICES = %w{stdin stdout wprompt wdialog wdisplay werror wwarning wtrace}
     
-    # Returns an array of methods suitable for adding self as a router to via
+    # Returns an array of methods suitable for adding self as a router via
     # the Api::Router.EnvAddRouter method.
     attr_reader :functions
     
@@ -53,7 +53,7 @@ module Clips
       validate(device)
       
       name = name.to_s
-      if has?(name)
+      if @devices.has_key?(name)
         @devices[name].close
       end
       
@@ -61,7 +61,7 @@ module Clips
     end
     
     def has?(name)
-      @devices.has_key?(name)
+      @devices.has_key?(name.to_s)
     end
     
     def devices
@@ -69,7 +69,23 @@ module Clips
     end
     
     def device(name)
-      @devices[name] or raise("no such device: #{name}")
+      self[name] or raise("no such device: #{name}")
+    end
+    
+    # Captures any output to the specified device for the duration of the
+    # block; the capture device is yielded to the block.  Returns the block
+    # result.
+    def capture(name) # :yields: device
+      name = name.to_s
+      current = @devices[name]
+      
+      begin
+        capture = StringIO.new
+        @devices[name] = capture
+        yield(capture)
+      ensure
+        @devices[name] = current
+      end
     end
     
     def extend(*args)
@@ -81,7 +97,7 @@ module Clips
     # Returns either 1 or 0 depending upon whether this router recognizes the
     # logical name.
     def query(ptr, name)
-      device(name) ? 1 : 0
+      self[name] ? 1 : 0
     end
     
     # Prints the string to the device specified by the logical name.
