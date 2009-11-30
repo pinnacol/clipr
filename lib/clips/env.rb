@@ -1,4 +1,5 @@
 require 'clips/api'
+require 'clips/construct'
 require 'clips/router'
 require 'clips/env/routers'
 
@@ -38,12 +39,13 @@ module Clips
     # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
     DEFAULT_DEVICE = 'wdisplay'
     
-    attr_reader :routers
+    attr_reader :routers, :constructs
     
     # Initializes a new Env.
     def initialize(options={})
       @pointer = Environment.CreateEnvironment
       @routers = Routers.new(self)
+      @constructs = {}
       
       unless @routers.has?(DEFAULT_ROUTER)
         @routers.add(DEFAULT_ROUTER, Router.new)
@@ -81,16 +83,25 @@ module Clips
     ########## API ##########
     
     # Builds the construct and returns self.
-    def build(str)
-      router.capture('werror') do |device|
-        unless Environment.EnvBuild(@pointer, str) == 1
-          err = device.string
-          err = "could not build: #{str}" if err.empty?
-          raise err
+    def build(construct)
+      unless built?(construct)
+        content = construct.content
+        router.capture('werror') do |device|
+          unless Environment.EnvBuild(@pointer, content) == 1
+            err = device.string
+            err = "could not build: #{content}" if err.empty?
+            raise err
+          end
         end
+        
+        constructs[construct.sha] = construct
       end
       
       self
+    end
+    
+    def built?(construct)
+      constructs.has_key?(construct.sha)
     end
     
     def classes(options={})
@@ -108,13 +119,13 @@ module Clips
       )
       
       router.capture(DEFAULT_DEVICE) do |dev|
-        Fact.EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
+        Api::Fact.EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
         dev.string
       end
     end
     
     def save(file)
-      Fact.EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
+      Api::Fact.EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
     end
   end
 end
