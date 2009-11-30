@@ -137,6 +137,34 @@ ERROR:
   end
   
   #
+  # assert test
+  #
+  
+  class AssertFact < Clips::Fact
+    slot :key, 'value'
+    
+    def initialize(attrs={})
+      @attrs = attrs
+    end
+    
+    def each_pair
+      @attrs.each_pair {|k,v| yield(k,v) }
+    end
+  end
+  
+  def test_assert_asserts_fact
+    fact = AssertFact.new
+    env.assert(fact)
+    assert_equal "f-0     (initial-fact)\nf-1     (ClipsEnvTest_AssertFact (key value))\nFor a total of 2 facts.\n", env.facts
+  end
+  
+  def test_assert_asserts_fact_with_non_default_value
+    fact = AssertFact.new(:key => 'alt')
+    env.assert(fact)
+    assert_equal "f-0     (initial-fact)\nf-1     (ClipsEnvTest_AssertFact (key alt))\nFor a total of 2 facts.\n", env.facts
+  end
+  
+  #
   # classes test
   #
   

@@ -38,10 +38,15 @@ module Clips
       attach_function :DestroyEnvironment, [:pointer], :bool
       # attach_function :GetCurrentEnvironment, [:pointer], :void 
       # attach_function :GetEnvironmentByIndex, [:pointer], :void 
-      # attach_function :GetEnvironmentData, [:pointer], :void 
+      # attach_function :GetEnvironmentData, [:pointer, :uint], :pointer 
       # attach_function :GetEnvironmentIndex, [:pointer], :void 
       # attach_function :SetCurrentEnvironment, [:pointer], :void 
       # attach_function :SetCurrentEnvironmentByIndex, [:pointer], :void
+      
+      # see symbol.h
+      attach_function :EnvAddSymbol, [:pointer, :string], :pointer
+      attach_function :EnvAddLong,   [:pointer, :long_long], :pointer
+      attach_function :EnvAddDouble, [:pointer, :double], :pointer
     end
   end
 end

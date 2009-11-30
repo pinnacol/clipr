@@ -16,7 +16,7 @@ module Clips
       # attach_function :EnvDeftemplateSlotRange, [:pointer], :void 
       # attach_function :EnvDeftemplateSlotSingleP, [:pointer], :void 
       # attach_function :EnvDeftemplateSlotTypes, [:pointer], :void 
-      # attach_function :EnvFindDeftemplate, [:pointer], :void 
+      attach_function :EnvFindDeftemplate, [:pointer, :string], :pointer 
       # attach_function :EnvGetDeftemplateList, [:pointer], :void 
       # attach_function :EnvGetDeftemplateName, [:pointer], :void 
       # attach_function :EnvGetDeftemplatePPForm, [:pointer], :void 

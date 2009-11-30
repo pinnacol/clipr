@@ -1,5 +1,5 @@
 require 'clips/api'
-require 'clips/construct'
+require 'clips/fact'
 require 'clips/router'
 require 'clips/env/routers'
 
@@ -39,13 +39,14 @@ module Clips
     # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
     DEFAULT_DEVICE = 'wdisplay'
     
-    attr_reader :routers, :constructs
+    attr_reader :routers, :constructs, :objects
     
     # Initializes a new Env.
     def initialize(options={})
       @pointer = Environment.CreateEnvironment
       @routers = Routers.new(self)
       @constructs = {}
+      @objects = {}
       
       unless @routers.has?(DEFAULT_ROUTER)
         @routers.add(DEFAULT_ROUTER, Router.new)
@@ -82,6 +83,21 @@ module Clips
     
     ########## API ##########
     
+    # Sets and returns pointer to a value
+    def symbolize(value)
+      case value
+      when String, Symbol
+        Environment::EnvAddSymbol(pointer, value.to_s)
+      when Fixnum
+        Environment::EnvAddLong(pointer, value)
+      when Float
+        Environment::EnvAddDouble(pointer, value)
+      else
+        objects[value.hash] = value
+        Environment::EnvAddLong(pointer, value.hash)
+      end
+    end
+    
     # Builds the construct and returns self.
     def build(construct)
       unless built?(construct)
@@ -102,6 +118,25 @@ module Clips
     
     def built?(construct)
       constructs.has_key?(construct.sha)
+    end
+    
+    def assert(fact)
+      deftemplate = fact.class
+      build(deftemplate) unless built?(deftemplate)
+      
+      deftemplate_ptr = Deftemplate.EnvFindDeftemplate(pointer, deftemplate.name)
+      fact_ptr = Api::Fact::EnvCreateFact(pointer, deftemplate_ptr)
+      
+      Api::Fact::EnvAssignFactSlotDefaults(pointer, fact_ptr)
+      
+      fact.each_pair do |slot, value|
+        o = Api::DataObject.new(:type => Api::DataObject::SYMBOL, :value => symbolize(value))
+        Api::Fact::EnvPutFactSlot(pointer, fact_ptr, slot.to_s, o)
+      end
+      
+      Api::Fact::EnvAssert(pointer, fact_ptr)
+      
+      self
     end
     
     def classes(options={})

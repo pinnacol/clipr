@@ -1,6 +1,17 @@
 module Clips
   module Api
     class DataObject < FFI::Struct
+      # see constant.h
+      FLOAT            = 0
+      INTEGER          = 1
+      SYMBOL           = 2
+      STRING           = 3
+      MULTIFIELD       = 4
+      EXTERNAL_ADDRESS = 5
+      FACT_ADDRESS     = 6
+      INSTANCE_ADDRESS = 7
+      INSTANCE_NAME    = 8
+      
       @@@
       struct do |s|
         s.name 'struct dataObject'
@@ -14,6 +25,14 @@ module Clips
         s.field :next,  :pointer
       end
       @@@
+      
+      def initialize(attrs=nil)
+        super()
+        
+        attrs.each_pair do |key, value|
+          self[key] = value
+        end if attrs
+      end
     end
   end
 end
