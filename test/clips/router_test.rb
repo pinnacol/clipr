@@ -53,4 +53,16 @@ class RouterTest < Test::Unit::TestCase
     assert_equal "error", err.message
     assert_equal device, router['dev']
   end
+  
+  #
+  # extend test
+  #
+  
+  module ExtendMod
+  end
+  
+  def test_extend_raises_error
+    err = assert_raises(RuntimeError) { router.extend(ExtendMod) }
+    assert_equal "router may not be extended", err.message
+  end
 end

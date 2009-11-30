@@ -75,21 +75,20 @@ module Clips
     # Captures any output to the specified device for the duration of the
     # block; the capture device is yielded to the block.  Returns the block
     # result.
-    def capture(name) # :yields: device
+    def capture(name, device=StringIO.new) # :yields: device
       name = name.to_s
       current = @devices[name]
       
       begin
-        capture = StringIO.new
-        @devices[name] = capture
-        yield(capture)
+        @devices[name] = device
+        yield(device)
       ensure
         @devices[name] = current
       end
     end
     
     def extend(*args)
-      raise "routers may not be extended"
+      raise "router may not be extended"
     end
     
     # CLIPS Router API (see apg.pdg 'AddRouter')

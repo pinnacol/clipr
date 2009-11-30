@@ -26,8 +26,17 @@ module Clips
     
     include Api
     
+    # The default router.
     DEFAULT_ROUTER = 'default'
-    DEFAULT_DEVICE = 'device'
+    
+    # The default device (ie logical name) that receives captured output.
+    #
+    #--
+    # DEFAULT_DEVICE is 'wdisplay' rather than something else because CLIPS
+    # sometimes sends output to this device when it probably shouldn't; using
+    # this device as the default ends up capturing all the output in most
+    # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
+    DEFAULT_DEVICE = 'wdisplay'
     
     attr_reader :routers
     
@@ -82,6 +91,13 @@ module Clips
       end
       
       self
+    end
+    
+    def classes(options={})
+      router.capture(DEFAULT_DEVICE) do |dev|
+        Defclass.EnvListDefclasses(pointer, DEFAULT_DEVICE, nil)
+        dev.string
+      end
     end
     
     def facts(options={})

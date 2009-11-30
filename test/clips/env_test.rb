@@ -123,10 +123,18 @@ ERROR:
   end
   
   #
+  # classes test
+  #
+  
+  def test_facts_classes_returns_classes_string
+    assert_equal "MAIN:\n   FLOAT\n   INTEGER\n   SYMBOL\n   STRING\n   MULTIFIELD\n   EXTERNAL-ADDRESS\n   FACT-ADDRESS\n   INSTANCE-ADDRESS\n   INSTANCE-NAME\n   OBJECT\n   PRIMITIVE\n   NUMBER\n   LEXEME\n   ADDRESS\n   INSTANCE\n   USER\n   INITIAL-OBJECT\nFor a total of 17 defclasses.\n", env.classes
+  end
+  
+  #
   # facts test
   #
   
-  def test_facts_prints_facts_to_device
+  def test_facts_returns_facts_string
     assert_equal "f-0     (initial-fact)\nFor a total of 1 fact.\n", env.facts
   end
   

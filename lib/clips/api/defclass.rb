@@ -22,7 +22,7 @@ module Clips
       # attach_function :EnvGetDefclassWatchSlots, [:pointer], :void 
       # attach_function :EnvGetNextDefclass, [:pointer], :void 
       # attach_function :EnvIsDefclassDeletable, [:pointer], :void 
-      # attach_function :EnvListDefclasses, [:pointer], :void 
+      attach_function :EnvListDefclasses, [:pointer, :string, :pointer], :void 
       # attach_function :EnvSetClassDefaultsMode, [:pointer], :void 
       # attach_function :EnvSetDefclassWatchInstances, [:pointer], :void 
       # attach_function :EnvSetDefclassWatchSlots, [:pointer], :void 
