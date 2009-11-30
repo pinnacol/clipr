@@ -1,0 +1,17 @@
+--- 
+at: 45e2303e7ff7fbec117327c2380ef8736d84c533
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1259604552.38743
+state: open
+title: Error in CLIPS routing?
+type: issue
+--- 
+Observe that when listing classes output is put to multiple logical names.  When DEFAULT_DEVICE is anything but wdisplay, some output is put to the specified device, and other output is put to wdisplay regardless of what you do.  With wdisplay:
+
+"MAIN:\n   FLOAT\n   INTEGER\n   SYMBOL\n   STRING\n   MULTIFIELD\n   EXTERNAL-ADDRESS\n   FACT-ADDRESS\n   INSTANCE-ADDRESS\n   INSTANCE-NAME\n   OBJECT\n   PRIMITIVE\n   NUMBER\n   LEXEME\n   ADDRESS\n   INSTANCE\n   USER\n   INITIAL-OBJECT\nFor a total of 17 defclasses.\n"
+
+Without:
+
+"MAIN:\nFLOAT\nINTEGER\nSYMBOL\nSTRING\nMULTIFIELD\nEXTERNAL-ADDRESS\nFACT-ADDRESS\nINSTANCE-ADDRESS\nINSTANCE-NAME\nOBJECT\nPRIMITIVE\nNUMBER\nLEXEME\nADDRESS\nINSTANCE\nUSER\nINITIAL-OBJECT\n"
+
+And the rest is put to wdisplay.
