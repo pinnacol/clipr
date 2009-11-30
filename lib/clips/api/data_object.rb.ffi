@@ -1,0 +1,19 @@
+module Clips
+  module Api
+    class DataObject < FFI::Struct
+      @@@
+      struct do |s|
+        s.name 'struct dataObject'
+        s.include 'clips.h'
+        
+        s.field :supplementalInfo, :pointer
+        s.field :type,  :ushort
+        s.field :value, :pointer
+        s.field :begin, :long
+        s.field :end,   :long
+        s.field :next,  :pointer
+      end
+      @@@
+    end
+  end
+end

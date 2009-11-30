@@ -82,8 +82,26 @@ file Clips::DYLIB => object_files do
   sh("gcc -dynamiclib -o #{Clips::DYLIB} #{object_files.join(' ')}")
 end
 
+ffi_files  = ["lib/clips/api/data_object.rb.ffi"]
+ruby_files = ffi_files.collect do |ffi_file|
+  ruby_file = ffi_file.chomp(".ffi")
+  file ruby_file => ffi_file do
+    require 'vendor/gems/environment'
+    require 'ffi'
+    require 'ffi/tools/generator'
+    require 'ffi/tools/struct_generator'
+    
+    puts "generating: #{ffi_file} => #{ruby_file}"
+    FFI::Generator.new ffi_file, ruby_file, :cflags => "-Isrc"
+  end
+  ruby_file
+end
+
 desc "compile the clips binary"
 task :compile => Clips::DYLIB
+
+desc "generate FFI structs"
+task :ffi_generate => [:check_bundle, *ruby_files]
 
 #
 # Test tasks
@@ -93,7 +111,7 @@ desc 'Default: Run tests.'
 task :default => :test
 
 desc 'Run the tests'
-task :test => [Clips::DYLIB, :check_bundle] do  
+task :test => [Clips::DYLIB, :check_bundle, :ffi_generate] do  
   tests = Dir.glob('test/**/*_test.rb')
   cmd = ['ruby', "-w", '-rvendor/gems/environment.rb', "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
