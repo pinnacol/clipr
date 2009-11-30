@@ -34,7 +34,7 @@ module Clips
       @routers = Routers.new(self)
       
       unless options[:no_default_router]
-        @routers.add(:default, Router.new(Router.strio_devices))
+        @routers.add('default', Router.new(Router.strio_devices))
       end
     end
     
@@ -42,6 +42,10 @@ module Clips
     # an error if the pointer is unset (ie the env was closed).
     def pointer
       @pointer or raise("closed env")
+    end
+    
+    def router(name='default')
+      routers[name]
     end
     
     # Closes self and deallocates all memory associated with self.
@@ -62,6 +66,19 @@ module Clips
     end
     
     ########## API ##########
+    
+    # Builds the construct and returns self.
+    def build(str)
+      router.capture('werror') do |device|
+        unless Environment.EnvBuild(@pointer, str) == 1
+          err = device.string
+          err = "could not build: #{str}" if err.empty?
+          raise err
+        end
+      end
+      
+      self
+    end
     
     def facts(options={})
       options = options.merge(

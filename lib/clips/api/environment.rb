@@ -11,7 +11,7 @@ module Clips
       # attach_function :EnvBatchStar, [:pointer], :void 
       # attach_function :EnvBload, [:pointer], :void 
       # attach_function :EnvBsave, [:pointer], :void 
-      # attach_function :EnvBuild, [:pointer], :void 
+      attach_function :EnvBuild, [:pointer, :string], :int 
       attach_function :EnvClear, [:pointer], :void 
       # attach_function :EnvEval, [:pointer], :void 
       # attach_function :EnvFunctionCall, [:pointer], :void 

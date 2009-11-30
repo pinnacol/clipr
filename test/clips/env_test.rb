@@ -77,6 +77,45 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
+  # build test
+  #
+  
+  def test_build_returns_self
+    template = %q{
+    (deftemplate sample 
+      "desc" 
+      (slot key 
+        (type SYMBOL) 
+        (default value)))}
+        
+    assert_equal env, env.build(template)
+  end
+  
+  def test_build_raises_error_for_invalid_constructs
+    template = %q{
+    (deftemplate sample 
+      "desc" 
+      (slot key 
+        (type STRING) 
+        (default value)))}
+    
+    err = assert_raises(RuntimeError) { env.build(template) }
+    assert_equal %q{
+[CSTRNCHK1] An expression found in the default attribute
+does not match the allowed types for slot key.
+
+ERROR:
+(deftemplate MAIN::sample "desc"
+   (slot key (type STRING) (default value))
+}, err.message
+  end
+
+  def test_build_raises_error_for_unbuildable_constructs
+    err = assert_raises(RuntimeError) { env.build("(assert (quack))") }
+    assert_equal "could not build: (assert (quack))", err.message
+  end
+  
+  #
   # facts test
   #
   
