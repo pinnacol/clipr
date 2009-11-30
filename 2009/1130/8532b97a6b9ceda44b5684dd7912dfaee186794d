@@ -1,0 +1,22 @@
+--- 
+at: daee6b8bfeabebc4204b2cdd50d9db3122a26aa4
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1259609127.58365
+state: open
+title: Dribble routers
+type: issue
+--- 
+A 'dribble' router prints to the router then shares the I/O request with other routers.  The following code is needed:
+
+  dribble = lambda do |env, logical_name, str|
+    begin
+      Router.EnvDeactivateRouter(env, router_name)
+      Io.EnvPrintRouter(env, logical_name, str)
+    ensure
+      Router.EnvActivateRouter(env, router_name)
+    end
+  end
+
+Dribbling could be implemented as an option on a Routers#add call.  In the case of a dribble, wrap the print function in the block such that it will have access to the router_name.  The other I/O functions can be wrapped in a similar manner (ex using Io.UngetcRouter).
+
+Note the wrappers currently have to be implemented at the Routers level because Router doesn't know it's own name... that information is stored in the Routers instance.
