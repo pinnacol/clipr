@@ -1,0 +1,191 @@
+== Efficiency (p78/88)
+
+ 1. Put the most specific patterns in a rule first. Patterns with unbound
+variables and wildcards should be lower down in the list of rule patterns. A
+control fact should be put first in the patterns.
+
+2. Patterns with fewer matching facts should go first to minimize partial
+matches.
+
+3. Patterns that are often retracted and asserted, volatile patterns, should
+be put last in the list of patterns.
+
+== Facts
+
+modify    (like a merge!)
+duplicate (like a merge)
+
+$ ~ * (splat)  # 5.4.1.3 Variables Single- and Multifield 
+
+== Inheritance
+
+COOL supports multiple inheritance: a class may directly inherit slots and
+message-handlers from more than one class. Since inheritance is only useful
+for slots and message-handlers, it is often not meaningful to inherit from one
+of the primitive type classes, such as MULTIFIELD or NUMBER. This is because
+these classes cannot have slots and usually do not have message-handlers.
+
+== Rules
+
+Patterns: & | ~ : = (connective constraints: and or not predicate return)
+OOP patterns: is-a 
+
+Negation: not
+Grouping: and, or, exists
+Callback: test
+Special: forall, logical
+
+=== Signatures
+
+not CE
+and CE+
+or CE+
+exists  CE+
+test FCN
+forall CE CE+
+logical CE+
+
+=== Experiments
+
+In this setup it may be best to actively compile each method call as it goes along.  That would allow proper nesting.  It's a builder model.
+
+env.rule do # ce(:and)
+  #
+  # Simplified syntax
+  #
+  
+  # (template (key value))
+  match template, :key => 'value'
+  
+  # (template (a ?a))
+  # (template (b ?b))
+  # (template (c ?c))
+  # (test (call block ?a ?b ?c)
+  match(template, :a, :b, :c) {|a, b, c| ... }
+  
+  # (template (key ?value&))
+  match(template) do
+    slot key, ['a', 'b'], ['c'] {|value| ... }
+  end
+  
+  # (or (template (key a)) (template (key b)))
+  any do
+    match template, :key => 'a'
+    match template, :key => 'b'
+  end
+  
+  # (and (template (key a)) (template (key b)))
+  all do 
+    match template, :key => 'a'
+    match template, :key => 'b'
+  end
+  
+  exists do
+    match a, :student
+    match a, :student
+    match b, :student
+  end
+  
+  not_match
+  not_any
+  not_all
+  not_exists
+  # not_check  -- check { false }
+  
+  # (template (key ?value&:(call assign :var, ?value)))
+  # --
+  # Note that assign can be implemented via match.
+  assign var, template, key
+  
+  # (test (call block))
+  check { }
+  
+  # (one (a ?a))
+  # (one (b ?b))
+  # (two (c ?c))
+  # (test (call block)  
+  #
+  # here the assigns are assigns to a rule instance,
+  # which sets the assignment in vars.  Then the
+  # block picks up the assignments later.
+  assign :a, one, a
+  assign :b, one, b
+  assign :c, two, c
+  check { vars[:a] }
+  
+  # (forall (one (key ?value)) (two (key ?value)))
+  every(one, :key) do |value|
+    match two, :key => value
+  end
+  
+  # (forall (student (name ?value)) () )
+  every(student, :name) do
+    match reading, :student
+    match writing, :student
+    match arithmetic, :student
+  end
+  
+  #
+  # General, using CLIPS syntax
+  #
+  
+  ce :match, template, :key => 'value'
+  ce :not, template, :key => 'value'
+  ce :or do
+    ce :match, template, :key => 'a'
+    ce :match, template, :key => 'b'
+  end
+  
+  ce :and do 
+    ce :match, template, :key => 'a'
+    ce :match, template, :key => 'b'
+  end
+  
+  ce :exists, template, :key => 'a'
+  
+  ##################################
+  rhs.exists []
+  rhs.forall []
+  
+  lhs.call
+  lhs.assert
+  
+end
+
+So even thinking about how to define the matcher requires some idea about the
+signature of a rule. Templates define the slots for a rule; hashes provide the values for a rule.  Maybe a simple pattern match provides a hash of values that should be met?
+
+  # (template (key value))
+  rhs.match template, {:key => 'value'}
+
+Predicates are handled with callbacks:
+
+  # (template (key ?value&:(...)) )
+  rhs.match(template) {|value| ... }
+
+Maybe block style for more complicated matches:
+
+  # (template (key value))
+  rhs.match template, {:key => 'value'}
+  
+  rhs.match template do
+    # (template (key a|b)
+    slot key, ['a']
+    
+    # (template (key a|b)
+    slot key, ['a', 'b']
+    
+    # (template (key ~c&~d)
+    slot key, [], ['c' ,'d']
+    
+    # (template (key ?value&:(...))
+    slot key {|value| ... }
+  
+    # (template (key ?value&a&~c&:(...)|b&~c&:(...)))
+    # Nasty because of precedence rules --- cross product
+    slot key, ['a', 'b'], ['c'] {|value| ... }
+    
+    slot key, [oks], [not_oks], {predicate}
+  end
+
+
