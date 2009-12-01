@@ -1,0 +1,17 @@
+--- 
+at: e2b20619f627eb6d11ec8377bda56952386bd1ae
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1259682296.17932
+state: open
+title: Primitive type matchers
+type: issue
+--- 
+There should be regexps that can identify how CLIPS will interpret a given string.
+
+  /[+-]?\d+/  Integer
+  /\w+/       Symbol
+
+Etc.  The rules for Symbols are given in the bpg p7/33:
+
+bq. A symbol in CLIPS is any sequence of characters that starts with any printable ASCII character and is followed by zero or more printable ASCII characters. When a delimiter is found, the symbol is ended. The following characters act as delimiters: any non-printable ASCII character (including spaces, tabs, carriage returns, and line feeds), a double quote, opening and closing parentheses “(” and “)”, an ampersand “&”, a vertical bar “|”, a less than “<”, and a tilde “~”. A semicolon “;” starts a CLIPS comment (see section 2.3.3) and also acts as a delimiter.
+
