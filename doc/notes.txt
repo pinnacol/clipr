@@ -45,85 +45,172 @@ test FCN
 forall CE CE+
 logical CE+
 
+== A General Pattern
+
+This is a general rule pattern that delegates fully to ruby.
+
+  (defrule name
+    ?fact <- (template (slot ?value&:(call block ?value)))
+    =>
+    (call block ?fact))
+
+It may be fast enough, but more likely this is a fairly slow way of pattern
+matching because of the many variable assignments and the callbacks to ruby.
+However, it's a good place to start and then optimizations can be built onto
+this basic scaffold for matching patterns with primitive types and performing
+standard LHS operations.
+
+The syntax is:
+
+  match(template, :a, :b, :c) {|a, b, c| ... }
+
 === Experiments
 
-In this setup it may be best to actively compile each method call as it goes along.  That would allow proper nesting.  It's a builder model.
+In this setup it may be best to actively compile each method call as it goes
+along. That would allow proper nesting. It's a builder model.
 
-env.rule do # ce(:and)
+env.rule do
+  # lhs/rhs methods instance_eval block or return self
+
+  lhs.match(:template, :key => 'value')
+  lhs.all do 
+    match(:template, :key => 'value')
+  end
+  rhs.call { ... }
+
+  # variation
+  
+  lhs do # implicit all
+    match(:template, :key => 'value')
+  end
+  
+  rhs do 
+    call { ... }
+    call { ... }
+    call { ... }
+    # standard patterns can be assigned here too...
+  end
+end
+
+env.rule do
+  # Match is a confluence of pattern matching and test.
   #
-  # Simplified syntax
+  # * Leading values pick up variable assignments (reordered to end)
+  # * Primitive types are used directly
+  #   (symbol.to_s will need to be scrubbed to ensure a legal symbol results)
+  # * Object types are compared using a predicate ruby compare
+  # * Block is a test that receives assignments (ruby-call converts ?values to objects)
   #
+  # (template
+  #   (sym value)
+  #   (str "value")
+  #   (int 1)
+  #   (float 1.2)
+  #   (obj ?object_id&:(ruby-equal object_id ?object_id))
+  #   (a ?a)
+  #   (b ?b)
+  #   (c ?c))
+  # (test (ruby-call block ?a ?b ?c))
+  #
+  match(template, :a, :b, :c
+    :sym => :value,
+    :str => 'value', 
+    :int => 1, 
+    :float => 1.2, 
+    :obj => Object.new
+  ) do |a,b,c|
+    ... true/false
+  end
   
-  # (template (key value))
-  match template, :key => 'value'
-  
-  # (template (a ?a))
-  # (template (b ?b))
-  # (template (c ?c))
-  # (test (call block ?a ?b ?c)
-  match(template, :a, :b, :c) {|a, b, c| ... }
-  
-  # (template (key ?value&))
+  # In a variation, a nil + block configures each slot individually.
+  #
+  # (template ... )
   match(template) do
-    slot key, ['a', 'b'], ['c'] {|value| ... }
+    # (key a)
+    slot key, [:a]
+  
+    # (key a|"a"|1|1.2)
+    slot key, [:a, 'a', 1, 1.2]
+  
+    # (key ~c&~d)
+    slot key, [], [:c, :d]
+  
+    # (key ?object_id&:(ruby-equal a_id ?object_id))&~:(ruby-equal b_id ?object_id))
+    slot key, [A.new], [B.new]
+    
+    # (template (key ?object_id&:(ruby-call block object_id))
+    slot key {|value| ... }
+
+    # (template (key ?object_id&a&~c&:(...)|b&~c&:(...)))
+    #
+    # Mixing is nasty because of precedence rules --- cross product results
+    slot key, [:a, :b], [:c] {|value| ... }
   end
   
+  # assign has similar syntax to a match, but assigns the pattern address.
+  # in general variables are local to the match/every block and so to
+  # access fact values, the rhs needs to assign the fact and then re-access
+  # manually.
+  #
+  # ?key <- (template
+  #   (a ?a)
+  #   (b ?b)
+  #   (c ?c))
+  # (test (ruby-call block ?a ?b ?c))
+  #
+  assign(:key, template, :a, :b, :c ...) {}
+  
+  # check creates a test block that can access the pattern addresses, in
+  # the order that they have been defined.  call blocks for the rhs
+  # similarly receive addresses.
+  #
+  # (test (ruby-call block ?key))
+  check {|key| }
+  
+  # any one must be true
   # (or (template (key a)) (template (key b)))
-  any do
+  any do 
     match template, :key => 'a'
     match template, :key => 'b'
   end
   
+  # all must be true, triggers for each match
   # (and (template (key a)) (template (key b)))
-  all do 
+  all do
     match template, :key => 'a'
     match template, :key => 'b'
   end
   
+  # all must be true, only triggers once
   exists do
     match a, :student
     match a, :student
     match b, :student
   end
   
-  not_match
-  not_any
-  not_all
-  not_exists
-  # not_check  -- check { false }
-  
-  # (template (key ?value&:(call assign :var, ?value)))
-  # --
-  # Note that assign can be implemented via match.
-  assign var, template, key
-  
-  # (test (call block))
-  check { }
-  
-  # (one (a ?a))
-  # (one (b ?b))
-  # (two (c ?c))
-  # (test (call block)  
+  # every uses the same syntax as match, except rather than defining
+  # a test, the block is used to define the rest of the statement.
+  # Note the variables are not values... they are placeholders
+  # indicating the variable to assign from the first statement.
   #
-  # here the assigns are assigns to a rule instance,
-  # which sets the assignment in vars.  Then the
-  # block picks up the assignments later.
-  assign :a, one, a
-  assign :b, one, b
-  assign :c, two, c
-  check { vars[:a] }
-  
-  # (forall (one (key ?value)) (two (key ?value)))
-  every(one, :key) do |value|
-    match two, :key => value
+  # (forall
+  #   (one (:b ?b) (:c ?c) (key value))
+  #   (two (b ?b))
+  #   (three (c ?c))
+  # )
+  every(one, :b, :c, :key => 'value') do |a, b, c|
+    match two, :b => b
+    match three, :c => c
   end
   
-  # (forall (student (name ?value)) () )
-  every(student, :name) do
-    match reading, :student
-    match writing, :student
-    match arithmetic, :student
-  end
+  # Note that not_assign, not_check do not exist.
+  # * not_assign will raise an error (<- (not... ))
+  # * not_check can be achieved by the block
+  not_match   # this is false
+  not_any     # all must be false, triggers for each match?
+  not_all     # one must be false
+  not_exists  # all must be false, only triggers once
+  not_every   # 
   
   #
   # General, using CLIPS syntax
@@ -142,18 +229,12 @@ env.rule do # ce(:and)
   end
   
   ce :exists, template, :key => 'a'
-  
-  ##################################
-  rhs.exists []
-  rhs.forall []
-  
-  lhs.call
-  lhs.assert
-  
 end
 
 So even thinking about how to define the matcher requires some idea about the
-signature of a rule. Templates define the slots for a rule; hashes provide the values for a rule.  Maybe a simple pattern match provides a hash of values that should be met?
+signature of a rule. Templates define the slots for a rule; hashes provide the
+values for a rule. Maybe a simple pattern match provides a hash of values that
+should be met?
 
   # (template (key value))
   rhs.match template, {:key => 'value'}
