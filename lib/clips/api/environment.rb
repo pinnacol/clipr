@@ -14,7 +14,7 @@ module Clips
       attach_function :EnvBuild, [:pointer, :string], :int 
       attach_function :EnvClear, [:pointer], :void 
       # attach_function :EnvEval, [:pointer], :void 
-      # attach_function :EnvFunctionCall, [:pointer], :void 
+      attach_function :EnvFunctionCall, [:pointer, :string, :string, :pointer], :int 
       # attach_function :EnvGetAutoFloatDividend, [:pointer], :void 
       # attach_function :EnvGetDynamicConstraintChecking, [:pointer], :void 
       # attach_function :EnvGetSequenceOperatorRecognition, [:pointer], :void 

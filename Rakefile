@@ -82,7 +82,7 @@ file Clips::DYLIB => object_files do
   sh("gcc -dynamiclib -o #{Clips::DYLIB} #{object_files.join(' ')}")
 end
 
-ffi_files  = ["lib/clips/api/data_object.rb.ffi"]
+ffi_files  = Dir.glob("lib/clips/api/**/*.rb.ffi")
 ruby_files = ffi_files.collect do |ffi_file|
   ruby_file = ffi_file.chomp(".ffi")
   file ruby_file => ffi_file do

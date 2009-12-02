@@ -2,6 +2,10 @@ require 'ffi'
 require 'clips/api_error'
 require 'clips/constants'
 
+Dir.glob("#{File.dirname(__FILE__)}/api/struct/*.rb").each do |struct_file|
+  require struct_file
+end
+
 Dir.glob("#{File.dirname(__FILE__)}/api/*.rb").each do |api_file|
   require api_file
 end

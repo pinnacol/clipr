@@ -1,6 +1,14 @@
+
 module Clips
   module Api
     class DataObject < FFI::Struct
+      class << self
+        def type_str(type)
+          constant = constants.find {|const| const_get(const) == type }
+          constant ? constant.to_s : nil
+        end
+      end
+      
       # see constant.h
       FLOAT            = 0
       INTEGER          = 1
@@ -11,6 +19,14 @@ module Clips
       FACT_ADDRESS     = 6
       INSTANCE_ADDRESS = 7
       INSTANCE_NAME    = 8
+      
+      CAST = {
+        FLOAT => Struct::FloatHashNode,
+        INTEGER => Struct::IntegerHashNode,
+        SYMBOL => Struct::SymbolHashNode,
+        STRING => Struct::SymbolHashNode,
+        EXTERNAL_ADDRESS => Struct::ExternalAddressHashNode
+      }
       
       @@@
       struct do |s|
@@ -32,6 +48,16 @@ module Clips
         attrs.each_pair do |key, value|
           self[key] = value
         end if attrs
+      end
+      
+      def type
+        DataObject.type_str(self[:type])
+      end
+      
+      def value
+        struct = CAST[self[:type]]
+        raise "cannot cast type: #{self[:type]} (#{type})" unless struct
+        struct.new(self[:value])[:contents]
       end
     end
   end

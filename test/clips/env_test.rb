@@ -84,6 +84,21 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
+  # call test
+  #
+  
+  def test_call_calls_the_function
+    result = env.call(">", "1 2")
+    assert_equal "SYMBOL", result.type
+    assert_equal "FALSE", result.value
+  end
+  
+  def test_call_raises_error_for_unknown_functions
+    err = assert_raises(RuntimeError) { env.call("unknown") }
+    assert_equal "[EVALUATN2] No function, generic function or deffunction of name unknown exists for external call.\n", err.message
+  end
+  
+  #
   # build test
   #
   

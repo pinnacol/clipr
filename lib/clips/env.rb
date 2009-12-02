@@ -83,6 +83,22 @@ module Clips
     
     ########## API ##########
     
+    def call(function, arguments=nil)
+      result = Api::DataObject.new
+      
+      router.capture('werror') do |device|
+        
+        # true if error occured (unexpected)
+        if Environment::EnvFunctionCall(pointer, function, arguments, result) == 1
+          err = device.string
+          err = "error in function: #{function}" if err.empty?
+          raise err
+        end
+      end
+      
+      result
+    end
+    
     # Sets and returns pointer to a value
     def symbolize(value)
       case value
@@ -103,7 +119,7 @@ module Clips
       unless built?(construct)
         content = construct.content
         router.capture('werror') do |device|
-          unless Environment.EnvBuild(@pointer, content) == 1
+          if Environment.EnvBuild(pointer, content) == 0
             err = device.string
             err = "could not build: #{content}" if err.empty?
             raise err

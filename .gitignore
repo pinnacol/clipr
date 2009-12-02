@@ -5,3 +5,4 @@ vendor/gems
 src/*.o
 bin/clips.*
 lib/clips/api/data_object.rb
+lib/clips/api/struct/*.rb
