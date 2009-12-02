@@ -1,0 +1,17 @@
+--- 
+at: a554b19d82f756c03d1dbc5a4c93cb56c951e2ad
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1259779486.24435
+state: open
+title: Optimize DataObject value conversion for TRUE/FALSE
+type: issue
+--- 
+Currently DataObject uses a system like:
+
+        case value
+        when "TRUE"  then true
+        when "FALSE" then false
+        else dup ? value.dup : value
+        end
+
+This requires getting the symbol value then doing a string compare... totally wasteful.  There should be a way to identify the TRUE/FALSE symbols and return them immediately.
