@@ -54,5 +54,10 @@ module Clips
   # 'Environment Companion Function' discussion in the apg for more details.
   #
   module Api
+    module_function
+    
+    def call(block)
+      ObjectSpace._id2ref(block).call
+    end
   end
 end

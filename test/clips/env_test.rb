@@ -102,6 +102,19 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal "[EVALUATN2] No function, generic function or deffunction of name unknown exists for external call.\n", err.message
   end
   
+  def test_rubycall
+    was_in_block = false
+    block = lambda { was_in_block = true }
+    
+    assert_equal false, was_in_block
+    
+    result = env.call("ruby-call", block.object_id.to_s)
+    assert_equal "SYMBOL", result.type
+    assert_equal true, result.value
+    
+    assert_equal true, was_in_block
+  end
+  
   #
   # build test
   #

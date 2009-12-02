@@ -67,19 +67,19 @@ end
 
 require 'lib/clips/constants'
 
+makefile = "src/Makefile"
 source_files = Dir.glob("src/*.c")
-object_files = source_files.collect do |src|
-  target = src.chomp(".c") + ".o"
-  file(target => src) { sh("gcc -c #{src} -o #{target}") }
-  target
+
+file makefile => source_files do
+  pkg = File.basename(Clips::DYLIB).chomp(File.extname(Clips::DYLIB))
+  Dir.chdir("src") { sh("ruby -r mkmf -e \"create_makefile('#{pkg}')\"") }
 end
 
-file Clips::DYLIB => object_files do
-  unless File.exists?("bin")
-    FileUtils.mkdir("bin")
-  end
+file Clips::DYLIB => makefile do
+  Dir.chdir("src") { sh("make") }
   
-  sh("gcc -dynamiclib -o #{Clips::DYLIB} #{object_files.join(' ')}")
+  FileUtils.mkdir("bin") unless File.exists?("bin")
+  FileUtils.mv("src/clips.bundle", "bin/clips.bundle")
 end
 
 ffi_files  = Dir.glob("lib/clips/api/**/*.rb.ffi")

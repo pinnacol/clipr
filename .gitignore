@@ -3,6 +3,7 @@ pkg
 rdoc
 vendor/gems
 src/*.o
+src/Makefile
 bin/clips.*
 lib/clips/api/data_object.rb
 lib/clips/api/struct/*.rb

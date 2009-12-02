@@ -42,6 +42,7 @@
 /***************************************************************************/
 
 #include "clips.h"
+#include "extnruby.h"
 
 void UserFunctions(void);
 void EnvUserFunctions(void *);
@@ -57,6 +58,7 @@ void EnvUserFunctions(void *);
 /*********************************************************/
 void UserFunctions()
   {   
+    DefineFunction("ruby-call", 'b', PTIF RubyCall, "RubyCall");
   }
   
 /***********************************************************/
