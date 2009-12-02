@@ -90,7 +90,11 @@ class ClipsEnvTest < Test::Unit::TestCase
   def test_call_calls_the_function
     result = env.call(">", "1 2")
     assert_equal "SYMBOL", result.type
-    assert_equal "FALSE", result.value
+    assert_equal false, result.value
+    
+    result = env.call(">", "2 1")
+    assert_equal "SYMBOL", result.type
+    assert_equal true, result.value
   end
   
   def test_call_raises_error_for_unknown_functions

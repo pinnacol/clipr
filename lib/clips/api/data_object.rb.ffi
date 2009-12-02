@@ -54,10 +54,30 @@ module Clips
         DataObject.type_str(self[:type])
       end
       
-      def value
+      # Duplicates SYMBOL and STRING values when dup is true, as prescribed in
+      # the apg:
+      #
+      #   Do not store the pointer returned by DOToString or DOPToString as part
+      #   of a permanent data structure. When CLIPS performs garbage collection
+      #   on symbols and strings, the pointer reference to the string may be
+      #   rendered invalid. To store a permanent reference to a string, allocate
+      #   storage for a copy of the string and then copy the string returned by
+      #   DOToString or DOPToString to the copy’s storage area.
+      #
+      def value(dup=true)
         struct = CAST[self[:type]]
         raise "cannot cast type: #{self[:type]} (#{type})" unless struct
-        struct.new(self[:value])[:contents]
+        value = struct.new(self[:value])[:contents]
+        
+        if struct != Struct::SymbolHashNode
+          return value 
+        end
+        
+        case value
+        when "TRUE"  then true
+        when "FALSE" then false
+        else dup ? value.dup : value
+        end
       end
     end
   end
