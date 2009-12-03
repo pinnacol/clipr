@@ -117,6 +117,17 @@ task :test => [Clips::DYLIB, :check_bundle, :ffi_generate] do
   sh(*cmd)
 end
 
+desc 'Run the benchmarks'
+task :benchmark => [Clips::DYLIB, :check_bundle, :ffi_generate] do
+  unless ENV['BENCHMARK'] || ENV['BENCHMARK_TEST']
+    ENV['BENCHMARK'] = 'TRUE'
+  end
+  
+  tests = Dir.glob('test/benchmark/*_benchmark.rb')
+  cmd = ['ruby', "-w", '-rvendor/gems/environment.rb', "-e", "ARGV.dup.each {|test| load test}"] + tests
+  sh(*cmd)
+end
+
 task :check_bundle do
   unless File.exists?("vendor/gems/environment.rb")
     puts %Q{
