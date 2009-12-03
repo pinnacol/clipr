@@ -92,13 +92,13 @@ class ClipsEnvTest < Test::Unit::TestCase
     block = lambda { was_in_block = true }
     assert_equal false, was_in_block
     
-    Clips::Api::Environment.EnvBuild(env.pointer, "(defrule sound-is-quack (sound quack) => (ruby-call #{block.object_id}))")
+    env.build_str  "(defrule sound-is-quack (sound quack) => (ruby-call #{block.object_id}))"
+    env.assert_str "(sound honk)"
     
-    env.assert_string("(sound honk)")
     assert_equal 0, env.run
     assert_equal false, was_in_block
     
-    env.assert_string("(sound quack)")
+    env.assert_str("(sound quack)")
     assert_equal 1, env.run
     assert_equal true, was_in_block
   end
@@ -160,25 +160,13 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal "0x4d2 is not id value", err.message
   end
   
-  class RubyCallFact < Clips::Fact
-    slot :key, 'value'
-    
-    def initialize(attrs={})
-      @attrs = attrs
-    end
-    
-    def each_pair
-      @attrs.each_pair {|k,v| yield(k,v) }
-    end
-  end
-  
   def test_rubycall_passes_back_pattern_addresses
     block_args = nil
     block = lambda {|*args| block_args = args }
     
-    Clips::Api::Environment.EnvBuild(env.pointer, "(deftemplate animal (slot sound))")
-    Clips::Api::Environment.EnvBuild(env.pointer, "(defrule sound-is-quack ?fact <- (animal (sound quack)) => (ruby-call #{block.object_id} ?fact)) ")
-    env.assert_string("(animal (sound quack))")
+    env.build_str  "(deftemplate animal (slot sound))"
+    env.build_str  "(defrule sound-is-quack ?fact <- (animal (sound quack)) => (ruby-call #{block.object_id} ?fact)) "
+    env.assert_str "(animal (sound quack))"
     
     assert_equal nil, block_args
     assert_equal 1, env.run
@@ -186,49 +174,36 @@ class ClipsEnvTest < Test::Unit::TestCase
     
     ptr = block_args[0]
     assert_equal Clips::Api::DataObject, ptr.class
-
+  
     obj = Clips::Api::DataObject.new 
-    assert_equal 1, Clips::Api::Fact::EnvGetFactSlot(env.pointer, ptr[:value], "sound", obj)
+    assert_equal 1, Clips::Api::Fact::EnvGetFactSlot(env.pointer, ptr.value, "sound", obj)
     assert_equal "quack", obj.value
   end
   
   #
-  # build test
+  # build_str test
   #
   
-  class BuildClass
-    include Clips::Construct
-    
-    attr_accessor :content
-    
-    def initialize(content)
-      reset
-      @content = content
-    end
-  end
-  
-  def test_build_sets_construct_and_returns_self
-    template = %q{
+  def test_build_str_builds_construct_and_returns_self
+    construct = %q{
     (deftemplate sample 
       "desc" 
       (slot key 
         (type SYMBOL) 
         (default value)))}
     
-    construct = BuildClass.new(template)
-    assert_equal env, env.build(construct)
-    assert_equal({construct.sha => construct}, env.constructs)
+    assert_equal env, env.build_str(construct)
   end
   
-  def test_build_raises_error_for_invalid_constructs
-    template = %q{
+  def test_build_str_raises_error_for_invalid_constructs
+    construct = %q{
     (deftemplate sample 
       "desc" 
       (slot key 
         (type STRING) 
         (default value)))}
     
-    err = assert_raises(RuntimeError) { env.build(BuildClass.new(template)) }
+    err = assert_raises(RuntimeError) { env.build_str(construct) }
     assert_equal %q{
 [CSTRNCHK1] An expression found in the default attribute
 does not match the allowed types for slot key.
@@ -239,47 +214,18 @@ ERROR:
 }, err.message
   end
 
-  def test_build_raises_error_for_unbuildable_constructs
-    template = "(assert (quack))"
-    err = assert_raises(RuntimeError) { env.build(BuildClass.new(template)) }
+  def test_build_str_raises_error_for_unbuildable_constructs
+    err = assert_raises(RuntimeError) { env.build_str "(assert (quack))" }
     assert_equal "could not build: (assert (quack))", err.message
   end
   
   #
-  # assert_string test
+  # assert_str test
   #
   
-  def test_assert_string_asserts_fact_string
-    env.assert_string("(goodnight moon)")
+  def test_assert_str_asserts_fact_string
+    env.assert_str("(goodnight moon)")
     assert_equal "f-0     (initial-fact)\nf-1     (goodnight moon)\nFor a total of 2 facts.\n", env.facts
-  end
-  
-  #
-  # assert test
-  #
-  
-  class AssertFact < Clips::Fact
-    slot :key, 'value'
-    
-    def initialize(attrs={})
-      @attrs = attrs
-    end
-    
-    def each_pair
-      @attrs.each_pair {|k,v| yield(k,v) }
-    end
-  end
-  
-  def test_assert_asserts_fact
-    fact = AssertFact.new
-    env.assert(fact)
-    assert_equal "f-0     (initial-fact)\nf-1     (ClipsEnvTest_AssertFact (key value))\nFor a total of 2 facts.\n", env.facts
-  end
-  
-  def test_assert_asserts_fact_with_non_default_value
-    fact = AssertFact.new(:key => 'alt')
-    env.assert(fact)
-    assert_equal "f-0     (initial-fact)\nf-1     (ClipsEnvTest_AssertFact (key alt))\nFor a total of 2 facts.\n", env.facts
   end
   
   #

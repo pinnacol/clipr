@@ -1,5 +1,4 @@
 require 'clips/api'
-require 'clips/fact'
 require 'clips/router'
 require 'clips/env/routers'
 
@@ -39,13 +38,12 @@ module Clips
     # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
     DEFAULT_DEVICE = 'wdisplay'
     
-    attr_reader :routers, :constructs, :objects
+    attr_reader :routers, :objects
     
     # Initializes a new Env.
     def initialize(options={})
       @pointer = Environment.CreateEnvironment
       @routers = Routers.new(self)
-      @constructs = {}
       @objects = {}
       
       unless @routers.has?(DEFAULT_ROUTER)
@@ -119,48 +117,20 @@ module Clips
     end
     
     # Builds the construct and returns self.
-    def build(construct)
-      unless built?(construct)
-        content = construct.content
-        router.capture('werror') do |device|
-          if Environment.EnvBuild(pointer, content) == 0
-            err = device.string
-            err = "could not build: #{content}" if err.empty?
-            raise err
-          end
+    def build_str(construct)
+      router.capture('werror') do |device|
+        if Environment.EnvBuild(pointer, construct) == 0
+          err = device.string
+          err = "could not build: #{construct}" if err.empty?
+          raise err
         end
-        
-        constructs[construct.sha] = construct
       end
       
       self
     end
     
-    def built?(construct)
-      constructs.has_key?(construct.sha)
-    end
-    
-    def assert_string(str)
-      Api::Fact::EnvAssertString(pointer, str)
-      self
-    end
-    
-    def assert(fact)
-      deftemplate = fact.class
-      build(deftemplate) unless built?(deftemplate)
-      
-      deftemplate_ptr = Deftemplate.EnvFindDeftemplate(pointer, deftemplate.name)
-      fact_ptr = Api::Fact::EnvCreateFact(pointer, deftemplate_ptr)
-      
-      Api::Fact::EnvAssignFactSlotDefaults(pointer, fact_ptr)
-      
-      fact.each_pair do |slot, value|
-        o = Api::DataObject.intern(:type => Api::DataObject::SYMBOL, :value => symbolize(value))
-        Api::Fact::EnvPutFactSlot(pointer, fact_ptr, slot.to_s, o)
-      end
-      
-      Api::Fact::EnvAssert(pointer, fact_ptr)
-      
+    def assert_str(str)
+      Fact::EnvAssertString(pointer, str)
       self
     end
     
@@ -179,13 +149,23 @@ module Clips
       )
       
       router.capture(DEFAULT_DEVICE) do |dev|
-        Api::Fact.EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
+        Fact.EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
         dev.string
       end
     end
     
     def save(file)
-      Api::Fact.EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
+      Fact.EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
     end
+    
+    private
+    
+    def each_module(name)
+      nesting = name.split("::")
+      base = nesting.pop
+      nesting.each {|nest| yield(nest) }
+      base
+    end
+    
   end
 end
