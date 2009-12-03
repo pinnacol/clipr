@@ -21,9 +21,8 @@
 /*************************************************************/
 
 #include "extnruby.h"
-#include <stdio.h>
 
-int RubyCall() 
+int EnvRubyCall(void *theEnv) 
 { 
   const VALUE object_space = rb_define_module_under(rb_cObject, "ObjectSpace");
   const ID id2ref = rb_intern("_id2ref");

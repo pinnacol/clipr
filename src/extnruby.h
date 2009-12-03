@@ -23,4 +23,4 @@
 #include "clips.h"
 #include "ruby.h"
 
-int RubyCall();
+int EnvRubyCall();
