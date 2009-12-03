@@ -21,7 +21,7 @@
 /*************************************************************/
 
 #include "extnruby.h"
-
+#include <stdio.h>
 /*********************************************************/
 /* A callback method to pass control to Ruby from CLIPS. */
 /* EnvRubyCall converts its inputs into ruby objects and */
@@ -52,11 +52,13 @@ int EnvRubyCall(void *theEnv)
   /* Get the callback inputs */ 
   /*=========================*/
   
+  n += 1;
   VALUE args[n];
-  args[0] = LONG2FIX(DOToLong(arg));
+  args[0] = rbffi_Pointer_NewInstance(theEnv);
+  args[1] = LONG2FIX(DOToLong(arg));
   
-  for(i = 1; i < n; ++i) {
-    RtnUnknown(i+1, &arg);
+  for(i = 2; i < n; ++i) {
+    RtnUnknown(i, &arg);
     args[i] = rbffi_Pointer_NewInstance(&arg);
   }
   

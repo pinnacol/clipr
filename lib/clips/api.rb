@@ -59,6 +59,7 @@ module Clips
     # Callback recieves inputs sent to the ruby-call external function that
     # Clips registers with the CLIPS runtime.  The inputs are:
     #
+    # * a pointer to the calling env
     # * an object id (identifies an object responding to call)
     # * an array of FFI pointers to DataObject structs
     #
@@ -67,11 +68,11 @@ module Clips
     #
     # Returns the call result.
     #
-    def callback(obj_id, *ptrs)
+    def callback(env_ptr, obj_id, *ptrs)
       obj = ObjectSpace._id2ref(obj_id)
       ptrs.collect! {|ptr| DataObject.new(ptr) }
       
-      obj.call(*ptrs)
+      obj.call(env_ptr, *ptrs)
     end
     
   end
