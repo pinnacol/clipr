@@ -1,21 +1,25 @@
 
 module Clips
   module Api
+    
+    # see constant.h
     class DataObject < FFI::Struct
       class << self
+        
+        # Initializes a new DataObject with the specified attributes.
         def intern(attrs={})
           obj = new
           attrs.each_pair {|key, value| obj[key] = value }
           obj
         end
         
+        # Returns the string for the specified type.
         def type_str(type)
           constant = constants.find {|const| const_get(const) == type }
           constant ? constant.to_s : nil
         end
       end
       
-      # see constant.h
       FLOAT            = 0
       INTEGER          = 1
       SYMBOL           = 2
@@ -48,12 +52,27 @@ module Clips
       end
       @@@
       
+      # Returns the type for self.
       def type
-        DataObject.type_str(self[:type])
+        self[:type]
       end
       
-      # Duplicates SYMBOL and STRING values when dup is true, as prescribed in
-      # the apg:
+      # Returns type converted to the corresponding type string, or nil for
+      # unknown types.
+      def type_str
+        DataObject.type_str(type)
+      end
+      
+      # Returns the value for self converted as follows:
+      #
+      # * primitive types are resolved into their corresponding objects
+      #   (FLOAT, INTEGER, SYMBOL, STRING)
+      # * other types are returned directly as FFI pointers
+      #   (FACT_ADDRESS, EXTERNAL_ADDRESS, INSTANCE_ADDRESS ... )
+      #
+      # By default value will duplicate SYMBOL and STRING outputs.  This
+      # behavior can be turned off by specifying dup = false, but be mindful
+      # of the consequences, as discussed in the apg:
       #
       #   Do not store the pointer returned by DOToString or DOPToString as part
       #   of a permanent data structure. When CLIPS performs garbage collection
@@ -63,10 +82,14 @@ module Clips
       #   DOToString or DOPToString to the copy’s storage area.
       #
       def value(dup=true)
-        struct = CAST[self[:type]]
-        raise "cannot cast type: #{self[:type]} (#{type})" unless struct
-        value = struct.new(self[:value])[:contents]
+        value = self[:value]
+        struct = CAST[type]
         
+        unless struct
+          return value
+        end
+        
+        value = struct.new(value)[:contents]
         if struct != Struct::SymbolHashNode
           return value 
         end

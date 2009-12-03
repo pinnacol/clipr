@@ -16,12 +16,21 @@
 /* Contributing Programmer(s):                               */
 /*                                                           */
 /* Revision History:                                         */
-/*      6.30: Added call and equal methods                   */
+/*      6.30: Added EnvRubyCall method                       */
 /*                                                           */
 /*************************************************************/
 
 #include "extnruby.h"
 
+/*********************************************************/
+/* A callback method to pass control to Ruby from CLIPS. */
+/* EnvRubyCall converts its inputs into ruby objects and */
+/* passes them to Clips::Api#callback; that method then  */
+/* dispatches control to some arbitrary block of code.   */
+/*                                                       */
+/* EnvRubyCall must receive at least one integer input   */
+/* to identify the block called by Clips::Api#callback.  */
+/*********************************************************/
 int EnvRubyCall(void *theEnv) 
 { 
   /*==================*/ 

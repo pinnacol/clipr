@@ -56,10 +56,22 @@ module Clips
   module Api
     module_function
     
-    def callback(block_id, *ptrs)
-      block = ObjectSpace._id2ref(block_id)
+    # Callback recieves inputs sent to the ruby-call external function that
+    # Clips registers with the CLIPS runtime.  The inputs are:
+    #
+    # * an object id (identifies an object responding to call)
+    # * an array of FFI pointers to DataObject structs
+    #
+    # Callback looks up the specified object, converts the pointers to
+    # DataObject instances, and sends the pointers to the object using call.
+    #
+    # Returns the call result.
+    #
+    def callback(obj_id, *ptrs)
+      obj = ObjectSpace._id2ref(obj_id)
       ptrs.collect! {|ptr| DataObject.new(ptr) }
-      block.call(*ptrs)
+      
+      obj.call(*ptrs)
     end
     
   end
