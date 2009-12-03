@@ -83,6 +83,10 @@ module Clips
     
     ########## API ##########
     
+    def run(n=-1)
+      Agenda::EnvRun(pointer, n)
+    end
+    
     def call(function, arguments=nil)
       result = Api::DataObject.new
       
@@ -134,6 +138,11 @@ module Clips
     
     def built?(construct)
       constructs.has_key?(construct.sha)
+    end
+    
+    def assert_string(str)
+      Api::Fact::EnvAssertString(pointer, str)
+      self
     end
     
     def assert(fact)

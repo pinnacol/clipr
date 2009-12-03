@@ -24,7 +24,7 @@ module Clips
       # attach_function :EnvRefreshAgenda, [:pointer], :void 
       # attach_function :EnvRemoveRunFunction, [:pointer], :void 
       # attach_function :EnvReorderAgenda, [:pointer], :void 
-      # attach_function :EnvRun, [:pointer], :void 
+      attach_function :EnvRun, [:pointer, :long_long], :long_long 
       # attach_function :EnvSetActivationSalience, [:pointer], :void 
       # attach_function :EnvSetAgendaChanged, [:pointer], :void 
       # attach_function :EnvSetSalienceEvaluation, [:pointer], :void 

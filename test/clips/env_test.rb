@@ -84,6 +84,26 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
+  # run test
+  #
+  
+  def test_run_with_rubycall
+    was_in_block = false
+    block = lambda { was_in_block = true }
+    assert_equal false, was_in_block
+    
+    Clips::Api::Environment.EnvBuild(env.pointer, "(defrule sound-is-quack (sound quack) => (ruby-call #{block.object_id}))")
+    
+    env.assert_string("(sound honk)")
+    assert_equal 0, env.run
+    assert_equal false, was_in_block
+    
+    env.assert_string("(sound quack)")
+    assert_equal 1, env.run
+    assert_equal true, was_in_block
+  end
+  
+  #
   # call test
   #
   
@@ -125,6 +145,14 @@ class ClipsEnvTest < Test::Unit::TestCase
     
     block = lambda { nil }
     assert_equal false, env.call("ruby-call", block.object_id.to_s)
+  end
+
+  def test_rubycall_raises_error_when_block_does_not_exist
+    err = assert_raises(RangeError) { ObjectSpace._id2ref(1234) }
+    assert_equal "0x4d2 is not id value", err.message
+    
+    err = assert_raises(RangeError) { env.call("ruby-call", "1234") }
+    assert_equal "0x4d2 is not id value", err.message
   end
   
   #
@@ -178,6 +206,15 @@ ERROR:
     template = "(assert (quack))"
     err = assert_raises(RuntimeError) { env.build(BuildClass.new(template)) }
     assert_equal "could not build: (assert (quack))", err.message
+  end
+  
+  #
+  # assert_string test
+  #
+  
+  def test_assert_string_asserts_fact_string
+    env.assert_string("(goodnight moon)")
+    assert_equal "f-0     (initial-fact)\nf-1     (goodnight moon)\nFor a total of 2 facts.\n", env.facts
   end
   
   #
