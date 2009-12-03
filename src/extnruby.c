@@ -24,21 +24,34 @@
 
 int RubyCall() 
 { 
-  VALUE object_space, callback, block_id;
-  ID id2ref, call;
-  long block;
+  const VALUE object_space = rb_define_module_under(rb_cObject, "ObjectSpace");
+  const ID id2ref = rb_intern("_id2ref");
+  const ID call = rb_intern("call");
+  
+  VALUE block, block_id, block_result;
+  long id, result;
   
   ArgCountCheck("ruby-call",EXACTLY,1);
-  block = RtnLong(1);
-  block_id = LONG2FIX(block);
-
-  object_space = rb_define_module_under(rb_cObject, "ObjectSpace");
-  id2ref = rb_intern("_id2ref");
-  call = rb_intern("call");
+  id = RtnLong(1);
   
-  callback = rb_funcall(object_space, id2ref, 1, block_id);
-  rb_funcall(callback, call, 0);
+  /*==================================================*/
+  /* Lookup the block specified by id, call it, and   */
+  /* convert the result into an true/false integer    */
+  /*==================================================*/
   
-  return(1); 
+  block_id = LONG2FIX(id);
+  block = rb_funcall(object_space, id2ref, 1, block_id);
+  
+  block_result = rb_funcall(block, call, 0);
+  result = FIX2INT(block_result);
+  
+  /*=======================================*/
+  /* FIX2INT returns 2 for nil and must be */
+  /* treated as a special case of false    */
+  /*=======================================*/
+  
+  if(result == 2) result = 0;
+  
+  return(result); 
 }
 

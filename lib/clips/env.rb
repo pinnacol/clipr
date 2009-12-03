@@ -96,7 +96,7 @@ module Clips
         end
       end
       
-      result
+      result.value
     end
     
     # Sets and returns pointer to a value

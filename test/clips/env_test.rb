@@ -87,14 +87,12 @@ class ClipsEnvTest < Test::Unit::TestCase
   # call test
   #
   
-  def test_call_calls_the_function
+  def test_call_calls_the_function_and_returns_result
     result = env.call(">", "1 2")
-    assert_equal "SYMBOL", result.type
-    assert_equal false, result.value
+    assert_equal false, result
     
     result = env.call(">", "2 1")
-    assert_equal "SYMBOL", result.type
-    assert_equal true, result.value
+    assert_equal true, result
   end
   
   def test_call_raises_error_for_unknown_functions
@@ -102,17 +100,31 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal "[EVALUATN2] No function, generic function or deffunction of name unknown exists for external call.\n", err.message
   end
   
-  def test_rubycall
+  def test_rubycall_calls_block
     was_in_block = false
     block = lambda { was_in_block = true }
-    
     assert_equal false, was_in_block
     
-    result = env.call("ruby-call", block.object_id.to_s)
-    assert_equal "SYMBOL", result.type
-    assert_equal true, result.value
-    
+    env.call("ruby-call", block.object_id.to_s)
     assert_equal true, was_in_block
+  end
+  
+  def test_rubycall_returns_true_if_block_returns_truthy
+    block = lambda { true }
+    assert_equal true, env.call("ruby-call", block.object_id.to_s)
+    
+    block = lambda { 1 }
+    assert_equal true, env.call("ruby-call", block.object_id.to_s)
+    
+    block = lambda { "str" }
+    assert_equal true, env.call("ruby-call", block.object_id.to_s)
+    
+    # falsy
+    block = lambda { false }
+    assert_equal false, env.call("ruby-call", block.object_id.to_s)
+    
+    block = lambda { nil }
+    assert_equal false, env.call("ruby-call", block.object_id.to_s)
   end
   
   #
