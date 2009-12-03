@@ -22,6 +22,5 @@
 
 #include "clips.h"
 #include "ruby.h"
-#include <stdio.h>
 
 int RubyCall();

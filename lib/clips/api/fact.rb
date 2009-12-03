@@ -19,7 +19,7 @@ module Clips
       # attach_function :EnvGetFactList, [:pointer], :void 
       # attach_function :EnvGetFactListChanged, [:pointer], :void 
       # attach_function :EnvGetFactPPForm, [:pointer], :void 
-      # attach_function :EnvGetFactSlot, [:pointer], :void 
+      attach_function :EnvGetFactSlot, [:pointer, :pointer, :string, :pointer], :int 
       # attach_function :EnvGetNextFact, [:pointer], :void 
       # attach_function :EnvGetNextFactInTemplate, [:pointer], :void 
       # attach_function :EnvIncrementFactCount, [:pointer], :void 

@@ -147,12 +147,49 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal false, env.call("ruby-call", block.object_id.to_s)
   end
 
+  def test_rubycall_raises_error_when_block_is_missing
+    err = assert_raises(ArgumentError) { env.call("ruby-call") }
+    assert_equal "no block id given", err.message
+  end
+
   def test_rubycall_raises_error_when_block_does_not_exist
     err = assert_raises(RangeError) { ObjectSpace._id2ref(1234) }
     assert_equal "0x4d2 is not id value", err.message
     
     err = assert_raises(RangeError) { env.call("ruby-call", "1234") }
     assert_equal "0x4d2 is not id value", err.message
+  end
+  
+  class RubyCallFact < Clips::Fact
+    slot :key, 'value'
+    
+    def initialize(attrs={})
+      @attrs = attrs
+    end
+    
+    def each_pair
+      @attrs.each_pair {|k,v| yield(k,v) }
+    end
+  end
+  
+  def test_rubycall_passes_back_pattern_addresses
+    block_args = nil
+    block = lambda {|*args| block_args = args }
+    
+    Clips::Api::Environment.EnvBuild(env.pointer, "(deftemplate animal (slot sound))")
+    Clips::Api::Environment.EnvBuild(env.pointer, "(defrule sound-is-quack ?fact <- (animal (sound quack)) => (ruby-call #{block.object_id} ?fact)) ")
+    env.assert_string("(animal (sound quack))")
+    
+    assert_equal nil, block_args
+    assert_equal 1, env.run
+    assert_equal 1, block_args.length
+    
+    ptr = block_args[0]
+    assert_equal FFI::Pointer, ptr.class
+
+    obj = Clips::Api::DataObject.new 
+    assert_equal 1, Clips::Api::Fact::EnvGetFactSlot(env.pointer, ptr, "sound", obj)
+    assert_equal "quack", obj.value
   end
   
   #

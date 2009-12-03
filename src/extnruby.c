@@ -21,6 +21,7 @@
 /*************************************************************/
 
 #include "extnruby.h"
+#include <stdio.h>
 
 int RubyCall() 
 { 
@@ -29,20 +30,43 @@ int RubyCall()
   const ID call = rb_intern("call");
   
   VALUE block, block_id, block_result;
+  DATA_OBJECT arg;
+  int i, n;
   long id, result;
   
-  ArgCountCheck("ruby-call",EXACTLY,1);
+  /*==================================*/ 
+  /* Check at least one argument.     */ 
+  /*==================================*/ 
+  
+  n = RtnArgCount();
+  if (n == 0) rb_raise(rb_eArgError, "no block id given");
+  
+  /*==================================*/ 
+  /* Get the block id.                */ 
+  /*==================================*/
+  
   id = RtnLong(1);
-  
-  /*==================================================*/
-  /* Lookup the block specified by id, call it, and   */
-  /* convert the result into an true/false integer    */
-  /*==================================================*/
-  
   block_id = LONG2FIX(id);
-  block = rb_funcall(object_space, id2ref, 1, block_id);
   
-  block_result = rb_funcall(block, call, 0);
+  /*==================================*/ 
+  /* Get the rule pointers            */ 
+  /*==================================*/
+  
+  n -= 1;
+  VALUE args[n];
+  for(i = 0; i < n; ++i) {
+    RtnUnknown(i+2, &arg);
+    args[i] = rbffi_Pointer_NewInstance(arg.value);
+  }
+  
+  /*================================================*/
+  /* Lookup the block specified by id, call it with */
+  /* the rule pointers, and convert the result into */
+  /* a true/false integer                           */
+  /*================================================*/
+  
+  block = rb_funcall(object_space, id2ref, 1, block_id);
+  block_result = rb_funcall2(block, call, n, (VALUE *)args);
   result = FIX2INT(block_result);
   
   /*=======================================*/
