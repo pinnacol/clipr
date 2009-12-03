@@ -85,12 +85,17 @@ module Clips
       Agenda::EnvRun(pointer, n)
     end
     
+    # Calls the function with the arguments and returns the value of the
+    # resulting DataObject. Provides similar functionality to:
+    #
+    #   CLIPS> (function arguments...)
+    #
+    # Only functions may be called through this method (see build_str and
+    # assert_str for building constructs and asserting facts from strings).
     def call(function, arguments=nil)
       result = Api::DataObject.new
       
       router.capture('werror') do |device|
-        
-        # true if error occured (unexpected)
         if Environment::EnvFunctionCall(pointer, function, arguments, result) == 1
           err = device.string
           err = "error in function: #{function}" if err.empty?
@@ -101,27 +106,18 @@ module Clips
       result.value
     end
     
-    # Sets and returns pointer to a value
-    def symbolize(value)
-      case value
-      when String, Symbol
-        Environment::EnvAddSymbol(pointer, value.to_s)
-      when Fixnum
-        Environment::EnvAddLong(pointer, value)
-      when Float
-        Environment::EnvAddDouble(pointer, value)
-      else
-        objects[value.hash] = value
-        Environment::EnvAddLong(pointer, value.hash)
-      end
-    end
-    
-    # Builds the construct and returns self.
-    def build_str(construct)
+    # Builds the construct str and returns self.  Provides similar
+    # functionality to:
+    #
+    #   CLIPS> (str...)
+    #
+    # Only constructs like deftemplate or defrule can be built through this
+    # method (to assert fact strings see assert_str).
+    def build_str(str)
       router.capture('werror') do |device|
-        if Environment.EnvBuild(pointer, construct) == 0
+        if Environment.EnvBuild(pointer, str) == 0
           err = device.string
-          err = "could not build: #{construct}" if err.empty?
+          err = "could not build: #{str}" if err.empty?
           raise err
         end
       end
@@ -129,6 +125,11 @@ module Clips
       self
     end
     
+    # Asserts the fact indicated by str and returns self.  Provides similar
+    # functionality to:
+    #
+    #   CLIPS> (assert (str...))
+    #
     def assert_str(str)
       Fact::EnvAssertString(pointer, str)
       self
@@ -141,6 +142,10 @@ module Clips
       end
     end
     
+    # Returns facts as a string, similar to:
+    #
+    #   CLIPS> (facts)
+    #
     def facts(options={})
       options = options.merge(
         :start => -1,
@@ -159,6 +164,21 @@ module Clips
     end
     
     private
+    
+    # Sets and returns pointer to a value
+    def symbolize(value)
+      case value
+      when String, Symbol
+        Environment::EnvAddSymbol(pointer, value.to_s)
+      when Fixnum
+        Environment::EnvAddLong(pointer, value)
+      when Float
+        Environment::EnvAddDouble(pointer, value)
+      else
+        objects[value.hash] = value
+        Environment::EnvAddLong(pointer, value.hash)
+      end
+    end
     
     def each_module(name)
       nesting = name.split("::")
