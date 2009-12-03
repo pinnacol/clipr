@@ -3,6 +3,12 @@ module Clips
   module Api
     class DataObject < FFI::Struct
       class << self
+        def intern(attrs={})
+          obj = new
+          attrs.each_pair {|key, value| obj[key] = value }
+          obj
+        end
+        
         def type_str(type)
           constant = constants.find {|const| const_get(const) == type }
           constant ? constant.to_s : nil
@@ -41,14 +47,6 @@ module Clips
         s.field :next,  :pointer
       end
       @@@
-      
-      def initialize(attrs=nil)
-        super()
-        
-        attrs.each_pair do |key, value|
-          self[key] = value
-        end if attrs
-      end
       
       def type
         DataObject.type_str(self[:type])

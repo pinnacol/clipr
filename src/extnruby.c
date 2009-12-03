@@ -24,49 +24,41 @@
 
 int EnvRubyCall(void *theEnv) 
 { 
-  const VALUE object_space = rb_define_module_under(rb_cObject, "ObjectSpace");
-  const ID id2ref = rb_intern("_id2ref");
-  const ID call = rb_intern("call");
+  /*==================*/ 
+  /* Check arguments. */ 
+  /*==================*/
   
-  VALUE block, block_id, block_result;
   DATA_OBJECT arg;
   int i, n;
-  long id, result;
   
-  /*==================================*/ 
-  /* Check at least one argument.     */ 
-  /*==================================*/ 
+  n = ArgCountCheck("ruby-call", AT_LEAST, 1);
   
-  n = RtnArgCount();
-  if (n == 0) rb_raise(rb_eArgError, "no block id given");
+  if (n == -1) 
+    rb_raise(rb_eArgError, "no block id given");
+    
+  if (ArgTypeCheck("ruby-call", 1, INTEGER, &arg) == 0) 
+    rb_raise(rb_eArgError, "expected block id as first argument");
+    
+  /*=========================*/ 
+  /* Get the callback inputs */ 
+  /*=========================*/
   
-  /*==================================*/ 
-  /* Get the block id.                */ 
-  /*==================================*/
-  
-  id = RtnLong(1);
-  block_id = LONG2FIX(id);
-  
-  /*==================================*/ 
-  /* Get the rule pointers            */ 
-  /*==================================*/
-  
-  n -= 1;
   VALUE args[n];
-  for(i = 0; i < n; ++i) {
-    RtnUnknown(i+2, &arg);
-    args[i] = rbffi_Pointer_NewInstance(arg.value);
+  args[0] = LONG2FIX(DOToLong(arg));
+  
+  for(i = 1; i < n; ++i) {
+    RtnUnknown(i+1, &arg);
+    args[i] = rbffi_Pointer_NewInstance(&arg);
   }
   
-  /*================================================*/
-  /* Lookup the block specified by id, call it with */
-  /* the rule pointers, and convert the result into */
-  /* a true/false integer                           */
-  /*================================================*/
+  /*=================================*/
+  /* Make the callback to Clips::Api */
+  /*=================================*/
   
-  block = rb_funcall(object_space, id2ref, 1, block_id);
-  block_result = rb_funcall2(block, call, n, (VALUE *)args);
-  result = FIX2INT(block_result);
+  VALUE clips = rb_const_get(rb_cObject, rb_intern("Clips"));
+  VALUE api   = rb_const_get(clips, rb_intern("Api"));
+  
+  long result = FIX2INT(rb_funcall2(api, rb_intern("callback"), n, (VALUE *)args));
   
   /*=======================================*/
   /* FIX2INT returns 2 for nil and must be */

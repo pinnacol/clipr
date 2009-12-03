@@ -155,7 +155,7 @@ module Clips
       Api::Fact::EnvAssignFactSlotDefaults(pointer, fact_ptr)
       
       fact.each_pair do |slot, value|
-        o = Api::DataObject.new(:type => Api::DataObject::SYMBOL, :value => symbolize(value))
+        o = Api::DataObject.intern(:type => Api::DataObject::SYMBOL, :value => symbolize(value))
         Api::Fact::EnvPutFactSlot(pointer, fact_ptr, slot.to_s, o)
       end
       

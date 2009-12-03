@@ -58,7 +58,7 @@ void EnvUserFunctions(void *);
 /*********************************************************/
 void UserFunctions()
   {   
-    DefineFunction("ruby-call", 'b', PTIF EnvRubyCall, "EnvRubyCall");
+    DefineFunction2("ruby-call", 'b', PTIF EnvRubyCall, "EnvRubyCall", "1*yi");
   }
   
 /***********************************************************/

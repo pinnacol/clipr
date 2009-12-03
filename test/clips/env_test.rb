@@ -185,10 +185,10 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal 1, block_args.length
     
     ptr = block_args[0]
-    assert_equal FFI::Pointer, ptr.class
+    assert_equal Clips::Api::DataObject, ptr.class
 
     obj = Clips::Api::DataObject.new 
-    assert_equal 1, Clips::Api::Fact::EnvGetFactSlot(env.pointer, ptr, "sound", obj)
+    assert_equal 1, Clips::Api::Fact::EnvGetFactSlot(env.pointer, ptr[:value], "sound", obj)
     assert_equal "quack", obj.value
   end
   

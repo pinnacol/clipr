@@ -54,5 +54,13 @@ module Clips
   # 'Environment Companion Function' discussion in the apg for more details.
   #
   module Api
+    module_function
+    
+    def callback(block_id, *ptrs)
+      block = ObjectSpace._id2ref(block_id)
+      ptrs.collect! {|ptr| DataObject.new(ptr) }
+      block.call(*ptrs)
+    end
+    
   end
 end
