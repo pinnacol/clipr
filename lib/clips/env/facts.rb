@@ -10,6 +10,22 @@ module Clips
         @env = env
       end
       
+      def assert(deftemplate, data={})
+        env_ptr = env.pointer
+        deftemplate_ptr = env.deftemplates.ptr(deftemplate)
+        fact_ptr = EnvCreateFact(env_ptr, deftemplate_ptr)
+        
+        data.each_pair do |slot, value|
+          env.set(value) do |ptr, obj|
+            EnvPutFactSlot(ptr, fact_ptr, slot.to_s, obj)
+          end
+        end
+        
+        EnvAssignFactSlotDefaults(env_ptr, fact_ptr)
+        EnvAssert(env_ptr, fact_ptr)
+        self
+      end
+      
       # Returns facts as an array, essentially by calling (facts) and parsing
       # the result.
       def list(options={})

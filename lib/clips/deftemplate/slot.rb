@@ -1,5 +1,5 @@
 module Clips
-  class Fact
+  class Deftemplate
     # Indicates (default ?DERIVE) when used in a slot definition.
     DERIVE = Object.new
 

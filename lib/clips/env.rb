@@ -1,9 +1,11 @@
 require 'clips/api'
 require 'clips/router'
+require 'clips/deftemplate'
 
 require 'clips/env/utils'
-require 'clips/env/facts'
 require 'clips/env/defglobals'
+require 'clips/env/deftemplates'
+require 'clips/env/facts'
 require 'clips/env/routers'
 
 module Clips
@@ -59,16 +61,18 @@ module Clips
     # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
     DEFAULT_DEVICE = 'wdisplay'
     
-    attr_reader :facts
     attr_reader :defglobals
+    attr_reader :deftemplates
+    attr_reader :facts
     attr_reader :routers
     
     # Initializes a new Env.
     def initialize(options={})
       @pointer = CreateEnvironment()
       
-      @facts = Facts.new(self)
       @defglobals = Defglobals.new(self)
+      @deftemplates = Deftemplates.new(self)
+      @facts = Facts.new(self)
       @routers = Routers.new(self)
       
       unless @routers.has?(DEFAULT_ROUTER)
@@ -147,6 +151,11 @@ module Clips
       obj = DataObject.intern(attributes)
       yield(pointer, obj)
       obj
+    end
+    
+    def find
+      ptr = yield(pointer)
+      ptr.address == 0 ? nil : ptr
     end
     
     # Captures output for Api printing methods.  Printing methods have a

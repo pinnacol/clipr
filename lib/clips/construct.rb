@@ -1,18 +1,31 @@
-require 'digest/sha1'
-
 module Clips
   module Construct
-    def reset
-      @sha = nil
-      @content = nil
+    
+    def name
+      @name ||= underscore(self.to_s)
     end
     
-    def sha
-      @sha ||= Digest::SHA1.hexdigest(content).to_sym
+    def description
+      @description ||= ""
     end
     
-    def content
-      raise NotImplementedError
+    protected
+    
+    def desc(description)
+      @description = description
+    end
+    
+    private
+    
+    # The reverse of camelize. Makes an underscored, lowercase form 
+    # from self.  underscore will also change '::' to '/' to convert 
+    # namespaces to paths.
+    def underscore(str)
+      str.gsub(/::/, '/').
+      gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+      gsub(/([a-z\d])([A-Z])/,'\1_\2').
+      tr("-", "_").
+      downcase
     end
   end
 end

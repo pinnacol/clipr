@@ -1,42 +1,30 @@
 require 'clips/construct'
-require 'clips/fact/slot'
+require 'clips/deftemplate/slot'
 
 module Clips
-  class Fact
-    module Api
+  class Deftemplate
+    class << self
       include Construct
       
       attr_reader :slots
       
-      def self.initialize(base)
-        unless base.instance_variable_defined?(:@slots)
-          base.instance_variable_set(:@slots, {})
-        end
-        
-        base.reset
-      end
-      
-      def name
-        self.to_s.gsub("::", "_")
-      end
-      
-      def content
-        @content ||= begin
-          slot_defs = slots.values.collect {|slot| slot.to_s }
-          "(deftemplate #{name} #{slot_defs.join(' ')})"
-        end
+      def str
+        slot_defs = slots.values.collect {|slot| slot.to_s }
+        "(deftemplate #{name} \"#{description}\" #{slot_defs.join(' ')})"
       end
       
       protected
       
+      def deftemplate(name)
+        @name = name
+      end
+      
       def slot(name, default=nil, options={})
         slots[name] = Slot.new(name, default, options)
-        reset
       end
     
       def multislot(name, default=[], options={})
         slots[name] = Slot.new(name, default, options, true)
-        reset
       end
       
       def remove(name)
@@ -44,7 +32,6 @@ module Clips
           raise NameError.new("not a slot on #{self}: #{name.inspect}")
         end
         slots.delete(name)
-        reset
       end
 
       def undefine(name)
@@ -52,13 +39,14 @@ module Clips
           raise NameError.new("not defined on #{self}: #{name.inspect}")
         end
         slots[name] = nil
-        reset
       end
       
       private
 
       def inherited(base)
-        Api.initialize(base)
+        unless base.instance_variable_defined?(:@slots)
+          base.instance_variable_set(:@slots, {})
+        end
         super
       end
 
@@ -74,6 +62,10 @@ module Clips
       end
     end
     
-    extend Api
+    attr_reader :data_object
+    
+    def initialize(data_object)
+      @data_object = data_object
+    end
   end
 end
