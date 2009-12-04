@@ -194,13 +194,6 @@ module Clips
       self
     end
     
-    def classes(options={})
-      router.capture(DEFAULT_DEVICE) do |dev|
-        Defclass.EnvListDefclasses(pointer, DEFAULT_DEVICE, nil)
-        dev.string
-      end
-    end
-    
     # Returns facts as a string, similar to:
     #
     #   CLIPS> (facts)
