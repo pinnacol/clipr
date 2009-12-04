@@ -3,7 +3,7 @@ require 'clips/router'
 
 require 'clips/env/utils'
 require 'clips/env/facts'
-require 'clips/env/globals'
+require 'clips/env/defglobals'
 require 'clips/env/routers'
 
 module Clips
@@ -60,7 +60,7 @@ module Clips
     DEFAULT_DEVICE = 'wdisplay'
     
     attr_reader :facts
-    attr_reader :globals
+    attr_reader :defglobals
     attr_reader :routers
     
     # Initializes a new Env.
@@ -68,7 +68,7 @@ module Clips
       @pointer = CreateEnvironment()
       
       @facts = Facts.new(self)
-      @globals = Globals.new(self)
+      @defglobals = Defglobals.new(self)
       @routers = Routers.new(self)
       
       unless @routers.has?(DEFAULT_ROUTER)
@@ -238,7 +238,7 @@ module Clips
     
     # resets the global variable identifying self within CLIPS
     def reset_global # :nodoc:
-      globals.set(GLOBAL, object_id)
+      defglobals.set(GLOBAL, object_id)
     end
   end
 end

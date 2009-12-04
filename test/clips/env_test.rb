@@ -61,7 +61,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   def test_initialize_sets_defglobal_for_env
-    assert_equal({"MAIN" => {Env::GLOBAL => env.object_id}}, env.globals.list)
+    assert_equal({"MAIN" => {Env::GLOBAL => env.object_id}}, env.defglobals.list)
   end
   
   #

@@ -1,6 +1,6 @@
 module Clips
   class Env
-    class Globals
+    class Defglobals
       include Api::Defglobal
       include Utils
       
