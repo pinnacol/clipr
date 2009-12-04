@@ -1,0 +1,11 @@
+--- 
+at: 8ab38362af6628fcc6c064b9f00225a3471a6adf
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1259949214.46323
+state: open
+title: Caching on env classes
+type: issue
+--- 
+The routers class caches information that is in CLIPS; currently the Globals class does not.  As a result Globals#list is super wasteful but more definitively up-to-date than Routers.
+
+Probably best to implement caching because under normal circumstances the cache will be up-to-date (ie users will go 100% through the API and the API won't produce side-effects).  An update method will have to be added to ensure out-of-date caches can be refreshed.
