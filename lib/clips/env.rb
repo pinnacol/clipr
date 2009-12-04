@@ -39,6 +39,17 @@ module Clips
         
         ObjectSpace._id2ref(obj.value)
       end
+      
+      def cast(ptr, data_objects)
+        env = get(ptr)
+        data_objects.collect! {|obj| env.cast(obj) }
+      end
+      
+      def lambda
+        Kernel.lambda do |env_ptr, data_objects|
+          yield(*cast(env_ptr, data_objects))
+        end
+      end
     end
     
     include Api

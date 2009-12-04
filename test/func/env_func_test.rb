@@ -71,17 +71,11 @@ class EnvFuncTest < Test::Unit::TestCase
     assert_equal true, was_in_block
   end
   
-  def test_casting_from_callback_with_deftemplate_class
+  def test_casting_callback_with_deftemplate_class
     env.deftemplates.build(ExampleTemplate)
     
     was_in_block = false
-    block = lambda do |env_ptr, data_objects|
-      fact_data_object = data_objects[0]
-      
-      callback_env = Env.get(env_ptr)
-      fact = callback_env.cast(fact_data_object)
-      
-      assert_equal env.object_id, callback_env.object_id
+    block = Env.lambda do |fact|
       assert_equal ExampleTemplate, fact.class
       assert_equal :alt, fact[:key]
       
