@@ -1,6 +1,7 @@
 require 'clips/api'
 require 'clips/router'
 
+require 'clips/env/utils'
 require 'clips/env/globals'
 require 'clips/env/routers'
 
