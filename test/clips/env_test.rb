@@ -14,7 +14,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
-  # class.open test
+  # Env.open test
   #
   
   def test_open_without_block_returns_open_env
@@ -35,6 +35,40 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert was_in_block
     assert result.kind_of?(Env)
     assert result.closed?
+  end
+  
+  #
+  # Env.get test
+  #
+  
+  def test_get_retreives_the_env_for_pointer
+    ptr = env.pointer
+    got = Env.get(ptr)
+    
+    assert_equal Env, got.class
+    assert_equal env.object_id, got.object_id
+  end
+  
+  #
+  # initialize test
+  #
+  
+  def test_initialize_sets_up_default_router
+    routers = env.routers
+    assert routers.list.include?('default')
+    assert routers['default'].kind_of?(Clips::Router)
+  end
+  
+  def test_initialize_sets_defglobal_for_env
+    assert_equal({"MAIN" => {Env::GLOBAL => env.object_id}}, env.globals.list)
+  end
+  
+  #
+  # router test
+  #
+  
+  def test_router_returns_the_DEFAULT_ROUTER_router
+    assert_equal env.routers[Env::DEFAULT_ROUTER], env.router
   end
   
   #
@@ -64,28 +98,6 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal false, env.closed?
     env.close
     assert_equal true, env.closed?
-  end
-  
-  #
-  # initialize test
-  #
-  
-  def test_initialize_sets_up_default_router
-    routers = env.routers
-    assert routers.list.include?('default')
-    assert routers['default'].kind_of?(Clips::Router)
-  end
-  
-  def test_initialize_sets_defglobal_for_env
-    assert_equal({"MAIN" => {Env::GLOBAL => env.object_id}}, env.globals.list)
-  end
-  
-  #
-  # router test
-  #
-  
-  def test_router_returns_the_DEFAULT_ROUTER_router
-    assert_equal env.routers[Env::DEFAULT_ROUTER], env.router
   end
   
   #

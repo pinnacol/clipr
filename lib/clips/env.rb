@@ -25,10 +25,24 @@ module Clips
           env.close
         end
       end
+      
+      # Gets an Env instance based on a CLIPS Environment pointer.  This is
+      # useful for looking up an Env from within an Api callback.
+      def get(ptr)
+        obj = Api::DataObject.new
+        if Api::Defglobal::EnvGetDefglobalValue(ptr, GLOBAL, obj) == 0
+          raise "could not find the #{GLOBAL} global"
+        end
+        
+        ObjectSpace._id2ref(obj.value)
+      end
     end
     
     include Api
     
+    # The global variable used to store a backreference to the Env instance
+    # within a CLIPS environment.  This variable can then be used to lookup
+    # the Env instance within Api callbacks (see Env.get).
     GLOBAL = "clipsenv"
     
     # The default router.
@@ -48,7 +62,7 @@ module Clips
     
     # Initializes a new Env.
     def initialize(options={})
-      @pointer = Environment.CreateEnvironment
+      @pointer = Environment::CreateEnvironment()
       @routers = Routers.new(self)
       @globals = Globals.new(self)
       @objects = {}
@@ -75,7 +89,7 @@ module Clips
     def close
       return false if closed?
       
-      unless Environment.DestroyEnvironment(@pointer)
+      unless Environment::DestroyEnvironment(@pointer)
         raise ApiError(:Environment, :DestroyEnvironment, "could not close environment")
       end
       
@@ -174,7 +188,7 @@ module Clips
     # method (to assert fact strings see assert_str).
     def build_str(str)
       router.capture('werror') do |device|
-        if Environment.EnvBuild(pointer, str) == 0
+        if Environment::EnvBuild(pointer, str) == 0
           err = device.string
           err = "could not build: #{str}" if err.empty?
           raise err
@@ -206,18 +220,19 @@ module Clips
       )
       
       router.capture(DEFAULT_DEVICE) do |dev|
-        Fact.EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
+        Fact::EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
         dev.string
       end
     end
     
     def save(file)
-      Fact.EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
+      Fact::EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
     end
     
     private
     
-    def reset_global
+    # resets the global variable identifying self within CLIPS
+    def reset_global # :nodoc:
       globals.set(GLOBAL, object_id)
     end
   end
