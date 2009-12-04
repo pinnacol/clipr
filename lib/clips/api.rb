@@ -53,6 +53,38 @@ module Clips
   # example it is not, and ungetc simply ignores the input.  See the
   # 'Environment Companion Function' discussion in the apg for more details.
   #
+  # === Best Practices
+  #
+  # In general the CLIPS API uses integer returns to signify success or
+  # failure.  For these API calls it's typical to check the return value and
+  # raise an ApiError if the script should not continue.  For example:
+  #
+  #   # Excerpt from Clips::Env#close
+  #   def close
+  #     unless DestroyEnvironment(@pointer)
+  #       raise ApiError(:Environment, :DestroyEnvironment, "could not close environment")
+  #     end
+  #     ...
+  #   end
+  #
+  # For some API failures the CLIPS error messages are meaningful.  Use the
+  # Env#capture method or re-route the relevant output device for the duration
+  # of the call.  For example:
+  #
+  #   # Excerpt from Clips::Env#build_str
+  #   def build_str(str)
+  #     router.capture('werror') do |device|
+  #       if EnvBuild(pointer, str) == 0
+  #         msg = device.string
+  #         msg = "could not build: #{str}" if msg.empty?
+  #         raise ApiError.new(:Environment, :EnvBuild, msg)
+  #       end
+  #     end
+  #     ...
+  #   end
+  #
+  # Numerous examples and variations of this method can be found by digging
+  # around in the code.
   module Api
     module_function
     
@@ -74,6 +106,5 @@ module Clips
       
       obj.call(env_ptr, *ptrs)
     end
-    
   end
 end

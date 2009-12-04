@@ -106,15 +106,27 @@ module Clips
       @pointer.nil?
     end
     
-    # Gets a DataObject from the block
-    def get
+    # Gets a DataObject from Api get methods.  Get methods have a signature
+    # like this (ex GetDefglobalValue):
+    #
+    #   EnvGetSomething(theEnv, ..., &data_object)
+    #
+    # Get will yield the env and data object to the block.  Returns the data
+    # object.
+    def get # :yields: env_ptr, data_object
       obj = DataObject.new
       yield(pointer, obj)
       obj
     end
     
-    # Sets a DataObject using the block
-    def set(value)
+    # Sets up a DataObject for the value, for use with Api set methods.  Set
+    # methods have a signature like this (ex EnvSetDefglobalValue):
+    #
+    #   EnvSetSomething(theEnv, ..., &data_object)
+    #
+    # Set will yield the env and data object to the block, where the data
+    # object will be setup with the specified value.  Returns the data object.
+    def set(value) # :yields: env_ptr, data_object
       attributes = case value
       when Symbol
         { :type  => DataObject::SYMBOL, 
@@ -137,10 +149,18 @@ module Clips
       obj
     end
     
-    def capture(options={})
-      router.capture(DEFAULT_DEVICE) do |dev|
+    # Captures output for Api printing methods.  Printing methods have a
+    # signature like this (ex EnvListDefglobals):
+    #    
+    #   EnvDoSomething(theEnv, logicalName, theModule)
+    #    
+    # Capture will yield these three arguments to the block and return
+    # whatever gets printed to the device.  Capture does not perform error
+    # checking.
+    def capture(options={}) # :yields: env_ptr, logical_name, module_name
+      router.capture(DEFAULT_DEVICE) do |device|
         yield(pointer, DEFAULT_DEVICE, nil)
-        dev.string
+        device.string
       end
     end
     
