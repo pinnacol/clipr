@@ -2,11 +2,11 @@ require 'clips/api'
 require 'clips/router'
 require 'clips/deftemplate'
 
-require 'clips/env/utils'
-require 'clips/env/defglobals'
-require 'clips/env/deftemplates'
-require 'clips/env/facts'
-require 'clips/env/routers'
+require 'clips/utils'
+require 'clips/defglobals'
+require 'clips/deftemplates'
+require 'clips/facts'
+require 'clips/routers'
 
 module Clips
   class Env

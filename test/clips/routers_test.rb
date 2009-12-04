@@ -1,8 +1,8 @@
-require File.dirname(__FILE__) + "/../../test_helper"
-require "clips/env/routers"
+require File.dirname(__FILE__) + "/../test_helper"
+require "clips/routers"
 
 class RoutersTest < Test::Unit::TestCase
-  Routers = Clips::Env::Routers
+  Routers = Clips::Routers
   
   class MockEnv
     attr_accessor :pointer
