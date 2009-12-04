@@ -72,10 +72,14 @@ module Clips
       @pointer = pointer
     end
     
-    def [](slot)
+    def get(slot)
       env.get do |ptr, obj|
         EnvGetFactSlot(ptr, pointer, slot.to_s, obj)
       end
+    end
+    
+    def [](slot)
+      get(slot).value
     end
   end
 end

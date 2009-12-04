@@ -58,7 +58,7 @@ class EnvFuncTest < Test::Unit::TestCase
       
       assert_equal env.object_id, callback_env.object_id
       assert_equal Clips::Deftemplate, fact.class
-      assert_equal :alt, fact[:key].value
+      assert_equal :alt, fact[:key]
       
       was_in_block = true
     end
@@ -83,7 +83,7 @@ class EnvFuncTest < Test::Unit::TestCase
       
       assert_equal env.object_id, callback_env.object_id
       assert_equal ExampleTemplate, fact.class
-      assert_equal :alt, fact[:key].value
+      assert_equal :alt, fact[:key]
       
       was_in_block = true
     end

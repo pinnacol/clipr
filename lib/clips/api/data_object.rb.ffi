@@ -87,17 +87,8 @@ module Clips
       #   storage for a copy of the string and then copy the string returned by
       #   DOToString or DOPToString to the copy’s storage area.
       #
-      def value(env=nil)
-        type = self[:type]
-        
-        if env && type == FACT_ADDRESS
-          return env.cast(self)
-        end
-        
-        # duplicates contents to keep value in scope ?!?
-        value = self[:value]
-        struct = CAST[self[:type]]
-        value = struct.new(value)[:contents] if struct
+      def value
+        value = contents
         
         case type
         when SYMBOL
