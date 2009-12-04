@@ -206,8 +206,8 @@ module Clips
     #
     #   CLIPS> (function arguments...)
     #
-    # Only functions may be called through this method (see build_str and
-    # assert_str for building constructs and asserting facts from strings).
+    # Only functions may be called through this method (see build and
+    # assert for building constructs and asserting facts from strings).
     def call(function, arguments=nil)
       get do |ptr, obj|
         router.capture('werror') do |device|
@@ -226,8 +226,8 @@ module Clips
     #   CLIPS> (str...)
     #
     # Only constructs like deftemplate or defrule can be built through this
-    # method (to assert fact strings see assert_str).
-    def build_str(str)
+    # method (to assert fact strings see assert).
+    def build(str)
       router.capture('werror') do |device|
         if EnvBuild(pointer, str) == 0
           msg = device.string
@@ -244,7 +244,7 @@ module Clips
     #
     #   CLIPS> (assert (str...))
     #
-    def assert_str(str)
+    def assert(str)
       Fact::EnvAssertString(pointer, str)
       self
     end

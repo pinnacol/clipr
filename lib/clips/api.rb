@@ -71,8 +71,8 @@ module Clips
   # Env#capture method or re-route the relevant output device for the duration
   # of the call.  For example:
   #
-  #   # Excerpt from Clips::Env#build_str
-  #   def build_str(str)
+  #   # Excerpt from Clips::Env#build
+  #   def build(str)
   #     router.capture('werror') do |device|
   #       if EnvBuild(pointer, str) == 0
   #         msg = device.string

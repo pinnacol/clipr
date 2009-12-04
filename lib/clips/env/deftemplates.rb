@@ -15,7 +15,7 @@ module Clips
       end
       
       def build(deftemplate)
-        env.build_str(deftemplate.str)
+        env.build(deftemplate.str)
         
         name = deftemplate.name
         ptr = env.find {|ptr| EnvFindDeftemplate(ptr, name) }

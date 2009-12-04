@@ -19,7 +19,7 @@ module Clips
       end
       
       def set(name, value)
-        env.build_str("(defglobal ?*#{name}* = 0)")
+        env.build("(defglobal ?*#{name}* = 0)")
         
         env.set(value) do |ptr, obj|
           if EnvSetDefglobalValue(ptr, name, obj) == 0

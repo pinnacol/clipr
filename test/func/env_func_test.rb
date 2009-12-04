@@ -65,8 +65,8 @@ class EnvFuncTest < Test::Unit::TestCase
       was_in_block = true
     end
     
-    env.build_str  "(defrule key-is-alt ?fact <- (example (key alt)) => (ruby-call #{block.object_id} ?fact))"
-    env.assert_str "(example (key alt))"
+    env.build  "(defrule key-is-alt ?fact <- (example (key alt)) => (ruby-call #{block.object_id} ?fact))"
+    env.assert "(example (key alt))"
     env.run
     
     assert_equal true, was_in_block

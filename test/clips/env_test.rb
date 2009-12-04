@@ -110,13 +110,13 @@ class ClipsEnvTest < Test::Unit::TestCase
     block = lambda {|ptr, args| was_in_block = true }
     assert_equal false, was_in_block
     
-    env.build_str  "(defrule sound-is-quack (sound quack) => (ruby-call #{block.object_id}))"
-    env.assert_str "(sound honk)"
+    env.build  "(defrule sound-is-quack (sound quack) => (ruby-call #{block.object_id}))"
+    env.assert "(sound honk)"
     
     assert_equal 0, env.run
     assert_equal false, was_in_block
     
-    env.assert_str("(sound quack)")
+    env.assert("(sound quack)")
     assert_equal 1, env.run
     assert_equal true, was_in_block
   end
@@ -188,9 +188,9 @@ class ClipsEnvTest < Test::Unit::TestCase
     block_args = nil
     block = lambda {|ptr, args| block_args = args }
     
-    env.build_str  "(deftemplate animal (slot sound))"
-    env.build_str  "(defrule sound-is-quack ?fact <- (animal (sound quack)) => (ruby-call #{block.object_id} ?fact)) "
-    env.assert_str "(animal (sound quack))"
+    env.build  "(deftemplate animal (slot sound))"
+    env.build  "(defrule sound-is-quack ?fact <- (animal (sound quack)) => (ruby-call #{block.object_id} ?fact)) "
+    env.assert "(animal (sound quack))"
     
     assert_equal nil, block_args
     assert_equal 1, env.run
@@ -205,10 +205,10 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
-  # build_str test
+  # build test
   #
   
-  def test_build_str_builds_construct_and_returns_self
+  def test_build_builds_construct_and_returns_self
     construct = %q{
     (deftemplate sample 
       "desc" 
@@ -216,10 +216,10 @@ class ClipsEnvTest < Test::Unit::TestCase
         (type SYMBOL) 
         (default value)))}
     
-    assert_equal env, env.build_str(construct)
+    assert_equal env, env.build(construct)
   end
   
-  def test_build_str_raises_error_for_invalid_constructs
+  def test_build_raises_error_for_invalid_constructs
     construct = %q{
     (deftemplate sample 
       "desc" 
@@ -227,7 +227,7 @@ class ClipsEnvTest < Test::Unit::TestCase
         (type STRING) 
         (default value)))}
     
-    err = assert_raises(ApiError) { env.build_str(construct) }
+    err = assert_raises(ApiError) { env.build(construct) }
     assert_equal %q{
 [CSTRNCHK1] An expression found in the default attribute
 does not match the allowed types for slot key.
@@ -238,17 +238,17 @@ ERROR:
 }, err.message
   end
 
-  def test_build_str_raises_error_for_unbuildable_constructs
-    err = assert_raises(ApiError) { env.build_str "(assert (quack))" }
+  def test_build_raises_error_for_unbuildable_constructs
+    err = assert_raises(ApiError) { env.build "(assert (quack))" }
     assert_equal "could not build: (assert (quack))", err.message
   end
   
   #
-  # assert_str test
+  # assert test
   #
   
-  def test_assert_str_asserts_fact_string
-    env.assert_str("(goodnight moon)")
+  def test_assert_asserts_fact_string
+    env.assert("(goodnight moon)")
     assert_equal ["(initial-fact)", "(goodnight moon)"], env.facts.list
   end
   
