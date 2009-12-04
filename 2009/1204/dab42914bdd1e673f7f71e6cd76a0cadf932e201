@@ -1,0 +1,9 @@
+--- 
+at: 59bcbb600a5530b31e70f6b7719d467bb804b1cb
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1259949016.86259
+re: ec542225a750f7fd47d28110c84fbfe2047760f0
+state: open
+type: update
+--- 
+This may be an issue analagous to App.run/stop.  Run will probably block until it completes, so there won't be any close conflict UNLESS the env in running on it's own thread.  But there should be a halt method or similar so the Env can go threaded.
