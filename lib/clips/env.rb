@@ -40,6 +40,7 @@ module Clips
     end
     
     include Api
+    include Api::Environment
     
     # The global variable used to store a backreference to the Env instance
     # within a CLIPS environment.  This variable can then be used to lookup
@@ -64,7 +65,7 @@ module Clips
     
     # Initializes a new Env.
     def initialize(options={})
-      @pointer = Environment::CreateEnvironment()
+      @pointer = CreateEnvironment()
       
       @facts = Facts.new(self)
       @globals = Globals.new(self)
@@ -92,7 +93,7 @@ module Clips
     def close
       return false if closed?
       
-      unless Environment::DestroyEnvironment(@pointer)
+      unless DestroyEnvironment(@pointer)
         raise ApiError(:Environment, :DestroyEnvironment, "could not close environment")
       end
       
@@ -117,16 +118,16 @@ module Clips
       attributes = case value
       when Symbol
         { :type  => DataObject::SYMBOL, 
-          :value => Environment::EnvAddSymbol(pointer, value.to_s)}
+          :value => EnvAddSymbol(pointer, value.to_s)}
       when String
         { :type  => DataObject::STRING,   
-          :value => Environment::EnvAddSymbol(pointer, value)}
+          :value => EnvAddSymbol(pointer, value)}
       when Fixnum
         { :type  => DataObject::INTEGER, 
-          :value => Environment::EnvAddLong(pointer, value)}
+          :value => EnvAddLong(pointer, value)}
       when Float
         { :type  => DataObject::FLOAT,   
-          :value => Environment::EnvAddDouble(pointer, value)}
+          :value => EnvAddDouble(pointer, value)}
       else
         raise "non-primitive values are not supported yet!"
       end
@@ -146,13 +147,13 @@ module Clips
     ########## API ##########
     
     def clear
-      Environment::Clear(pointer)
+      Clear(pointer)
       reset_global
       self
     end
     
     def reset
-      Environment::Reset(pointer)
+      Reset(pointer)
       reset_global
       self
     end
@@ -171,10 +172,10 @@ module Clips
     def call(function, arguments=nil)
       get do |ptr, obj|
         router.capture('werror') do |device|
-          if Environment::EnvFunctionCall(ptr, function, arguments, obj) == 1
-            err = device.string
-            err = "error in function: #{function}" if err.empty?
-            raise err
+          if EnvFunctionCall(ptr, function, arguments, obj) == 1
+            msg = device.string
+            msg = "error in function: #{function}" if msg.empty?
+            raise ApiError.new(:Environment, :EnvFunctionCall, msg)
           end
         end
       end
@@ -189,10 +190,10 @@ module Clips
     # method (to assert fact strings see assert_str).
     def build_str(str)
       router.capture('werror') do |device|
-        if Environment::EnvBuild(pointer, str) == 0
-          err = device.string
-          err = "could not build: #{str}" if err.empty?
-          raise err
+        if EnvBuild(pointer, str) == 0
+          msg = device.string
+          msg = "could not build: #{str}" if msg.empty?
+          raise ApiError.new(:Environment, :EnvBuild, msg)
         end
       end
       

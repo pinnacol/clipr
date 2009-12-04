@@ -1,7 +1,7 @@
 module Clips
   class Env
     class Facts
-      include Api
+      include Api::Fact
       include Utils
       
       attr_reader :env
@@ -20,7 +20,7 @@ module Clips
         }.merge!(options)
 
         str = env.capture(options) do |ptr, logical_name, module_ptr|
-          Fact::EnvFacts(ptr, logical_name, module_ptr, options[:start], options[:end], options[:max])
+          EnvFacts(ptr, logical_name, module_ptr, options[:start], options[:end], options[:max])
         end
         
         parse_fact_list(str)

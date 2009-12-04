@@ -5,6 +5,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   acts_as_file_test
   Env = Clips::Env
   DataObject = Clips::Api::DataObject
+  ApiError = Clips::ApiError
   
   attr_reader :env
   
@@ -135,7 +136,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   def test_call_raises_error_for_unknown_functions
-    err = assert_raises(RuntimeError) { env.call("unknown") }
+    err = assert_raises(ApiError) { env.call("unknown") }
     assert_equal "[EVALUATN2] No function, generic function or deffunction of name unknown exists for external call.\n", err.message
   end
   
@@ -226,7 +227,7 @@ class ClipsEnvTest < Test::Unit::TestCase
         (type STRING) 
         (default value)))}
     
-    err = assert_raises(RuntimeError) { env.build_str(construct) }
+    err = assert_raises(ApiError) { env.build_str(construct) }
     assert_equal %q{
 [CSTRNCHK1] An expression found in the default attribute
 does not match the allowed types for slot key.
@@ -238,7 +239,7 @@ ERROR:
   end
 
   def test_build_str_raises_error_for_unbuildable_constructs
-    err = assert_raises(RuntimeError) { env.build_str "(assert (quack))" }
+    err = assert_raises(ApiError) { env.build_str "(assert (quack))" }
     assert_equal "could not build: (assert (quack))", err.message
   end
   

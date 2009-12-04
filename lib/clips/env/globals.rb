@@ -1,7 +1,7 @@
 module Clips
   class Env
     class Globals
-      include Api
+      include Api::Defglobal
       include Utils
       
       attr_reader :env
@@ -12,7 +12,7 @@ module Clips
       
       def get(name)
         env.get do |ptr, obj|
-          if Defglobal::EnvGetDefglobalValue(ptr, name, obj) == 0
+          if EnvGetDefglobalValue(ptr, name, obj) == 0
             return nil
           end
         end
@@ -20,14 +20,17 @@ module Clips
       
       def set(name, value)
         env.build_str("(defglobal ?*#{name}* = 0)")
+        
         env.set(value) do |ptr, obj|
-          Defglobal::EnvSetDefglobalValue(ptr, name, obj)
+          if EnvSetDefglobalValue(ptr, name, obj) == 0
+            raise ApiError.new(:Defglobal, :EnvSetDefglobalValue, "cannot set: #{name} (global does not exist)")
+          end
         end
       end
       
       def list(options={})
         str = env.capture(options) do |ptr, logical_name, module_ptr|
-          Defglobal.EnvListDefglobals(ptr, logical_name, module_ptr)
+          EnvListDefglobals(ptr, logical_name, module_ptr)
         end
         
         list = {}
