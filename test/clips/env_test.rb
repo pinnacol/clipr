@@ -107,7 +107,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   
   def test_run_with_rubycall
     was_in_block = false
-    block = lambda {|ptr| was_in_block = true }
+    block = lambda {|ptr, args| was_in_block = true }
     assert_equal false, was_in_block
     
     env.build_str  "(defrule sound-is-quack (sound quack) => (ruby-call #{block.object_id}))"
@@ -142,7 +142,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   
   def test_rubycall_calls_block_with_env_pointer
     was_in_block = false
-    block = lambda do |ptr|
+    block = lambda do |ptr, args|
       assert_equal ptr, env.pointer
       was_in_block = true
     end
@@ -154,20 +154,20 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   def test_rubycall_returns_true_if_block_returns_truthy
-    block = lambda {|ptr| true }
+    block = lambda {|ptr, args| true }
     assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
-    block = lambda {|ptr| 1 }
+    block = lambda {|ptr, args| 1 }
     assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
-    block = lambda {|ptr| "str" }
+    block = lambda {|ptr, args| "str" }
     assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
     # falsy
-    block = lambda {|ptr| false }
+    block = lambda {|ptr, args| false }
     assert_equal false, env.call("ruby-call", block.object_id.to_s).value
     
-    block = lambda {|ptr| nil }
+    block = lambda {|ptr, args| nil }
     assert_equal false, env.call("ruby-call", block.object_id.to_s).value
   end
 
@@ -186,7 +186,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   
   def test_rubycall_passes_back_pattern_addresses
     block_args = nil
-    block = lambda {|ptr, *args| block_args = args }
+    block = lambda {|ptr, args| block_args = args }
     
     env.build_str  "(deftemplate animal (slot sound))"
     env.build_str  "(defrule sound-is-quack ?fact <- (animal (sound quack)) => (ruby-call #{block.object_id} ?fact)) "
@@ -201,7 +201,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   
     obj = Clips::Api::DataObject.new 
     assert_equal 1, Clips::Api::Fact::EnvGetFactSlot(env.pointer, ptr.value, "sound", obj)
-    assert_equal "quack", obj.value
+    assert_equal :quack, obj.value
   end
   
   #

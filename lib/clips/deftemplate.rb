@@ -62,10 +62,20 @@ module Clips
       end
     end
     
-    attr_reader :data_object
+    include Api::Fact
     
-    def initialize(data_object)
-      @data_object = data_object
+    attr_reader :env
+    attr_reader :pointer
+    
+    def initialize(env, pointer)
+      @env = env
+      @pointer = pointer
+    end
+    
+    def [](slot)
+      env.get do |ptr, obj|
+        EnvGetFactSlot(ptr, pointer, slot.to_s, obj)
+      end
     end
   end
 end

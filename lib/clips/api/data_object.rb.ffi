@@ -63,6 +63,12 @@ module Clips
         DataObject.type_str(type)
       end
       
+      def contents
+        value = self[:value]
+        struct = CAST[self[:type]]
+        struct ? struct.new(value)[:contents] : value
+      end
+      
       # Returns the value for self converted as follows:
       #
       # * primitive types are resolved into their corresponding objects
@@ -81,23 +87,31 @@ module Clips
       #   storage for a copy of the string and then copy the string returned by
       #   DOToString or DOPToString to the copy’s storage area.
       #
-      def value(dup=true)
+      def value(env=nil)
+        type = self[:type]
+        
+        if env && type == FACT_ADDRESS
+          return env.cast(self)
+        end
+        
+        # duplicates contents to keep value in scope ?!?
         value = self[:value]
-        struct = CAST[type]
+        struct = CAST[self[:type]]
+        value = struct.new(value)[:contents] if struct
         
-        unless struct
-          return value
-        end
-        
-        value = struct.new(value)[:contents]
-        if struct != Struct::SymbolHashNode
-          return value 
-        end
-        
-        case value
-        when "TRUE"  then true
-        when "FALSE" then false
-        else dup ? value.dup : value
+        case type
+        when SYMBOL
+          case value
+          when "TRUE"  then true
+          when "FALSE" then false
+          else value.to_sym
+          end
+          
+        when STRING
+          value.dup
+          
+        else
+          value
         end
       end
     end

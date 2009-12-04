@@ -96,15 +96,16 @@ module Clips
     # * an array of FFI pointers to DataObject structs
     #
     # Callback looks up the specified object, converts the pointers to
-    # DataObject instances, and sends the pointers to the object using call.
+    # DataObject instances, and invokes the following:
+    #
+    #   object.call(env_ptr, data_objects_array)
     #
     # Returns the call result.
-    #
     def callback(env_ptr, obj_id, *ptrs)
       obj = ObjectSpace._id2ref(obj_id)
       ptrs.collect! {|ptr| DataObject.new(ptr) }
       
-      obj.call(env_ptr, *ptrs)
+      obj.call(env_ptr, ptrs)
     end
   end
 end

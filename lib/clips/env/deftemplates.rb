@@ -20,10 +20,14 @@ module Clips
         name = deftemplate.name
         ptr = env.find {|ptr| EnvFindDeftemplate(ptr, name) }
         
-        casts[ptr] = deftemplate
+        casts[ptr.address] = deftemplate
         pointers[name.to_sym] = ptr
         
         ptr
+      end
+      
+      def deftemplate(ptr)
+        casts[ptr.address]
       end
       
       def ptr(name)

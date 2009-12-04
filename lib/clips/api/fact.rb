@@ -10,7 +10,7 @@ module Clips
       attach_function :EnvAssignFactSlotDefaults, [:pointer, :pointer], :int 
       attach_function :EnvCreateFact, [:pointer, :pointer], :pointer 
       # attach_function :EnvDecrementFactCount, [:pointer], :void 
-      # attach_function :EnvFactDeftemplate, [:pointer], :void 
+      attach_function :EnvFactDeftemplate, [:pointer, :pointer], :pointer
       # attach_function :EnvFactExistp, [:pointer], :void 
       # attach_function :EnvFactIndex, [:pointer], :void 
       attach_function :EnvFacts, [:pointer, :string, :pointer, :long_long, :long_long, :long_long], :void 
