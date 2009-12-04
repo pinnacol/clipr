@@ -248,15 +248,7 @@ ERROR:
   
   def test_assert_str_asserts_fact_string
     env.assert_str("(goodnight moon)")
-    assert_equal "f-0     (initial-fact)\nf-1     (goodnight moon)\nFor a total of 2 facts.\n", env.facts
-  end
-  
-  #
-  # facts test
-  #
-  
-  def test_facts_returns_facts_string
-    assert_equal "f-0     (initial-fact)\nFor a total of 1 fact.\n", env.facts
+    assert_equal ["(initial-fact)", "(goodnight moon)"], env.facts.list
   end
   
   #

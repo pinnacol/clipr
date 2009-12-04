@@ -25,13 +25,13 @@ module Clips
         end
       end
       
-      def list(module_name=nil)
-        listing = env.capture(module_name) do |ptr, logical_name, module_ptr|
+      def list(options={})
+        str = env.capture(options) do |ptr, logical_name, module_ptr|
           Defglobal.EnvListDefglobals(ptr, logical_name, module_ptr)
         end
         
         list = {}
-        parse_module_list(listing).each_pair do |module_name, names|
+        parse_module_list(str).each_pair do |module_name, names|
           values = {}
           names.each do |name|
             values[name] = get(name).value

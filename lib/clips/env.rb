@@ -2,6 +2,7 @@ require 'clips/api'
 require 'clips/router'
 
 require 'clips/env/utils'
+require 'clips/env/facts'
 require 'clips/env/globals'
 require 'clips/env/routers'
 
@@ -57,15 +58,17 @@ module Clips
     # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
     DEFAULT_DEVICE = 'wdisplay'
     
-    attr_reader :routers, :objects
+    attr_reader :facts
     attr_reader :globals
+    attr_reader :routers
     
     # Initializes a new Env.
     def initialize(options={})
       @pointer = Environment::CreateEnvironment()
-      @routers = Routers.new(self)
+      
+      @facts = Facts.new(self)
       @globals = Globals.new(self)
-      @objects = {}
+      @routers = Routers.new(self)
       
       unless @routers.has?(DEFAULT_ROUTER)
         @routers.add(DEFAULT_ROUTER, Router.new)
@@ -133,11 +136,9 @@ module Clips
       obj
     end
     
-    def capture(module_name=nil)
-      module_ptr = module_name ? raise("module names are unsupported") : nil
-      
+    def capture(options={})
       router.capture(DEFAULT_DEVICE) do |dev|
-        yield(pointer, DEFAULT_DEVICE, module_ptr)
+        yield(pointer, DEFAULT_DEVICE, nil)
         dev.string
       end
     end
@@ -206,23 +207,6 @@ module Clips
     def assert_str(str)
       Fact::EnvAssertString(pointer, str)
       self
-    end
-    
-    # Returns facts as a string, similar to:
-    #
-    #   CLIPS> (facts)
-    #
-    def facts(options={})
-      options = options.merge(
-        :start => -1,
-        :end => -1,
-        :max => -1
-      )
-      
-      router.capture(DEFAULT_DEVICE) do |dev|
-        Fact::EnvFacts(pointer, DEFAULT_DEVICE, nil, options[:start], options[:end], options[:max])
-        dev.string
-      end
     end
     
     def save(file)
