@@ -4,6 +4,7 @@ require "clips/env"
 class ClipsEnvTest < Test::Unit::TestCase
   acts_as_file_test
   Env = Clips::Env
+  DataObject = Clips::Api::DataObject
   
   attr_reader :env
   
@@ -75,6 +76,10 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert routers['default'].kind_of?(Clips::Router)
   end
   
+  def test_initialize_sets_defglobal_for_env
+    assert_equal({"MAIN" => {Env::GLOBAL => env.object_id}}, env.globals.list)
+  end
+  
   #
   # router test
   #
@@ -107,12 +112,14 @@ class ClipsEnvTest < Test::Unit::TestCase
   # call test
   #
   
-  def test_call_calls_the_function_and_returns_result
-    result = env.call(">", "1 2")
-    assert_equal false, result
+  def test_call_calls_the_function_and_returns_data_object
+    obj = env.call(">", "1 2")
+    assert_equal DataObject, obj.class
+    assert_equal false, obj.value
     
-    result = env.call(">", "2 1")
-    assert_equal true, result
+    obj = env.call(">", "2 1")
+    assert_equal DataObject, obj.class
+    assert_equal true, obj.value
   end
   
   def test_call_raises_error_for_unknown_functions
@@ -135,20 +142,20 @@ class ClipsEnvTest < Test::Unit::TestCase
   
   def test_rubycall_returns_true_if_block_returns_truthy
     block = lambda {|ptr| true }
-    assert_equal true, env.call("ruby-call", block.object_id.to_s)
+    assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
     block = lambda {|ptr| 1 }
-    assert_equal true, env.call("ruby-call", block.object_id.to_s)
+    assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
     block = lambda {|ptr| "str" }
-    assert_equal true, env.call("ruby-call", block.object_id.to_s)
+    assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
     # falsy
     block = lambda {|ptr| false }
-    assert_equal false, env.call("ruby-call", block.object_id.to_s)
+    assert_equal false, env.call("ruby-call", block.object_id.to_s).value
     
     block = lambda {|ptr| nil }
-    assert_equal false, env.call("ruby-call", block.object_id.to_s)
+    assert_equal false, env.call("ruby-call", block.object_id.to_s).value
   end
 
   def test_rubycall_raises_error_when_block_is_missing

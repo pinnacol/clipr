@@ -1,5 +1,7 @@
 require 'clips/api'
 require 'clips/router'
+
+require 'clips/env/globals'
 require 'clips/env/routers'
 
 module Clips
@@ -26,6 +28,8 @@ module Clips
     
     include Api
     
+    GLOBAL = "clipsenv"
+    
     # The default router.
     DEFAULT_ROUTER = 'default'
     
@@ -39,16 +43,20 @@ module Clips
     DEFAULT_DEVICE = 'wdisplay'
     
     attr_reader :routers, :objects
+    attr_reader :globals
     
     # Initializes a new Env.
     def initialize(options={})
       @pointer = Environment.CreateEnvironment
       @routers = Routers.new(self)
+      @globals = Globals.new(self)
       @objects = {}
       
       unless @routers.has?(DEFAULT_ROUTER)
         @routers.add(DEFAULT_ROUTER, Router.new)
       end
+      
+      reset_global
     end
     
     # Returns the pointer to the internal Environment wrapped by self.  Raises
@@ -79,31 +87,81 @@ module Clips
       @pointer.nil?
     end
     
+    # Gets a DataObject from the block
+    def get
+      obj = DataObject.new
+      yield(pointer, obj)
+      obj
+    end
+    
+    # Sets a DataObject using the block
+    def set(value)
+      attributes = case value
+      when Symbol
+        { :type  => DataObject::SYMBOL, 
+          :value => Environment::EnvAddSymbol(pointer, value.to_s)}
+      when String
+        { :type  => DataObject::STRING,   
+          :value => Environment::EnvAddSymbol(pointer, value)}
+      when Fixnum
+        { :type  => DataObject::INTEGER, 
+          :value => Environment::EnvAddLong(pointer, value)}
+      when Float
+        { :type  => DataObject::FLOAT,   
+          :value => Environment::EnvAddDouble(pointer, value)}
+      else
+        raise "non-primitive values are not supported yet!"
+      end
+      
+      obj = DataObject.intern(attributes)
+      yield(pointer, obj)
+      obj
+    end
+    
+    def capture(module_name=nil)
+      module_ptr = module_name ? raise("module names are unsupported") : nil
+      
+      router.capture(DEFAULT_DEVICE) do |dev|
+        yield(pointer, DEFAULT_DEVICE, module_ptr)
+        dev.string
+      end
+    end
+    
     ########## API ##########
+    
+    def clear
+      Environment::Clear(pointer)
+      reset_global
+      self
+    end
+    
+    def reset
+      Environment::Reset(pointer)
+      reset_global
+      self
+    end
     
     def run(n=-1)
       Agenda::EnvRun(pointer, n)
     end
     
-    # Calls the function with the arguments and returns the value of the
-    # resulting DataObject. Provides similar functionality to:
+    # Calls the function with the arguments and returns the resulting
+    # DataObject. Provides similar functionality to:
     #
     #   CLIPS> (function arguments...)
     #
     # Only functions may be called through this method (see build_str and
     # assert_str for building constructs and asserting facts from strings).
     def call(function, arguments=nil)
-      result = Api::DataObject.new
-      
-      router.capture('werror') do |device|
-        if Environment::EnvFunctionCall(pointer, function, arguments, result) == 1
-          err = device.string
-          err = "error in function: #{function}" if err.empty?
-          raise err
+      get do |ptr, obj|
+        router.capture('werror') do |device|
+          if Environment::EnvFunctionCall(ptr, function, arguments, obj) == 1
+            err = device.string
+            err = "error in function: #{function}" if err.empty?
+            raise err
+          end
         end
       end
-      
-      result.value
     end
     
     # Builds the construct str and returns self.  Provides similar
@@ -165,27 +223,8 @@ module Clips
     
     private
     
-    # Sets and returns pointer to a value
-    def symbolize(value)
-      case value
-      when String, Symbol
-        Environment::EnvAddSymbol(pointer, value.to_s)
-      when Fixnum
-        Environment::EnvAddLong(pointer, value)
-      when Float
-        Environment::EnvAddDouble(pointer, value)
-      else
-        objects[value.hash] = value
-        Environment::EnvAddLong(pointer, value.hash)
-      end
+    def reset_global
+      globals.set(GLOBAL, object_id)
     end
-    
-    def each_module(name)
-      nesting = name.split("::")
-      base = nesting.pop
-      nesting.each {|nest| yield(nest) }
-      base
-    end
-    
   end
 end
