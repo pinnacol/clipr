@@ -177,10 +177,9 @@ module Clips
       return data_object unless data_object[:type] == 6
       
       fact_ptr = data_object[:value]
-      deftemplate_ptr = Fact::EnvFactDeftemplate(pointer, fact_ptr)
-      deftemplate = deftemplates.deftemplate(deftemplate_ptr)
+      deft_ptr = Fact::EnvFactDeftemplate(pointer, fact_ptr)
       
-      deftemplate ? deftemplate.new(self, fact_ptr) : fact_ptr
+      deftemplates.deftemplate(deft_ptr).new(self, fact_ptr)
     end
     
     ########## API ##########

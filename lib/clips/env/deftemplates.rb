@@ -27,7 +27,7 @@ module Clips
       end
       
       def deftemplate(ptr)
-        casts[ptr.address]
+        casts[ptr.address] || Deftemplate
       end
       
       def ptr(name)
