@@ -1,5 +1,8 @@
 require 'clips/api'
 require 'clips/router'
+
+require 'clips/construct'
+require 'clips/defrule'
 require 'clips/deftemplate'
 
 require 'clips/utils'

@@ -122,29 +122,38 @@ env.rule do
     ... true/false
   end
   
-  # In a variation, a nil + block configures each slot individually.
+  # In a variation, a nil + block configures each constraint individually.
   #
   # (template ... )
   match(template) do
     # (key a)
-    slot key, [:a]
+    slot key, equal(:a)
   
     # (key a|"a"|1|1.2)
-    slot key, [:a, 'a', 1, 1.2]
-  
+    slot key, equal(:a, 'a', 1, 1.2, A.new, B.new)
+    slot key, ["a", "\"a\"", "1", "1.2", "?a_id&:(ruby-equal a_id ?a_id)"]
+    slot key, "a|"a"|1|1.2|?a_id&:(ruby-equal a_id ?a_id)|?b_id&:(ruby-equal b_id ?b_id)"
+    
     # (key ~c&~d)
-    slot key, [], [:c, :d]
-  
-    # (key ?object_id&:(ruby-equal a_id ?object_id))&~:(ruby-equal b_id ?object_id))
-    slot key, [A.new], [B.new]
+    slot key, not_equal(:c, :d, A.new)
+    slot key, "~c&~d&?a_id&~:(ruby-equal a_id ?a_id)"
+    
+    # a&b&~b&~c&~e | a&d&~b&~c&~e | b&c&~b&~c&~e | b&d&~b&~c&~e
+    slot key, equal(:a, :b), equal(:c, :d), not_equal(:b, :c, :e)
+    slot key, [:a, :b], [:c, :d], "~b&~c&~d"
+    slot key, "a&b&~b&~c&~e | a&d&~b&~c&~e | b&c&~b&~c&~e | b&d&~b&~c&~e"
+    
+    # (key :(ruby-equal a_id ?object_id)|~:(ruby-equal b_id ?object_id))
+    slot key, equal(A.new), not_equal(B.new)
+    slot key, "?a_id&:(ruby-equal a_id ?a_id)", "?b_id&~:(ruby-equal b_id ?b_id)"
+    slot key, "?a_id&:(ruby-equal a_id ?a_id)|?b_id&~:(ruby-equal b_id ?b_id)"
     
     # (template (key ?object_id&:(ruby-call block object_id))
     slot key {|value| ... }
 
     # (template (key ?object_id&a&~c&:(...)|b&~c&:(...)))
-    #
-    # Mixing is nasty because of precedence rules --- cross product results
-    slot key, [:a, :b], [:c] {|value| ... }
+    slot(key, [:a, :b], [:c]) {|value| ... }
+    slot key, "?object_id& a&c&:(ruby-call block object_id) | b&c&:(ruby-call block object_id) "
   end
   
   # assign has similar syntax to a match, but assigns the pattern address.
@@ -251,22 +260,28 @@ Maybe block style for more complicated matches:
   
   rhs.match template do
     # (template (key a|b)
-    slot key, ['a']
+    constrain key, ['a']
     
     # (template (key a|b)
-    slot key, ['a', 'b']
+    constrain key, ['a', 'b']
     
     # (template (key ~c&~d)
-    slot key, [], ['c' ,'d']
+    constrain key, [], ['c' ,'d']
     
     # (template (key ?value&:(...))
-    slot key {|value| ... }
+    constrain key {|value| ... }
   
     # (template (key ?value&a&~c&:(...)|b&~c&:(...)))
     # Nasty because of precedence rules --- cross product
-    slot key, ['a', 'b'], ['c'] {|value| ... }
+    constrain key, ['a', 'b'], ['c'] {|value| ... }
     
-    slot key, [oks], [not_oks], {predicate}
+    constrain key, [oks], [not_oks], {predicate}
   end
 
+== Use Cases
 
+Clips could be constructed as a dispatch. Rules represent gateways to code and
+facts are conditions that trigger code.
+
+Clips could be used a polling engine. Rules represent ticks to a option and
+effectively query facts for the winning option.

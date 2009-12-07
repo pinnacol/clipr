@@ -1,4 +1,3 @@
-require 'clips/construct'
 require 'clips/deftemplate/slot'
 
 module Clips
@@ -48,17 +47,6 @@ module Clips
           base.instance_variable_set(:@slots, {})
         end
         super
-      end
-
-      def each_ancestor
-        yield(self)
-
-        blank, *ancestors = self.ancestors
-        ancestors.each do |ancestor|
-          yield(ancestor) if ancestor.kind_of?(ClassMethods)
-        end
-
-        nil
       end
     end
     
