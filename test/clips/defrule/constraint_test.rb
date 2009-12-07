@@ -1,7 +1,8 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips/env'
+require 'clips'
 
 class ConstraintTest < Test::Unit::TestCase
+  include BlockHelpers
   Constraint = Clips::Defrule::Constraint
   
   #
@@ -32,17 +33,13 @@ class ConstraintTest < Test::Unit::TestCase
   end
   
   def test_to_s_adds_predicate_if_specified
-    p = lambda {}
-    oid = p.object_id
-    
+    p, oid = setup_block
     c = Constraint.new("key", ["a"], &p)
     assert_equal "(key ?v#{oid}&a&:(ruby-call #{oid} ?v#{oid}))", c.to_s
   end
   
   def test_to_s_adds_predicate_to_each_cross_product
-    p = lambda {}
-    oid = p.object_id
-    
+    p, oid = setup_block
     c = Constraint.new("key", [["a", "b"], "c"], &p)
     assert_equal "(key ?v#{oid}&a&c&:(ruby-call #{oid} ?v#{oid})|b&c&:(ruby-call #{oid} ?v#{oid}))", c.to_s
   end

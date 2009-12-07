@@ -1,4 +1,4 @@
-require 'clips/defrule/action'
+require 'clips/defrule/actions'
 require 'clips/defrule/conditions'
 
 module Clips
@@ -9,11 +9,17 @@ module Clips
       attr_reader :actions
       attr_reader :conditions
       
+      def intern(name, description=nil, &block)
+        rule = Class.new(self)
+        rule.instance_variable_set(:@name, name)
+        rule.instance_variable_set(:@description, description)
+        rule.instance_eval(&block)
+        rule
+      end
+      
       def str
-        condition_defs = conditions.collect {|condition| condition.to_s }
-        action_defs = actions.collect {|action| action.to_s }
-        
-        "(defrule #{name} \"#{description}\" #{condition_defs.join(' ')} => #{action_defs.join(' ')})"
+        desc = description.to_s.empty? ? " " : " \"#{description}\" "
+        "(defrule #{name}#{desc}#{conditions.to_s} => #{actions.to_s})"
       end
       
       def call(env_ptr, data_objects)
@@ -22,15 +28,25 @@ module Clips
       
       protected
       
+      def lhs(&block)
+        conditions.instance_eval(&block) if block_given?
+        conditions
+      end
+      
+      def rhs
+        actions.instance_eval(&block) if block_given?
+        actions
+      end
+      
       private
 
       def inherited(base)
         unless base.instance_variable_defined?(:@conditions)
-          base.instance_variable_set(:@conditions, [])
+          base.instance_variable_set(:@conditions, Conditions.new)
         end
         
         unless base.instance_variable_defined?(:@actions)
-          base.instance_variable_set(:@actions, [])
+          base.instance_variable_set(:@actions, Actions.new(base))
         end
         
         super

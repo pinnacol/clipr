@@ -1,14 +1,9 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips/env'
+require 'clips'
 
 class ConditionTest < Test::Unit::TestCase
+  include BlockHelpers
   Condition = Clips::Defrule::Condition
-
-  def setup_block
-    block = lambda {}
-    oid = block.object_id
-    [block, oid]
-  end
   
   #
   # slot test
