@@ -33,6 +33,10 @@ module Clips
         register(block)
       end
       
+      def callback(&block)
+        register Env.lambda(&block)
+      end
+      
       def to_s
         actions.collect do |action|
           action.vars = vars if action.respond_to?(:vars=)

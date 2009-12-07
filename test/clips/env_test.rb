@@ -121,6 +121,35 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal true, was_in_block
   end
   
+  def test_run_with_simple_rule
+    env.template :simple do
+      slot :key
+    end
+    
+    env.rule do
+      lhs do
+        match :simple, :key => :value
+      end
+      
+      rhs do
+        callback do |env|
+          env.assert "(was in block)"
+        end
+      end
+    end
+    
+    env.run
+    assert_equal ["(initial-fact)"], env.facts.list
+    
+    env.assert "(simple (key alt))"
+    env.run
+    assert_equal ["(initial-fact)", "(simple (key alt))"], env.facts.list
+    
+    env.assert "(simple (key value))"
+    env.run
+    assert_equal ["(initial-fact)", "(simple (key alt))", "(simple (key value))", "(was in block)"], env.facts.list
+  end
+  
   #
   # call test
   #

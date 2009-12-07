@@ -45,12 +45,13 @@ module Clips
       
       def cast(ptr, data_objects)
         env = get(ptr)
-        data_objects.collect! {|obj| env.cast(obj) }
+        [env, data_objects.collect! {|obj| env.cast(obj) }]
       end
       
       def lambda
         Kernel.lambda do |env_ptr, data_objects|
-          yield(*cast(env_ptr, data_objects))
+          env, objects = cast(env_ptr, data_objects)
+          yield(env, *objects)
         end
       end
     end
@@ -195,6 +196,14 @@ module Clips
       else
         data_object.value
       end
+    end
+    
+    def template(name=nil, desc=nil, &block)
+      build Deftemplate.intern(name, desc, &block).str
+    end
+    
+    def rule(name=nil, desc=nil, &block)
+      build Defrule.intern(name, desc, &block).str
     end
     
     ########## API ##########

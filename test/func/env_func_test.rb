@@ -75,7 +75,7 @@ class EnvFuncTest < Test::Unit::TestCase
     env.deftemplates.build(ExampleTemplate)
     
     was_in_block = false
-    block = Env.lambda do |fact|
+    block = Env.lambda do |env, fact|
       assert_equal ExampleTemplate, fact.class
       assert_equal :alt, fact[:key]
       

@@ -9,21 +9,16 @@ module Clips
       attr_reader :actions
       attr_reader :conditions
       
-      def intern(name, description=nil, &block)
-        rule = Class.new(self)
-        rule.instance_variable_set(:@name, name)
-        rule.instance_variable_set(:@description, description)
-        rule.instance_eval(&block)
-        rule
-      end
-      
       def str
         desc = description.to_s.empty? ? " " : " \"#{description}\" "
         "(defrule #{name}#{desc}#{conditions.to_s} => #{actions.to_s})"
       end
       
-      def call(env_ptr, data_objects)
-        self.new.call(Env.cast(ptr, data_objects))
+      def call(ptr, data_objects)
+        env = Env.get(ptr)
+        data_objects.collect! {|obj| env.cast(obj) }
+        
+        self.new.call(env, data_objects)
       end
       
       protected
@@ -33,7 +28,7 @@ module Clips
         conditions
       end
       
-      def rhs
+      def rhs(&block)
         actions.instance_eval(&block) if block_given?
         actions
       end
@@ -53,8 +48,7 @@ module Clips
       end
     end
     
-    def call(args)
-      raise NotImplementedError
+    def call(env, args)
     end
   end
 end
