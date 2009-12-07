@@ -12,14 +12,18 @@ module Clips
         end
       end
       
-      attr_reader :conditions
-      attr_reader :modifier
-      attr_reader :test
+      attr_accessor :conditions
+      attr_accessor :modifier
+      attr_accessor :checks
       
-      def initialize(conditions=[], modifier=nil, &test)
+      def initialize(conditions=[], modifier=nil, &check)
         @conditions = conditions
         @modifier = modifier
-        @test = test
+      end
+      
+      def add(condition)
+        conditions << condition
+        condition
       end
       
       def match(deftemplate, *assignments, &block)
@@ -29,74 +33,86 @@ module Clips
         else []
         end
         
-        condition = Condition.intern(deftemplate) do
+        cond = Condition.intern(deftemplate) do
           constraints.each {|name, value| slot(name, equal(value)) }
           assign(*assignments)
           test(&block) if block_given?
         end
 
-        conditions << condition
-        condition
+        add(cond)
       end
       
-      def assign(var, template, *slots)
-        raise NotImplementedError
+      # Same as match but evaluates the block as if interning a condition,
+      # rather than as a test.
+      def cond(deftemplate, *assignments, &block)
+        cond = match(deftemplate, *assignments)
+        cond.instance_eval(&block) if block
+        cond
+      end
+      
+      # Same as match but assigns matches to the variable.
+      def assign(variable, deftemplate, *assignments, &block)
+        cond = match(deftemplate, *assignments, &block)
+        cond.variable = variable
+        cond
       end
       
       def check(&block)
-        raise NotImplementedError
+        return nil unless block
+        
+        vars = [nil]
+        vars = variables(vars).join(' ')
+        cond = "(test (ruby-call #{block.object_id}#{vars}))"
+        conditions << cond
+        cond
       end
       
+      # 
       def any(&block)
-        raise NotImplementedError
+        add Conditions.intern(:or, &block)
       end
       
       def all(&block)
-        raise NotImplementedError
+        add Conditions.intern(:and, &block)
       end
       
       def exists(&block)
-        raise NotImplementedError
+        add Conditions.intern(:exists, &block)
       end
       
-      def every(&block)
-        raise NotImplementedError
-      end
-      
-      def not_match(deftemplate, *slots, &block)
-        raise NotImplementedError
+      def not_match(deftemplate, *assignments, &block)
+        cond = Conditions.intern(:not) { match(deftemplate, *assignments, &block) }
+        add(cond)
       end
       
       def not_any(&block)
-        raise NotImplementedError
+        cond = Conditions.intern(:not) { any(&block) }
+        add(cond)
       end
       
       def not_all(&block)
-        raise NotImplementedError
+        cond = Conditions.intern(:not) { all(&block) }
+        add(cond)
       end
       
       def not_exists(&block)
-        raise NotImplementedError
+        cond = Conditions.intern(:not) { exists(&block) }
+        add(cond)
       end
       
-      def not_every(&block)
-        raise NotImplementedError
-      end
-      
-      def variables
-        variables = []
+      def variables(target=[])
         conditions.each do |condition|
           case
           when condition.respond_to?(:variable)
-            variables << condition.variable
+            target << "?#{condition.variable}"
           when condition.respond_to?(:variables)
-            variables.concat(condition.variables)
+            condition.variables(target)
           else
             next
           end
         end
         
-        variables
+        target
       end
       
       def to_s
@@ -105,8 +121,6 @@ module Clips
         end.join(' ')
         
         str = "(#{modifier} #{str})" if modifier
-        str = "#{str} (test (ruby-call #{test.object_id} #{variables.join(' ')}))" if test
-        
         str
       end
     end

@@ -1,9 +1,9 @@
 module Clips
   class Defrule
     class Constraint
-      attr_reader :slot
-      attr_reader :terms
-      attr_reader :predicate
+      attr_accessor :slot
+      attr_accessor :terms
+      attr_accessor :predicate
       
       def initialize(slot, terms=[], &predicate)
         @slot = slot

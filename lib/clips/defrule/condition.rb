@@ -13,11 +13,11 @@ module Clips
         end
       end
       
-      attr_reader :deftemplate
-      attr_reader :constraints
-      attr_reader :assignments
-      attr_reader :variable
-      attr_reader :tests
+      attr_accessor :deftemplate
+      attr_accessor :constraints
+      attr_accessor :assignments
+      attr_accessor :variable
+      attr_accessor :tests
       
       def initialize(deftemplate, options={}, &test)
         @deftemplate = deftemplate
