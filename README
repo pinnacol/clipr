@@ -1,7 +1,56 @@
 = Clips
 
+{CLIPS}[http://clipsrules.sourceforge.net/] bindings for Ruby.
+
 == Description
+
+The Clips gem provides {FFI}[http://github.com/ffi/ffi] bindings to the
+embedded CLIPS API, and a set of classes which act as wrappers for the various
+CLIPS constructs. Clips allows callbacks to Ruby from CLIPS so that procedural
+logic and rules logic may be kept separate.
+
+==== Notes
+
+{CLIPS}[http://clipsrules.sourceforge.net/] (C Language Integrated Production
+System) is an open-source expert system widely used throughout the government,
+industry, and academia. CLIPS is powerful and fast, but requires some study
+because it uses a programming style that many people will find unusual.
+
+Users are encouraged to consult the {extensive and accessible CLIPS
+documentation}[http://clipsrules.sourceforge.net/OnlineDocs.html] for
+clarification of what the Clipr constructs are intended to do, as well as a
+great deal more information regarding the CLIPS API.
 
 == Usage
 
-== Installation
+=== Clips::Api
+
+The Api is organized into modules as described in the Advanced Programming
+Guide (apg.pdf). All of the methods bind the contextual forms of the API
+methods when possible. The Api methods may be used directly in a
+close-to-the-metal approach:
+
+  require 'clips/api'
+  include Clips::Api
+  
+  # create an environment
+  env_ptr = Environment::CreateEnvironment()
+  
+  # make the function call "(> 1 2)"
+  obj = DataObject.new
+  Environment::EnvFunctionCall(env_ptr, ">", "1 2", obj)
+  
+  # get the result out of the DataObject
+  node = Struct::SymbolHashNode.new(obj[:value])
+  node[:contents]          # => "FALSE"
+
+Direct usage of the Api requires knowledge of the CLIPS API and an attention
+to detail. The rest of Clips provides a wrapper to make the Api more
+accessible:
+
+  require 'clips'
+  env = Clips::Env.new
+  env.call(">", "1 2").value   # => false
+
+=== Clips
+
