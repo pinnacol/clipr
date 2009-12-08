@@ -88,4 +88,41 @@ class EnvFuncTest < Test::Unit::TestCase
     
     assert_equal true, was_in_block
   end
+  
+  #
+  # rules
+  #
+  
+  class ExampleRule < Clips::Defrule
+    lhs do
+      match :example, :key => :value
+    end
+    
+    def call(env, args)
+      env.assert "(was in block - #{args.length})"
+    end
+  end
+  
+  def test_callback_to_rule
+    env.build(ExampleTemplate.str)
+    env.build(ExampleRule.str)
+    
+    env.facts.assert(:example, {:key => :alt})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)", 
+      "(example (key alt))"
+    ], env.facts.list
+    
+    env.facts.assert(:example, {:key => :value})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)", 
+      "(example (key alt))",
+      "(example (key value))",
+      "(was in block - 0)"
+    ], env.facts.list
+  end
 end

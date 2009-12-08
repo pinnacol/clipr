@@ -21,10 +21,10 @@ module Clips
       def slot(name, default=nil, options={})
         slots[name] = Slot.new(name, default, options)
       end
-    
-      def multislot(name, default=[], options={})
-        slots[name] = Slot.new(name, default, options, true)
-      end
+      
+      # def multislot(name, default=[], options={})
+      #   slots[name] = Slot.new(name, default, options, true)
+      # end
       
       def remove(name)
         unless slots.has_name?(name)
