@@ -12,6 +12,7 @@ module Clips
           cond
         end
       end
+      include Utils
       
       attr_accessor :deftemplate
       attr_accessor :constraints
@@ -78,18 +79,11 @@ module Clips
         "#{assignment}(#{deftemplate}#{conditions.join(' ')})#{checks.join(' ')}"
       end
       
-      protected
+      private
       
-      def value_str(value) # :nodoc:
-        case value
-        when Symbol, Integer, Float
-          value.to_s
-        when String
-          "\"#{value}\""
-        else
-          oid = value.object_id
-          "?v#{oid}&:(ruby-equal #{oid} ?v#{oid})"
-        end
+      def non_primitive_value_str(value) # :nodoc:
+        oid = value.object_id
+        "?v#{oid}&:(ruby-equal #{oid} ?v#{oid})"
       end
     end
   end

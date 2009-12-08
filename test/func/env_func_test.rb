@@ -15,7 +15,7 @@ class EnvFuncTest < Test::Unit::TestCase
   
   class ExampleTemplate < Clips::Deftemplate
     deftemplate "example"
-    slot :key, 'value'
+    slot :key, :value
   end
   
   #

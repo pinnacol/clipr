@@ -1,14 +1,13 @@
 require 'clips/api'
-require 'clips/router'
-
+require 'clips/utils'
 require 'clips/construct'
+
 require 'clips/defrule'
 require 'clips/deftemplate'
-
-require 'clips/utils'
-require 'clips/defglobals'
 require 'clips/deftemplates'
+require 'clips/defglobals'
 require 'clips/facts'
+require 'clips/router'
 require 'clips/routers'
 
 module Clips

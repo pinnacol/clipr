@@ -23,6 +23,10 @@ module Clips
       
       protected
       
+      def defrule(name)
+        @name = name
+      end
+      
       def lhs(&block)
         conditions.instance_eval(&block) if block_given?
         conditions

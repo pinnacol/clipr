@@ -35,5 +35,20 @@ module Clips
       
       facts
     end
+    
+    def value_str(value)
+      case value
+      when Symbol, Integer, Float
+        value.to_s
+      when String
+        "\"#{value}\""
+      else
+        non_primitive_value_str(value)
+      end
+    end
+    
+    def non_primitive_value_str(value)
+      raise "non-primitive values are not supported yet!"
+    end
   end
 end
