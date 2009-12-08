@@ -33,7 +33,7 @@ task :print_manifest do
   # included already (marking by the absence
   # of a label)
   Dir.glob("**/*").each do |file|
-    next if file =~ /^(rdoc|pkg|backup|vendor)/ || File.directory?(file)
+    next if file =~ /^(rdoc|pkg|backup|vendor|test|.*\.o)/ || File.directory?(file)
     
     path = File.expand_path(file)
     files[path] = ["", file] unless files.has_key?(path)
@@ -72,14 +72,11 @@ source_files = Dir.glob("src/*.c")
 
 file makefile => source_files do
   pkg = File.basename(Clips::DYLIB).chomp(File.extname(Clips::DYLIB))
-  Dir.chdir("src") { sh("ruby -r mkmf -e \"create_makefile('#{pkg}')\"") }
+  Dir.chdir("src") { sh("ruby extconf.rb") }
 end
 
 file Clips::DYLIB => makefile do
   Dir.chdir("src") { sh("make") }
-  
-  FileUtils.mkdir("bin") unless File.exists?("bin")
-  FileUtils.mv("src/clips.bundle", "bin/clips.bundle")
 end
 
 ffi_files  = Dir.glob("lib/clips/api/**/*.rb.ffi")

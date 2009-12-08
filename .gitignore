@@ -4,6 +4,8 @@ rdoc
 vendor/gems
 src/*.o
 src/Makefile
-bin/clips.*
+src/clips.bundle
+src/clips.so
+src/clips.dll
 lib/clips/api/data_object.rb
 lib/clips/api/struct/*.rb
