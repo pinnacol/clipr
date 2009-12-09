@@ -214,20 +214,25 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   def test_rubycall_passes_back_pattern_addresses
-    block_args = nil
-    block = lambda {|ptr, args| block_args = args }
+    was_in_block = false
+    block = lambda do |ptr, args|
+      assert_equal 1, args.length
+      
+      env = Env.get(ptr)
+      obj = args[0]
+      assert_equal Clips::Api::DataObject, obj.class
+      assert_equal :quack, env.cast(obj)[:sound]
+      
+      was_in_block = true
+    end
     
     env.build  "(deftemplate animal (slot sound))"
     env.build  "(defrule sound-is-quack ?fact <- (animal (sound quack)) => (ruby-call #{block.object_id} ?fact)) "
     env.assert "(animal (sound quack))"
     
-    assert_equal nil, block_args
+    assert_equal false, was_in_block
     assert_equal 1, env.run
-    assert_equal 1, block_args.length
-    
-    obj = block_args[0]
-    assert_equal Clips::Api::DataObject, obj.class
-    assert_equal :quack, env.cast(obj)[:sound]
+    assert_equal true, was_in_block
   end
   
   #

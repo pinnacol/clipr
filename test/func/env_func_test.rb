@@ -89,6 +89,23 @@ class EnvFuncTest < Test::Unit::TestCase
     assert_equal true, was_in_block
   end
   
+  def test_casting_callback_with_multiple_facts
+    was_in_block = false
+    block = Env.lambda do |env, fact1, fact2|
+      assert_equal :one, fact1[:key]
+      assert_equal :two, fact2[:key]
+      was_in_block = true
+    end
+    
+    env.build  "(deftemplate example (slot key))"
+    env.build  "(defrule key-is-alt ?one <- (example (key one)) ?two <- (example (key two)) => (ruby-call #{block.object_id} ?one ?two))"
+    env.assert "(example (key one))"
+    env.assert "(example (key two))"
+    env.run
+    
+    assert_equal true, was_in_block
+  end
+  
   #
   # rules
   #

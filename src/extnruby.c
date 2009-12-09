@@ -21,7 +21,7 @@
 /*************************************************************/
 
 #include "extnruby.h"
-#include <stdio.h>
+
 /*********************************************************/
 /* A callback method to pass control to Ruby from CLIPS. */
 /* EnvRubyCall converts its inputs into ruby objects and */
@@ -37,15 +37,14 @@ int EnvRubyCall(void *theEnv)
   /* Check arguments. */ 
   /*==================*/
   
-  DATA_OBJECT arg;
   int i, n;
-  
   n = ArgCountCheck("ruby-call", AT_LEAST, 1);
   
   if (n == -1) 
     rb_raise(rb_eArgError, "no block id given");
-    
-  if (ArgTypeCheck("ruby-call", 1, INTEGER, &arg) == 0) 
+  
+  DATA_OBJECT objects[n];
+  if (ArgTypeCheck("ruby-call", 1, INTEGER, &objects[0]) == 0) 
     rb_raise(rb_eArgError, "expected block id as first argument");
     
   /*=========================*/ 
@@ -55,11 +54,11 @@ int EnvRubyCall(void *theEnv)
   n += 1;
   VALUE args[n];
   args[0] = rbffi_Pointer_NewInstance(theEnv);
-  args[1] = LONG2FIX(DOToLong(arg));
+  args[1] = LONG2FIX(DOToLong(objects[0]));
   
   for(i = 2; i < n; ++i) {
-    RtnUnknown(i, &arg);
-    args[i] = rbffi_Pointer_NewInstance(&arg);
+    RtnUnknown(i, &objects[i-1]);
+    args[i] = rbffi_Pointer_NewInstance(&objects[i-1]);
   }
   
   /*=================================*/
