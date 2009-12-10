@@ -75,6 +75,8 @@ module Clips
     # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
     DEFAULT_DEVICE = 'wdisplay'
     
+    CALLBACK = "ruby-call"
+    
     attr_reader :defglobals
     attr_reader :deftemplates
     attr_reader :facts
@@ -83,6 +85,7 @@ module Clips
     # Initializes a new Env.
     def initialize(options={})
       @pointer = CreateEnvironment()
+      DefineFunction2(CALLBACK, ?b, method(:callback), "EnvRubyCall", "1*ui")
       
       @defglobals = Defglobals.new(self)
       @deftemplates = Deftemplates.new(self)
@@ -94,6 +97,39 @@ module Clips
       end
       
       reset_global
+    end
+    
+    # Callback recieves inputs sent to the ruby-call external function that
+    # Clips registers with the CLIPS runtime.  The inputs are:
+    #
+    # * a pointer to the calling env
+    # * an object id (identifies an object responding to call)
+    # * an array of FFI pointers to DataObject structs
+    #
+    # Callback looks up the specified object, converts the pointers to
+    # DataObject instances, and invokes the following:
+    #
+    #   object.call(env_ptr, data_objects_array)
+    #
+    # Returns the call result.
+    def callback
+      n = EnvArgCountCheck(pointer, CALLBACK, AT_LEAST, 1)
+      raise(ArgumentError, "no block id given") if n == -1
+      
+      args = []
+      1.upto(n) do |i|
+        obj = DataObject.new
+        EnvRtnUnknown(pointer, i, obj)
+        args << obj
+      end
+      
+      block = args.shift
+      if block.type != INTEGER
+        raise(ArgumentError, "expected block id as first argument")
+      end
+      
+      result = ObjectSpace._id2ref(block.value).call(pointer, args)
+      result ? 1 : 0
     end
     
     # Returns the pointer to the internal Environment wrapped by self.  Raises

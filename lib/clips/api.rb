@@ -86,26 +86,33 @@ module Clips
   # Numerous examples and variations of this method can be found by digging
   # around in the code.
   module Api
-    module_function
+    extend FFI::Library
+    ffi_lib DYLIB
     
-    # Callback recieves inputs sent to the ruby-call external function that
-    # Clips registers with the CLIPS runtime.  The inputs are:
-    #
-    # * a pointer to the calling env
-    # * an object id (identifies an object responding to call)
-    # * an array of FFI pointers to DataObject structs
-    #
-    # Callback looks up the specified object, converts the pointers to
-    # DataObject instances, and invokes the following:
-    #
-    #   object.call(env_ptr, data_objects_array)
-    #
-    # Returns the call result.
-    def callback(env_ptr, obj_id, *ptrs)
-      obj = ObjectSpace._id2ref(obj_id)
-      ptrs.collect! {|ptr| DataObject.new(ptr) }
-      
-      obj.call(env_ptr, ptrs)
-    end
+    EXACTLY      = 0
+    AT_LEAST     = 1
+    NO_MORE_THAN = 2
+    
+    FLOAT            = 0
+    INTEGER          = 1
+    SYMBOL           = 2
+    STRING           = 3
+    MULTIFIELD       = 4
+    EXTERNAL_ADDRESS = 5
+    FACT_ADDRESS     = 6
+    INSTANCE_ADDRESS = 7
+    INSTANCE_NAME    = 8
+    
+    callback :callback, [], :int
+    attach_function :DefineFunction,[:string, :char, :callback, :string], :void
+    attach_function :DefineFunction2, [:string, :char, :callback, :string, :string], :void
+    
+    callback :env_callback, [:pointer], :int
+    attach_function :EnvDefineFunction, [:pointer, :string, :char, :env_callback, :string], :void
+    attach_function :EnvDefineFunction2, [:pointer, :string, :char, :env_callback, :string, :string], :void
+    
+    attach_function :EnvRtnArgCount, [:pointer], :int
+    attach_function :EnvArgCountCheck, [:pointer, :string, :int, :int], :int
+    attach_function :EnvRtnUnknown, [:pointer, :int, :pointer], :pointer
   end
 end

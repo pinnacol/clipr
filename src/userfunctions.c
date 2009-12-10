@@ -42,7 +42,6 @@
 /***************************************************************************/
 
 #include "clips.h"
-#include "extnruby.h"
 
 void UserFunctions(void);
 void EnvUserFunctions(void *);
@@ -57,8 +56,7 @@ void EnvUserFunctions(void *);
 /*   included in another file.                           */
 /*********************************************************/
 void UserFunctions()
-  {   
-    DefineFunction2("ruby-call", 'b', PTIF EnvRubyCall, "EnvRubyCall", "1*ui");
+  {
   }
   
 /***********************************************************/
