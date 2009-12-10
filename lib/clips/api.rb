@@ -103,6 +103,14 @@ module Clips
     INSTANCE_ADDRESS = 7
     INSTANCE_NAME    = 8
     
+    CAST = {
+      FLOAT => Struct::FloatHashNode,
+      INTEGER => Struct::IntegerHashNode,
+      SYMBOL => Struct::SymbolHashNode,
+      STRING => Struct::SymbolHashNode,
+      EXTERNAL_ADDRESS => Struct::ExternalAddressHashNode
+    }
+    
     callback :callback, [], :int
     attach_function :DefineFunction,[:string, :char, :callback, :string], :void
     attach_function :DefineFunction2, [:string, :char, :callback, :string, :string], :void

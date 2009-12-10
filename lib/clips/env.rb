@@ -136,16 +136,16 @@ module Clips
     def set(value) # :yields: env_ptr, data_object
       attributes = case value
       when Symbol
-        { :type  => DataObject::SYMBOL, 
+        { :type  => SYMBOL, 
           :value => EnvAddSymbol(pointer, value.to_s)}
       when String
-        { :type  => DataObject::STRING,   
+        { :type  => STRING,   
           :value => EnvAddSymbol(pointer, value)}
       when Fixnum
-        { :type  => DataObject::INTEGER, 
+        { :type  => INTEGER, 
           :value => EnvAddLong(pointer, value)}
       when Float
-        { :type  => DataObject::FLOAT,   
+        { :type  => FLOAT,   
           :value => EnvAddDouble(pointer, value)}
       else
         raise "non-primitive values are not supported yet!"
@@ -177,7 +177,7 @@ module Clips
     end
     
     def cast(data_object)
-      if data_object[:type] == DataObject::FACT_ADDRESS
+      if data_object[:type] ==FACT_ADDRESS
         fact_ptr = data_object[:value]
         deft_ptr = Fact::EnvFactDeftemplate(pointer, fact_ptr)
         deftemplates.deftemplate(deft_ptr).new(self, fact_ptr)
