@@ -37,9 +37,9 @@ module Clips
       # attach_function :DeallocateEnvironmentData, [:pointer], :void 
       attach_function :DestroyEnvironment, [:pointer], :bool
       # attach_function :GetCurrentEnvironment, [:pointer], :void 
-      # attach_function :GetEnvironmentByIndex, [:pointer], :void 
+      attach_function :GetEnvironmentByIndex, [:int], :pointer 
       # attach_function :GetEnvironmentData, [:pointer, :uint], :pointer 
-      # attach_function :GetEnvironmentIndex, [:pointer], :void 
+      attach_function :GetEnvironmentIndex, [:pointer], :int 
       # attach_function :SetCurrentEnvironment, [:pointer], :void 
       # attach_function :SetCurrentEnvironmentByIndex, [:pointer], :void
       

@@ -42,11 +42,6 @@ module Clips
     include Api
     include Api::Environment
     
-    # The global variable used to store a backreference to the Env instance
-    # within a CLIPS environment.  This variable can then be used to lookup
-    # the Env instance within Api callbacks (see Env.get).
-    GLOBAL = "clipsenv"
-    
     # The default router.
     DEFAULT_ROUTER = 'default'
     
@@ -59,6 +54,7 @@ module Clips
     # cases.  (see gitgo b9e3ab796c00d99c3894949b57542cccc3da2ee3)
     DEFAULT_DEVICE = 'wdisplay'
     
+    # The external function in CLIPS for callbacks to Ruby.
     CALLBACK = "ruby-call"
     
     attr_reader :defglobals
@@ -90,6 +86,11 @@ module Clips
     # an error if the pointer is unset (ie the env was closed).
     def pointer
       @pointer or raise("closed env")
+    end
+    
+    # Returns the index for the environment.
+    def index
+      GetEnvironmentIndex(pointer)
     end
     
     # Returns the specified router; raises an error if no such router exists.

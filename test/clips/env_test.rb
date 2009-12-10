@@ -54,6 +54,14 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
+  # index test
+  #
+  
+  def test_index_returns_index_for_env
+    assert_equal Fixnum, env.index.class
+  end
+  
+  #
   # router test
   #
   
