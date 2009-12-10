@@ -112,12 +112,12 @@ module Clips
     }
     
     callback :callback, [], :int
-    attach_function :DefineFunction,[:string, :char, :callback, :string], :void
-    attach_function :DefineFunction2, [:string, :char, :callback, :string, :string], :void
+    attach_function :DefineFunction,[:string, :char, :callback, :string], :int
+    attach_function :DefineFunction2, [:string, :char, :callback, :string, :string], :int
     
     callback :env_callback, [:pointer], :int
-    attach_function :EnvDefineFunction, [:pointer, :string, :char, :env_callback, :string], :void
-    attach_function :EnvDefineFunction2, [:pointer, :string, :char, :env_callback, :string, :string], :void
+    attach_function :EnvDefineFunction, [:pointer, :string, :char, :env_callback, :string], :int
+    attach_function :EnvDefineFunction2, [:pointer, :string, :char, :env_callback, :string, :string], :int
     
     attach_function :EnvRtnArgCount, [:pointer], :int
     attach_function :EnvArgCountCheck, [:pointer, :string, :int, :int], :int

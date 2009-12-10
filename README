@@ -26,9 +26,8 @@ great deal more information regarding the CLIPS API.
 === Clips::Api
 
 The Api is organized into modules as described in the Advanced Programming
-Guide (apg.pdf). All of the methods bind the contextual forms of the API
-methods when possible. The Api methods may be used directly in a
-close-to-the-metal approach:
+Guide (apg.pdf). All of the methods bind the contextual, environment-aware
+forms of the API methods when possible.
 
   require 'clips/api'
   include Clips::Api
@@ -43,14 +42,62 @@ close-to-the-metal approach:
   # get the result out of the DataObject
   node = Struct::SymbolHashNode.new(obj[:value])
   node[:contents]          # => "FALSE"
-
+  
+  # cleanup the environment
+  Environment::DestroyEnvironment(env_ptr)
+  
 Direct usage of the Api requires knowledge of the CLIPS API and an attention
 to detail. The rest of Clips provides a wrapper to make the Api more
-accessible:
+accessible.
 
   require 'clips'
-  env = Clips::Env.new
-  env.call(">", "1 2").value   # => false
+  Clips::Env.open do |env|
+    env.call(">", "1 2").value   # => false
+  end
 
 === Clips
 
+Clips is built around the Env class which represents a CLIPS environment, much
+like you would use through a CLIPS console. Basic usage is similar to the
+console as well:
+
+  env = Clips::Env.new
+  facts = env.facts
+  
+  env.assert "(animal-is duck)"
+  env.build  "(defrule duck (animal-is duck) => (assert (sound-is quack)))"
+  
+  facts.list  # => ["(initial-fact)", "(animal-is duck)"]
+  
+  env.run
+  facts.list  # => ["(initial-fact)", "(animal-is duck)", "(sound-is quack)"]
+  
+  env.clear
+  facts.list  # => ["(initial-fact)"]
+
+More real-world examples will want to use deftemplates and defrules defined in
+ruby.
+
+  class Animal < Clips::Deftemplate
+    deftemplate "animal"
+    slot :sound
+  end
+
+  class Quack < Clips::Defrule
+    defrule "quack"
+    lhs.match "animal", :sound do |env, sound|
+      env.cast(sound[0]) == :quack
+    end
+  
+    rhs.call do |env, args|
+      env.assert "(sound-was quack)"
+    end
+  end
+  
+  env.build(Animal)
+  env.build(Quack)
+  
+  facts.assert(:animal, {:sound => :quack})
+  env.run
+  facts.list  # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
+  

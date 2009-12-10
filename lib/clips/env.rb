@@ -199,12 +199,12 @@ module Clips
     ########## API ##########
     
     def clear
-      Clear(pointer)
+      EnvClear(pointer)
       self
     end
     
     def reset
-      Reset(pointer)
+      EnvReset(pointer)
       self
     end
     
@@ -242,7 +242,8 @@ module Clips
     #
     # Only constructs like deftemplate or defrule can be built through this
     # method (to assert fact strings see assert).
-    def build(str)
+    def build(construct)
+      str = construct.respond_to?(:str) ? construct.str : construct.to_s
       router.capture('werror') do |device|
         if EnvBuild(pointer, str) == 0
           msg = device.string
