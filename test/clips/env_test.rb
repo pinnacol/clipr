@@ -14,9 +14,10 @@ class ClipsEnvTest < Test::Unit::TestCase
     @env = Env.new
   end
   
-  # def teardown
-  #   env.close
-  # end
+  def teardown
+    super
+    env.close
+  end
   
   #
   # Env.open test
@@ -199,6 +200,15 @@ class ClipsEnvTest < Test::Unit::TestCase
     
     err = assert_raises(RangeError) { env.call("ruby-call", "1234") }
     assert_equal "0x4d2 is not id value", err.message
+  end
+  
+  def test_rubycall_error_in_callback_permits_close
+    block = lambda {|e, args| raise "error" }
+    
+    err = assert_raises(RuntimeError) { env.call("ruby-call", block.object_id.to_s) }
+    assert_equal "error", err.message
+    
+    assert_equal true, env.close
   end
   
   def test_rubycall_passes_back_pattern_addresses

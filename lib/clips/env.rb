@@ -82,6 +82,7 @@ module Clips
       # note this reference to callback must be maintained
       # to ensure the Proc isn't gc'ed.
       @callback = method(:callback)
+      @callback_error = nil
       EnvDefineFunction2(pointer, CALLBACK, ?b, @callback, "EnvCallback", "1*ui")
     end
     
@@ -207,7 +208,9 @@ module Clips
     end
     
     def run(n=-1)
-      Agenda::EnvRun(pointer, n)
+      check_callback do
+        Agenda::EnvRun(pointer, n)
+      end
     end
     
     # Calls the function with the arguments and returns the resulting
@@ -218,12 +221,14 @@ module Clips
     # Only functions may be called through this method (see build and
     # assert for building constructs and asserting facts from strings).
     def call(function, arguments=nil)
-      get do |ptr, obj|
-        router.capture('werror') do |device|
-          if EnvFunctionCall(ptr, function, arguments, obj) == 1
-            msg = device.string
-            msg = "error in function: #{function}" if msg.empty?
-            raise ApiError.new(:Environment, :EnvFunctionCall, msg)
+      check_callback do
+        get do |ptr, obj|
+          router.capture('werror') do |device|
+            if EnvFunctionCall(ptr, function, arguments, obj) == 1
+              msg = device.string
+              msg = "error in function: #{function}" if msg.empty?
+              raise ApiError.new(:Environment, :EnvFunctionCall, msg)
+            end
           end
         end
       end
@@ -264,6 +269,18 @@ module Clips
     
     private
     
+    def check_callback # :nodoc:
+      result = yield
+      
+      unless @callback_error.nil?
+        err = @callback_error
+        @callback_error = nil
+        raise err
+      end
+      
+      result
+    end
+    
     # Callback recieves inputs sent to the ruby-call external function that
     # Clips registers with the CLIPS runtime.  The input is a pointer to the
     # calling env (equal to self.pointer) and is provided by CLIPS.
@@ -279,12 +296,12 @@ module Clips
     def callback(ptr)
       n = EnvRtnArgCount(ptr)
       raise(ArgumentError, "no block id given") if n < 1
-      
+    
       # lookup block
       obj = DataObject.new
       EnvRtnUnknown(ptr, 1, obj)
       block = ObjectSpace._id2ref(obj.contents)
-      
+    
       # collect args
       args = []
       2.upto(n) do |i|
@@ -292,8 +309,12 @@ module Clips
         EnvRtnUnknown(ptr, i, obj)
         args << obj
       end
-      
+    
       block.call(self, args) ? 1 : 0
+      
+    rescue(Exception)
+      @callback_error = $!
+      return(0)
     end
   end
 end
