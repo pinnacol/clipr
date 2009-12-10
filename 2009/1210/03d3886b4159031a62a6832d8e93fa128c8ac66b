@@ -1,0 +1,16 @@
+--- 
+at: 5a5c6f34d08432f42c8f251d44997ab82ce97ed8
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1260459337.90751
+state: open
+title: Redirect close errors
+type: issue
+--- 
+Close errors are printed to STDOUT, as in:
+
+  assert_raises(RangeError) { env.call("ruby-call", "1234") }
+  env.close
+
+Here the problem is that some memory can't be deallocated.  This print to stdout is built into clips at present using printf, and the same is true when creating an environment bombs.  There should be a way to redirect stdout to capture it on an Env level.
+
+ 
