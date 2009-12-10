@@ -101,7 +101,7 @@ module Clips
       return false if closed?
       
       unless DestroyEnvironment(@pointer)
-        raise ApiError(:Environment, :DestroyEnvironment, "could not close environment")
+        raise ApiError.new(:Environment, :DestroyEnvironment, "could not close environment")
       end
       
       @pointer = nil

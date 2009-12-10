@@ -14,6 +14,10 @@ class ClipsEnvTest < Test::Unit::TestCase
     @env = Env.new
   end
   
+  # def teardown
+  #   env.close
+  # end
+  
   #
   # Env.open test
   #
