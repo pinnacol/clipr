@@ -50,10 +50,8 @@ class EnvFuncTest < Test::Unit::TestCase
   
   def test_casting_from_callback
     was_in_block = false
-    block = lambda do |env_ptr, data_objects|
+    block = lambda do |callback_env, data_objects|
       fact_data_object = data_objects[0]
-      
-      callback_env = Env.get(env_ptr)
       fact = callback_env.cast(fact_data_object)
       
       assert_equal env.object_id, callback_env.object_id
@@ -75,7 +73,7 @@ class EnvFuncTest < Test::Unit::TestCase
     env.deftemplates.build(ExampleTemplate)
     
     was_in_block = false
-    block = Env.lambda do |env, fact|
+    block = Env.lambda do |callback_env, fact|
       assert_equal ExampleTemplate, fact.class
       assert_equal :alt, fact[:key]
       
@@ -91,7 +89,7 @@ class EnvFuncTest < Test::Unit::TestCase
   
   def test_casting_callback_with_multiple_facts
     was_in_block = false
-    block = Env.lambda do |env, fact1, fact2|
+    block = Env.lambda do |callback_env, fact1, fact2|
       assert_equal :one, fact1[:key]
       assert_equal :two, fact2[:key]
       was_in_block = true

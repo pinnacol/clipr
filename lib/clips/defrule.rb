@@ -14,10 +14,8 @@ module Clips
         "(defrule #{name}#{desc}#{conditions.to_s} => #{actions.to_s})"
       end
       
-      def call(ptr, data_objects)
-        env = Env.get(ptr)
+      def call(env, data_objects)
         data_objects.collect! {|obj| env.cast(obj) }
-        
         self.new.call(env, data_objects)
       end
       

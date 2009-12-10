@@ -31,26 +31,10 @@ module Clips
         end
       end
       
-      # Gets an Env instance based on a CLIPS Environment pointer.  This is
-      # useful for looking up an Env from within an Api callback.
-      def get(ptr)
-        obj = Api::DataObject.new
-        if Api::Defglobal::EnvGetDefglobalValue(ptr, GLOBAL, obj) == 0
-          raise "could not find the #{GLOBAL} global"
-        end
-        
-        ObjectSpace._id2ref(obj.value)
-      end
-      
-      def cast(ptr, data_objects)
-        env = get(ptr)
-        [env, data_objects.collect! {|obj| env.cast(obj) }]
-      end
-      
       def lambda
-        Kernel.lambda do |env_ptr, data_objects|
-          env, objects = cast(env_ptr, data_objects)
-          yield(env, *objects)
+        Kernel.lambda do |env, data_objects|
+          data_objects.collect! {|obj| env.cast(obj) }
+          yield(env, *data_objects)
         end
       end
     end
@@ -85,7 +69,8 @@ module Clips
     # Initializes a new Env.
     def initialize(options={})
       @pointer = CreateEnvironment()
-      DefineFunction2(CALLBACK, ?b, method(:callback), "EnvRubyCall", "1*ui")
+      @callback = method(:callback)
+      DefineFunction2(CALLBACK, ?b, @callback, "EnvRubyCall", "1*ui")
       
       @defglobals = Defglobals.new(self)
       @deftemplates = Deftemplates.new(self)
@@ -95,8 +80,6 @@ module Clips
       unless @routers.has?(DEFAULT_ROUTER)
         @routers.add(DEFAULT_ROUTER, Router.new)
       end
-      
-      reset_global
     end
     
     # Callback recieves inputs sent to the ruby-call external function that
@@ -128,7 +111,7 @@ module Clips
         raise(ArgumentError, "expected block id as first argument")
       end
       
-      result = ObjectSpace._id2ref(block.value).call(pointer, args)
+      result = ObjectSpace._id2ref(block.value).call(self, args)
       result ? 1 : 0
     end
     
@@ -245,13 +228,11 @@ module Clips
     
     def clear
       Clear(pointer)
-      reset_global
       self
     end
     
     def reset
       Reset(pointer)
-      reset_global
       self
     end
     
@@ -309,13 +290,6 @@ module Clips
     
     def save(file)
       Fact::EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
-    end
-    
-    private
-    
-    # resets the global variable identifying self within CLIPS
-    def reset_global # :nodoc:
-      defglobals.set(GLOBAL, object_id)
     end
   end
 end

@@ -39,18 +39,6 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   #
-  # Env.get test
-  #
-  
-  def test_get_retreives_the_env_for_pointer
-    ptr = env.pointer
-    got = Env.get(ptr)
-    
-    assert_equal Env, got.class
-    assert_equal env.object_id, got.object_id
-  end
-  
-  #
   # initialize test
   #
   
@@ -58,10 +46,6 @@ class ClipsEnvTest < Test::Unit::TestCase
     routers = env.routers
     assert routers.list.include?('default')
     assert routers['default'].kind_of?(Clips::Router)
-  end
-  
-  def test_initialize_sets_defglobal_for_env
-    assert_equal({"MAIN" => {Env::GLOBAL => env.object_id}}, env.defglobals.list)
   end
   
   #
@@ -107,7 +91,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   
   def test_run_with_rubycall
     was_in_block = false
-    block = lambda {|ptr, args| was_in_block = true }
+    block = lambda {|e, args| was_in_block = true }
     assert_equal false, was_in_block
     
     env.build  "(defrule sound-is-quack (sound quack) => (ruby-call #{block.object_id}))"
@@ -169,10 +153,10 @@ class ClipsEnvTest < Test::Unit::TestCase
     assert_equal "[EVALUATN2] No function, generic function or deffunction of name unknown exists for external call.\n", err.message
   end
   
-  def test_rubycall_calls_block_with_env_pointer
+  def test_rubycall_calls_block_with_env
     was_in_block = false
-    block = lambda do |ptr, args|
-      assert_equal ptr, env.pointer
+    block = lambda do |e, args|
+      assert_equal e, env
       was_in_block = true
     end
     
@@ -183,20 +167,20 @@ class ClipsEnvTest < Test::Unit::TestCase
   end
   
   def test_rubycall_returns_true_if_block_returns_truthy
-    block = lambda {|ptr, args| true }
+    block = lambda {|e, args| true }
     assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
-    block = lambda {|ptr, args| 1 }
+    block = lambda {|e, args| 1 }
     assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
-    block = lambda {|ptr, args| "str" }
+    block = lambda {|e, args| "str" }
     assert_equal true, env.call("ruby-call", block.object_id.to_s).value
     
     # falsy
-    block = lambda {|ptr, args| false }
+    block = lambda {|e, args| false }
     assert_equal false, env.call("ruby-call", block.object_id.to_s).value
     
-    block = lambda {|ptr, args| nil }
+    block = lambda {|e, args| nil }
     assert_equal false, env.call("ruby-call", block.object_id.to_s).value
   end
 
@@ -215,13 +199,12 @@ class ClipsEnvTest < Test::Unit::TestCase
   
   def test_rubycall_passes_back_pattern_addresses
     was_in_block = false
-    block = lambda do |ptr, args|
+    block = lambda do |e, args|
       assert_equal 1, args.length
       
-      env = Env.get(ptr)
       obj = args[0]
       assert_equal Clips::Api::DataObject, obj.class
-      assert_equal :quack, env.cast(obj)[:sound]
+      assert_equal :quack, e.cast(obj)[:sound]
       
       was_in_block = true
     end
