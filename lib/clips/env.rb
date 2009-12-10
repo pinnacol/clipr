@@ -69,8 +69,6 @@ module Clips
     # Initializes a new Env.
     def initialize(options={})
       @pointer = CreateEnvironment()
-      @callback = method(:callback)
-      DefineFunction2(CALLBACK, ?b, @callback, "EnvRubyCall", "1*ui")
       
       @defglobals = Defglobals.new(self)
       @deftemplates = Deftemplates.new(self)
@@ -80,39 +78,11 @@ module Clips
       unless @routers.has?(DEFAULT_ROUTER)
         @routers.add(DEFAULT_ROUTER, Router.new)
       end
-    end
-    
-    # Callback recieves inputs sent to the ruby-call external function that
-    # Clips registers with the CLIPS runtime.  The inputs are:
-    #
-    # * a pointer to the calling env
-    # * an object id (identifies an object responding to call)
-    # * an array of FFI pointers to DataObject structs
-    #
-    # Callback looks up the specified object, converts the pointers to
-    # DataObject instances, and invokes the following:
-    #
-    #   object.call(env_ptr, data_objects_array)
-    #
-    # Returns the call result.
-    def callback
-      n = EnvArgCountCheck(pointer, CALLBACK, AT_LEAST, 1)
-      raise(ArgumentError, "no block id given") if n == -1
       
-      args = []
-      1.upto(n) do |i|
-        obj = DataObject.new
-        EnvRtnUnknown(pointer, i, obj)
-        args << obj
-      end
-      
-      block = args.shift
-      if block.type != INTEGER
-        raise(ArgumentError, "expected block id as first argument")
-      end
-      
-      result = ObjectSpace._id2ref(block.value).call(self, args)
-      result ? 1 : 0
+      # note this reference to callback must be maintained
+      # to ensure the Proc isn't gc'ed.
+      @callback = method(:callback)
+      EnvDefineFunction2(pointer, CALLBACK, ?b, @callback, "EnvCallback", "1*ui")
     end
     
     # Returns the pointer to the internal Environment wrapped by self.  Raises
@@ -290,6 +260,40 @@ module Clips
     
     def save(file)
       Fact::EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
+    end
+    
+    private
+    
+    # Callback recieves inputs sent to the ruby-call external function that
+    # Clips registers with the CLIPS runtime.  The input is a pointer to the
+    # calling env (equal to self.pointer) and is provided by CLIPS.
+    #
+    # The ruby-call function takes the object id of a callable object as its
+    # first argument.  Subsequent arguments can be any variable; they will be
+    # looked up as DataObject instances.  Callback looks up the callable
+    # object and then invokes the following:
+    #
+    #   object.call(env, data_objects)
+    #
+    # Returns 1 if call returns truthy, or 0 otherwise (for false/nil).
+    def callback(ptr)
+      n = EnvRtnArgCount(ptr)
+      raise(ArgumentError, "no block id given") if n < 1
+      
+      # lookup block
+      obj = DataObject.new
+      EnvRtnUnknown(ptr, 1, obj)
+      block = ObjectSpace._id2ref(obj.contents)
+      
+      # collect args
+      args = []
+      2.upto(n) do |i|
+        obj = DataObject.new
+        EnvRtnUnknown(ptr, i, obj)
+        args << obj
+      end
+      
+      block.call(self, args) ? 1 : 0
     end
   end
 end

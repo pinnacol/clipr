@@ -8,7 +8,7 @@ class RubycallBenchmark < Test::Unit::TestCase
   def test_rubycall_speed
     benchmark_test do |x|
       n = 10
-      block = lambda {}
+      block = lambda { }
       block_id = block.object_id.to_s
       env = Clips::Env.new
       
