@@ -1,0 +1,18 @@
+--- 
+at: 5a5c6f34d08432f42c8f251d44997ab82ce97ed8
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1260459510.6863
+state: open
+title: Deallocation of data on error
+type: issue
+--- 
+Errors in callback make it impossible to deallocate data on close:
+
+    block = lambda {|e, args| raise "error" }
+    
+    err = assert_raises(RuntimeError) { env.call("ruby-call", block.object_id.to_s) }
+    assert_equal "error", err.message
+
+    env.close
+
+The errors need to be caught an re-raised such that the env can be closed.
