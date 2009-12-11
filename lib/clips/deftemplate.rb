@@ -9,7 +9,8 @@ module Clips
       
       def str
         slot_defs = slots.values.collect {|slot| slot.to_s }
-        "(deftemplate #{name} \"#{description}\" #{slot_defs.join(' ')})"
+        desc = description.empty? ? description : " \"#{description}\""
+        "(deftemplate #{name}#{desc} #{slot_defs.join(' ')})"
       end
       
       protected

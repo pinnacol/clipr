@@ -113,6 +113,8 @@ class EnvFuncTest < Test::Unit::TestCase
       match :example, :key => :value
     end
     
+    rhs.register(self)
+    
     def call(env, args)
       env.assert "(was in block - #{args.length})"
     end

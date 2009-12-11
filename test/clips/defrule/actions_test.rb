@@ -4,13 +4,7 @@ require 'clips'
 class ActionsTest < Test::Unit::TestCase
   include BlockHelpers
   Actions = Clips::Defrule::Actions
-
-  def test_initialize_sets_default_target
-    block, oid = setup_block
-    actions = Actions.new(block)
-    assert_equal "(ruby-call #{oid})", actions.to_s
-  end
-
+  
   def test_add_adds_string_action
     actions = Actions.intern do
       add "(> 1 2)"

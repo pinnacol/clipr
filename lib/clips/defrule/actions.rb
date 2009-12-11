@@ -4,8 +4,8 @@ module Clips
   class Defrule
     class Actions
       class << self
-        def intern(target=nil, &block)
-          actions = new(target)
+        def intern(&block)
+          actions = new
           actions.instance_eval(&block) if block_given?
           actions
         end
@@ -14,10 +14,9 @@ module Clips
       attr_accessor :vars
       attr_accessor :actions
       
-      def initialize(target=nil)
+      def initialize
         @vars = nil
         @actions = []
-        register(target)
       end
       
       def add(action)
@@ -27,6 +26,10 @@ module Clips
       
       def register(target)
         target ? add(Action.new(target)) : nil
+      end
+      
+      def assert(str)
+        
       end
       
       def call(&block)

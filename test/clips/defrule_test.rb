@@ -6,9 +6,8 @@ class DefruleTest < Test::Unit::TestCase
   
   def test_defrule_formats_simple_rules_to_call_back_to_class
     rule = Defrule.intern "basic" do
-      lhs do
-        match 'sample', :key => :value
-      end
+      lhs.match 'sample', :key => :value
+      rhs.register(self)
     end
     
     assert_equal Class, rule.class
