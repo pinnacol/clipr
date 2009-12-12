@@ -57,9 +57,8 @@ accessible.
 
 === Clips
 
-Clips is built around the Env class which represents a CLIPS environment, much
-like you would use through a CLIPS console. Basic usage is similar to the
-console as well:
+Clips is built around the Env class which represents a CLIPS environment.
+Basic usage is similar to the console:
 
   env = Clips::Env.new
   facts = env.facts
@@ -75,29 +74,52 @@ console as well:
   env.clear
   facts.list  # => ["(initial-fact)"]
 
-More real-world examples will want to use deftemplates and defrules defined in
-ruby.
+More complex constructs can be defined in Ruby:
 
   class Animal < Clips::Deftemplate
     deftemplate "animal"
     slot :sound
   end
+  Animal.str  # => "(deftemplate animal (slot sound))"
 
   class Quack < Clips::Defrule
     defrule "quack"
-    lhs.match "animal", :sound do |env, sound|
-      env.cast(sound[0]) == :quack
-    end
-  
-    rhs.call do |env, args|
-      env.assert "(sound-was quack)"
-    end
+    lhs.match "animal", :sound => :quack
+    rhs.assert "(sound-was quack)"
   end
+  Quack.str   # => "(defrule quack (animal (sound quack)) => (assert (sound-was quack))"
   
+  env.clear
   env.build(Animal)
   env.build(Quack)
   
   facts.assert(:animal, {:sound => :quack})
   env.run
   facts.list  # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
+
+Clips provides a callback system that lets CLIPS use blocks written in Ruby.
+This is a way of writing an equivalent quack rule (albeit with a very
+different CLIPS construct):
+
+  class QuackCall < Clips::Defrule
+    lhs.match "animal", :sound do |sound|
+      sound == :quack
+    end
+    
+    rhs.call do |env|
+      env.assert "(sound-was quack)"
+    end
+  end
+  QuackCall.str  # => "(defrule quack_call (animal (sound ?sound)) (test (ruby-call ... ?sound)) => (ruby-call ...))"
+
+  env.clear
+  env.build(Animal)
+  env.build(QuackCall)
   
+  facts.assert(:animal, {:sound => :quack})
+  env.run
+  facts.list     # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
+
+Deftemplates and Defrules are flexible enough to represent almost all CLIPS
+constructs. See the documentation for examples of slot defaults, assignment,
+retraction, or/and/not conditionals, and more!
