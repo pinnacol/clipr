@@ -22,6 +22,8 @@
 /*                                                           */
 /*            Renamed BOOLEAN macro type to intBool.         */
 /*                                                           */
+/*      2009-12-14 updated RemoveHashedFact for 64-bit       */
+/*                                                           */
 /*************************************************************/
 
 #define _FACTHSH_SOURCE_
@@ -149,7 +151,7 @@ globle intBool RemoveHashedFact(
   void *theEnv,
   struct fact *theFact)
   {
-   int hashValue;
+   unsigned long hashValue;
    struct factHashEntry *hptr, *prev;
 
    hashValue = HashFact(theFact);
