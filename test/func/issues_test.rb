@@ -3,6 +3,7 @@ require "clips/env"
 
 class IssuesTest < Test::Unit::TestCase
   acts_as_file_test
+  acts_as_shell_test
   
   Env = Clips::Env
 
@@ -11,6 +12,11 @@ class IssuesTest < Test::Unit::TestCase
   def setup
     super
     @env = Env.new
+  end
+  
+  # suppress some logging...
+  def quiet?
+    verbose? ? false : true
   end
   
   # Platform: OSX 10.6.2 (Snow Leopard)
@@ -35,5 +41,23 @@ class IssuesTest < Test::Unit::TestCase
     env.assert("(key value)")
     env.assert("(key two)")
     assert_equal ["(initial-fact)", "(key value)", "(key two)"], env.facts.list
+  end
+  
+  def test_assert_clear_assert_a_fact_in_c
+    sh_test %Q{
+% "#{method_root.root}/main.test"
+f-0     (initial-fact)
+For a total of 1 fact.
+f-0     (initial-fact)
+f-1     (key value)
+f-2     (key one)
+For a total of 3 facts.
+f-0     (initial-fact)
+For a total of 1 fact.
+f-0     (initial-fact)
+f-1     (key value)
+f-2     (key two)
+For a total of 3 facts.
+}
   end
 end

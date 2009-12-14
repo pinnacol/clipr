@@ -101,6 +101,21 @@ desc "generate FFI structs"
 task :ffi_generate => [:check_bundle, *ruby_files]
 
 #
+issues_files = Dir.glob("test/func/issues/**/*.c")
+object_files = source_files.collect {|src| src.chomp(".c") + ".o"}
+
+issues_exes  = issues_files.collect do |src|
+  obj = src.chomp(".c") + ".o"
+  exe = src.chomp(".c") + ".test"
+  file(obj => [Clips::DYLIB, src]) { sh("gcc -Isrc -c #{src} -o #{obj}") }
+  file(exe => obj) { sh("gcc -o '#{exe}' #{obj} #{object_files.join(' ')}") }
+  exe
+end
+
+desc "compile the issues binaries"
+task :compile_issues => issues_exes
+
+#
 # Test tasks
 #
 
@@ -108,7 +123,7 @@ desc 'Default: Run tests.'
 task :default => :test
 
 desc 'Run the tests'
-task :test => [Clips::DYLIB, :check_bundle, :ffi_generate] do  
+task :test => [Clips::DYLIB, :compile_issues, :check_bundle, :ffi_generate] do  
   tests = Dir.glob('test/**/*_test.rb')
   cmd = ['ruby', "-w", '-rvendor/gems/environment.rb', "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)

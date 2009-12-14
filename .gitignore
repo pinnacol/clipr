@@ -9,3 +9,5 @@ src/clips.so
 src/clips.dll
 lib/clips/api/data_object.rb
 lib/clips/api/struct/*.rb
+test/func/issues/**/*.o
+test/func/issues/**/*.test
