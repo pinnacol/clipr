@@ -16,6 +16,8 @@ class ReadmeTest < Test::Unit::TestCase
   end
   
   class QuackCall < Clips::Defrule
+    defrule "quack_call"
+    
     lhs.match("animal", :sound) do |sound|
       sound == :quack
     end
@@ -60,7 +62,7 @@ class ReadmeTest < Test::Unit::TestCase
     ###
     
     assert_equal "(deftemplate animal (slot sound))", Animal.str
-    assert_equal "(defrule quack (animal (sound quack)) => (assert (sound-was quack))", Quack.str
+    assert_equal "(defrule quack (animal (sound quack)) => (assert (sound-was quack)))", Quack.str
 
     env.clear
     env.build(Animal)
@@ -72,7 +74,9 @@ class ReadmeTest < Test::Unit::TestCase
     
     ###
     
-    assert_equal "(defrule quack (animal (sound ?sound)) (test (ruby-call ... ?sound)) => (ruby-call ...))", QuackCall.str
+    lhs_block = QuackCall.conditions.conditions[0].tests[0]
+    rhs_block = QuackCall.actions.actions[0].target
+    assert_equal "(defrule quack_call (animal (sound ?sound)) (test (ruby-call #{lhs_block.object_id} ?sound)) => (ruby-call #{rhs_block.object_id}))", QuackCall.str
 
     env.clear
     env.build(Animal)

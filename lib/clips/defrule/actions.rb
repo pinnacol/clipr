@@ -29,7 +29,7 @@ module Clips
       end
       
       def assert(str)
-        
+        actions << "(assert #{str})"
       end
       
       def call(&block)

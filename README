@@ -87,7 +87,7 @@ More complex constructs can be defined in Ruby:
     lhs.match "animal", :sound => :quack
     rhs.assert "(sound-was quack)"
   end
-  Quack.str   # => "(defrule quack (animal (sound quack)) => (assert (sound-was quack))"
+  Quack.str   # => "(defrule quack (animal (sound quack)) => (assert (sound-was quack)))"
   
   env.clear
   env.build(Animal)
@@ -102,6 +102,8 @@ This is a way of writing an equivalent quack rule (albeit with a very
 different CLIPS construct):
 
   class QuackCall < Clips::Defrule
+    defrule "quack_call"
+    
     lhs.match "animal", :sound do |sound|
       sound == :quack
     end
