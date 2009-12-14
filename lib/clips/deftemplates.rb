@@ -13,6 +13,11 @@ module Clips
       @pointers = {}
     end
     
+    def clear
+      @casts.clear
+      @pointers.clear
+    end
+    
     def build(deftemplate)
       env.build(deftemplate.str)
       

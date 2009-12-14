@@ -44,6 +44,46 @@ class EnvFuncTest < Test::Unit::TestCase
     ], env.facts.list
   end
   
+  def test_build_clear_rebuild
+    env.deftemplates.build(ExampleTemplate)
+    env.facts.assert(:example, {:key => :one})
+    assert_equal ["(initial-fact)", "(example (key one))"], env.facts.list
+    
+    env.clear
+    assert_equal ["(initial-fact)"], env.facts.list
+    
+    env.deftemplates.build(ExampleTemplate)
+    env.facts.assert(:example, {:key => :two})
+    assert_equal ["(initial-fact)", "(example (key two))"], env.facts.list
+    
+    env.clear
+    assert_equal ["(initial-fact)"], env.facts.list
+    
+    env.deftemplates.build(ExampleTemplate)
+    env.facts.assert(:example, {:key => :three})
+    assert_equal ["(initial-fact)", "(example (key three))"], env.facts.list
+  end
+  
+  def test_build_clear_rebuild_the_same_fact
+    env.deftemplates.build(ExampleTemplate)
+    env.facts.assert(:example, {})
+    assert_equal ["(initial-fact)", "(example (key value))"], env.facts.list
+    
+    env.clear
+    assert_equal ["(initial-fact)"], env.facts.list
+    
+    env.deftemplates.build(ExampleTemplate)
+    env.facts.assert(:example, {})
+    assert_equal ["(initial-fact)", "(example (key value))"], env.facts.list
+    
+    env.clear
+    assert_equal ["(initial-fact)"], env.facts.list
+    
+    env.deftemplates.build(ExampleTemplate)
+    env.facts.assert(:example, {})
+    assert_equal ["(initial-fact)", "(example (key value))"], env.facts.list
+  end
+  
   #
   # casting
   #

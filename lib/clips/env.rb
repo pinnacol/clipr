@@ -200,6 +200,7 @@ module Clips
     
     def clear
       EnvClear(pointer)
+      deftemplates.clear
       self
     end
     
