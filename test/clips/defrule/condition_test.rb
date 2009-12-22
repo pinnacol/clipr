@@ -98,9 +98,11 @@ class ConditionTest < Test::Unit::TestCase
     
     assert_equal Test, test1.class
     assert_equal t1, test1.callback.callback
+    assert_equal [:a], test1.variables
     
     assert_equal Test, test2.class
     assert_equal t2, test2.callback.callback
+    assert_equal [:b, :a], test2.variables
     
     assert_equal "(sample (a ?a) (b ?b)) #{test1} #{test2}", cond.to_s
   end
@@ -108,6 +110,8 @@ class ConditionTest < Test::Unit::TestCase
   def test_tests_do_not_need_assignments
     cond = Condition.intern("sample")
     test = cond.test {}
+    
+    assert_equal [], test.variables
     assert_equal "(sample) #{test}", cond.to_s
   end
   

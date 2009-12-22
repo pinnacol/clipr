@@ -3,6 +3,7 @@ require 'clips'
 
 class ConditionsTest < Test::Unit::TestCase
   Conditions = Clips::Defrule::Conditions
+  Test = Clips::Defrule::Test
   
   def test_add_adds_a_literal_condition
     conds = Conditions.intern do
@@ -155,29 +156,34 @@ class ConditionsTest < Test::Unit::TestCase
     assert_equal "(not (exists (a (key one)) (b (key two))))", conds.to_s
   end
   
-  def test_check_sets_callback_with_specified_variables
+  def test_test_sets_callback_with_specified_variables
     block1 = lambda {}
     block2 = lambda {}
     
-    check1 = nil
-    check2 = nil
+    test1 = nil
+    test2 = nil
     
     conds = Conditions.intern do
       assign :a, :one
       
       not_all do
         assign :b, :two
-        check1 = check(:a, :b, &block1)
+        test1 = test(:a, :b, &block1)
       end
       
       assign :c, :three
-      check2 = check(:b, :c, &block2)
+      test2 = test(:b, :c, &block2)
     end
     
-    assert_equal block1, check1.callback.callback
-    assert_equal block2, check2.callback.callback
+    assert_equal Test, test1.class
+    assert_equal block1, test1.callback.callback
+    assert_equal [:a, :b], test1.variables
     
-    assert_equal "?a <- (one) (not (and ?b <- (two) (test (ruby-call #{check1.callback.object_id} ?a ?b)))) ?c <- (three) (test (ruby-call #{check2.callback.object_id} ?b ?c))", conds.to_s
+    assert_equal Test, test2.class
+    assert_equal block2, test2.callback.callback
+    assert_equal [:b, :c], test2.variables
+    
+    assert_equal "?a <- (one) (not (and ?b <- (two) #{test1})) ?c <- (three) #{test2}", conds.to_s
   end
   
   #

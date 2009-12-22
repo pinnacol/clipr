@@ -105,34 +105,34 @@ class PatternsTest < Test::Unit::TestCase
   end
   
   #
-  # test match pattern
+  # condition test match pattern
   #
   
-  class TestMatchPattern < WasInBlockRule
+  class ConditionTestMatchPattern < WasInBlockRule
     lhs.condition :example do
       assign :key
       test(:key) {|key| key == :value }
     end
   end
   
-  def test_test_match_pattern
-    env.build(TestMatchPattern)
+  def test_condition_test_match_pattern
+    env.build(ConditionTestMatchPattern)
     assert_match
   end
   
   #
-  # check match pattern
+  # test match pattern
   #
   
-  class CheckMatchPattern < WasInBlockRule
+  class TestMatchPattern < WasInBlockRule
     lhs.assign :var, :example
-    lhs.check :var do |var|
+    lhs.test :var do |var|
       var[:key] == :value
     end
   end
   
-  def test_check_match_pattern
-    env.build(CheckMatchPattern)
+  def test_test_match_pattern
+    env.build(TestMatchPattern)
     assert_match
   end
   

@@ -57,7 +57,7 @@ module Clips
         cond
       end
       
-      def check(*vars, &block)
+      def test(*vars, &block)
         return nil unless block
         
         test = Test.new(block, vars)
