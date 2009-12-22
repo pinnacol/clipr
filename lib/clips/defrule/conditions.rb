@@ -1,4 +1,5 @@
 require 'clips/defrule/condition'
+require 'clips/defrule/check'
 
 module Clips
   class Defrule
@@ -57,12 +58,10 @@ module Clips
         cond
       end
       
-      def check(&block)
+      def check(*vars, &block)
         return nil unless block
         
-        vars = [nil]
-        vars = variables(vars).join(' ')
-        cond = "(test (ruby-call #{block.object_id}#{vars}))"
+        cond = Check.new(block, vars)
         conditions << cond
         cond
       end
@@ -104,7 +103,7 @@ module Clips
         conditions.each do |condition|
           case
           when condition.respond_to?(:variable)
-            target << "?#{condition.variable}"
+            target << condition.variable
           when condition.respond_to?(:variables)
             condition.variables(target)
           else

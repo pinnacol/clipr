@@ -2,7 +2,6 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clips'
 
 class ConditionsTest < Test::Unit::TestCase
-  include BlockHelpers
   Conditions = Clips::Defrule::Conditions
   
   def test_add_adds_a_literal_condition
@@ -156,33 +155,29 @@ class ConditionsTest < Test::Unit::TestCase
     assert_equal "(not (exists (a (key one)) (b (key two))))", conds.to_s
   end
   
-  def test_check_receives_variables_from_all_nested_assignments_in_order
-    t1, oid1 = setup_block
-    t2, oid2 = setup_block
+  def test_check_sets_callback_with_specified_variables
+    block1 = lambda {}
+    block2 = lambda {}
+    
+    check1 = nil
+    check2 = nil
+    
     conds = Conditions.intern do
       assign :a, :one
       
       not_all do
         assign :b, :two
-        check(&t1)
+        check1 = check(:a, :b, &block1)
       end
       
       assign :c, :three
-      check(&t2)
+      check2 = check(:b, :c, &block2)
     end
     
-    assert_equal "?a <- (one) (not (and ?b <- (two) (test (ruby-call #{oid1} ?b)))) ?c <- (three) (test (ruby-call #{oid2} ?a ?b ?c))", conds.to_s
-  end
-  
-  def test_check_only_receives_variables_defined_up_to_the_point_of_check
-    t, oid = setup_block
-    conds = Conditions.intern do
-      assign :a, :one
-      check(&t)
-      assign :b, :two
-    end
+    assert_equal block1, check1.callback.callback
+    assert_equal block2, check2.callback.callback
     
-    assert_equal "?a <- (one) (test (ruby-call #{oid} ?a)) ?b <- (two)", conds.to_s
+    assert_equal "?a <- (one) (not (and ?b <- (two) (test (ruby-call #{check1.callback.object_id} ?a ?b)))) ?c <- (three) (test (ruby-call #{check2.callback.object_id} ?b ?c))", conds.to_s
   end
   
   #

@@ -103,4 +103,20 @@ class PatternsTest < Test::Unit::TestCase
     env.build(PredicateMatchPattern)
     assert_match
   end
+  
+  #
+  # test match pattern
+  #
+  
+  class TestMatchPattern < WasInBlockRule
+    lhs.assign :var, :example
+    lhs.check :var do |var|
+      var[:key] == :value
+    end
+  end
+  
+  def test_test_match_pattern
+    env.build(TestMatchPattern)
+    assert_match
+  end
 end

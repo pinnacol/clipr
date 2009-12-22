@@ -180,7 +180,7 @@ module Clips
     end
     
     def cast(data_object)
-      if data_object[:type] ==FACT_ADDRESS
+      if data_object[:type] == FACT_ADDRESS
         fact_ptr = data_object[:value]
         deft_ptr = Fact::EnvFactDeftemplate(pointer, fact_ptr)
         deftemplates.deftemplate(deft_ptr).new(self, fact_ptr)
