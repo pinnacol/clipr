@@ -22,7 +22,7 @@ class ReadmeTest < Test::Unit::TestCase
       sound == :quack
     end
 
-    rhs.call do |env|
+    rhs.callback do |env|
       env.assert "(sound-was quack)"
     end
   end
@@ -75,7 +75,7 @@ class ReadmeTest < Test::Unit::TestCase
     ###
     
     lhs_block = QuackCall.conditions.conditions[0].tests[0]
-    rhs_block = QuackCall.actions.actions[0].target
+    rhs_block = QuackCall.actions.actions[0]
     assert_equal "(defrule quack_call (animal (sound ?sound)) (test (ruby-call #{lhs_block.object_id} ?sound)) => (ruby-call #{rhs_block.object_id}))", QuackCall.str
 
     env.clear

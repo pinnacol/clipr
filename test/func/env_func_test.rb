@@ -115,8 +115,8 @@ class EnvFuncTest < Test::Unit::TestCase
     
     rhs.register(self)
     
-    def call(env, args)
-      env.assert "(was in block - #{args.length})"
+    def call(env)
+      env.assert "(was in block)"
     end
   end
   
@@ -139,7 +139,7 @@ class EnvFuncTest < Test::Unit::TestCase
       "(initial-fact)", 
       "(example (key alt))",
       "(example (key value))",
-      "(was in block - 0)"
+      "(was in block)"
     ], env.facts.list
   end
 end

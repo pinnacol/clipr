@@ -108,7 +108,7 @@ different CLIPS construct):
       sound == :quack
     end
     
-    rhs.call do |env|
+    rhs.callback do |env|
       env.assert "(sound-was quack)"
     end
   end

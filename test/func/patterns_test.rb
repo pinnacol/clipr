@@ -20,7 +20,7 @@ class PatternsTest < Test::Unit::TestCase
   
   class WasInBlockRule < Clips::Defrule
     rhs.register(self)
-    def call(env, args)
+    def call(env)
       env.assert "(was in block)"
     end
   end

@@ -11,11 +11,9 @@ module Clips
         end
       end
       
-      attr_accessor :vars
       attr_accessor :actions
       
       def initialize
-        @vars = nil
         @actions = []
       end
       
@@ -24,32 +22,24 @@ module Clips
         action
       end
       
-      def register(target)
-        target ? add(Action.new(target)) : nil
-      end
-      
       def assert(str)
         actions << "(assert #{str})"
       end
       
-      def call(&block)
-        register(block)
+      def callback(*variables, &callback)
+        add Action.new(callback, variables)
       end
       
-      def callback(&block)
-        register Env.lambda(&block)
+      def register(callback, *variables)
+        add Action.new(callback, variables)
       end
       
       def to_s
-        actions.collect do |action|
-          action.vars = vars if action.respond_to?(:vars=)
-          action.to_s
-        end.join(' ')
+        actions.collect {|action| action.to_s }.join(' ')
       end
       
       def initialize_copy(orig)
         super
-        @vars = @vars.dup if @vars
         @actions = @actions.dup
       end
     end
