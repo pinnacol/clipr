@@ -46,6 +46,12 @@ module Clips
           action.to_s
         end.join(' ')
       end
+      
+      def initialize_copy(orig)
+        super
+        @vars = @vars.dup if @vars
+        @actions = @actions.dup
+      end
     end
   end
 end

@@ -60,18 +60,21 @@ module Clips
       
       private
 
-      def inherited(base)
+      def inherited(base) # :nodoc:
         unless base.instance_variable_defined?(:@conditions)
-          base.instance_variable_set(:@conditions, Conditions.new)
+          base.instance_variable_set(:@conditions, @conditions.dup)
         end
         
         unless base.instance_variable_defined?(:@actions)
-          base.instance_variable_set(:@actions, Actions.new)
+          base.instance_variable_set(:@actions, @actions.dup)
         end
         
         super
       end
     end
+    
+    @actions = Actions.new
+    @conditions = Conditions.new
     
     def call(env, args)
     end

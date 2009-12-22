@@ -123,6 +123,11 @@ module Clips
         str = "(#{modifier} #{str})" if modifier
         str
       end
+      
+      def initialize_copy(orig)
+        super
+        @conditions = @conditions.dup
+      end
     end
   end
 end

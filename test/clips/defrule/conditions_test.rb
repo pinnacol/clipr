@@ -183,4 +183,23 @@ class ConditionsTest < Test::Unit::TestCase
     
     assert_equal "?a <- (one) (test (ruby-call #{oid} ?a)) ?b <- (two)", conds.to_s
   end
+  
+  #
+  # dup test
+  #
+  
+  def test_duplicates_do_not_add_conditions_to_one_another
+    a = Conditions.new
+    a.match "a", :key => :a
+    b = a.dup
+    
+    assert_equal "(a (key a))", a.to_s
+    assert_equal "(a (key a))", b.to_s
+    
+    b.match "b", :key => :b
+    a.match "c", :key => :c
+    
+    assert_equal "(a (key a)) (c (key c))", a.to_s
+    assert_equal "(a (key a)) (b (key b))", b.to_s
+  end
 end

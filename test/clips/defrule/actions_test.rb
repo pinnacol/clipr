@@ -48,4 +48,27 @@ class ActionsTest < Test::Unit::TestCase
     actions.vars = " ?x ?y"
     assert_equal "(ruby-call #{oid1} ?x ?y) (ruby-call #{oid2} ?x ?y)", actions.to_s
   end
+  
+  #
+  # dup test
+  #
+  
+  def test_duplicates_do_not_add_actions_to_one_another
+    t1, oid1 = setup_block
+    t2, oid2 = setup_block
+    t3, oid3 = setup_block
+    
+    a = Actions.new
+    a.call(&t1)
+    b = a.dup
+    
+    assert_equal "(ruby-call #{oid1})", a.to_s
+    assert_equal "(ruby-call #{oid1})", b.to_s
+    
+    b.call(&t2)
+    a.call(&t3)
+    
+    assert_equal "(ruby-call #{oid1}) (ruby-call #{oid3})", a.to_s
+    assert_equal "(ruby-call #{oid1}) (ruby-call #{oid2})", b.to_s
+  end
 end
