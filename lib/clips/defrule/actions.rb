@@ -31,7 +31,7 @@ module Clips
       end
       
       def register(callback, *variables)
-        add Action.new(callback, variables)
+        add Callback.new(callback, variables)
       end
       
       def to_s

@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../test_helper"
 require "clips/env"
 
-class PatternsTest < Test::Unit::TestCase
+class LhsTest < Test::Unit::TestCase
   acts_as_file_test
   
   Env = Clips::Env
