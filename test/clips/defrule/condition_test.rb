@@ -3,6 +3,7 @@ require 'clips'
 
 class ConditionTest < Test::Unit::TestCase
   Condition = Clips::Defrule::Condition
+  Test = Clips::Defrule::Test
   
   #
   # slot test
@@ -86,7 +87,7 @@ class ConditionTest < Test::Unit::TestCase
     assert_equal "(sample (a ?a) (b ?alt))", cond.to_s
   end
   
-  def test_tests_are_formatted_to_receive_cast_assignments
+  def test_test_adds_test
     t1 = lambda {}
     t2 = lambda {}
     
@@ -95,17 +96,19 @@ class ConditionTest < Test::Unit::TestCase
     test1 = cond.test(:a, &t1)
     test2 = cond.test(:b, :a, &t2)
     
+    assert_equal Test, test1.class
     assert_equal t1, test1.callback.callback
+    
+    assert_equal Test, test2.class
     assert_equal t2, test2.callback.callback
     
-    assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{test1.callback.object_id} ?a)) (test (ruby-call #{test2.callback.object_id} ?b ?a))", cond.to_s
+    assert_equal "(sample (a ?a) (b ?b)) #{test1} #{test2}", cond.to_s
   end
   
   def test_tests_do_not_need_assignments
     cond = Condition.intern("sample")
     test = cond.test {}
-    
-    assert_equal "(sample) (test (ruby-call #{test.callback.object_id}))", cond.to_s
+    assert_equal "(sample) #{test}", cond.to_s
   end
   
   def test_conditions_are_assigned_to_variable
