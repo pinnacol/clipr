@@ -49,7 +49,7 @@ module Clips
       end
       
       def test(&block)
-        callback = Callback.new(&block)
+        callback = Callback.new(block)
         @tests << callback
         callback
       end

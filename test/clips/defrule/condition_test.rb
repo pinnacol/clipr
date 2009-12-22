@@ -2,7 +2,6 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clips'
 
 class ConditionTest < Test::Unit::TestCase
-  include BlockHelpers
   Condition = Clips::Defrule::Condition
   
   #
@@ -58,11 +57,14 @@ class ConditionTest < Test::Unit::TestCase
   end
   
   def test_slot_handles_predicates_correctly
-    p, oid = setup_block
-    cond = Condition.intern("sample") do
-      slot :key, &p
-    end
+    block = lambda {}
+    cond = Condition.new("sample")
+    constraint = cond.slot(:key, &block)
     
+    predicate = constraint.predicate
+    assert_equal block, predicate.callback
+    
+    oid = predicate.object_id
     assert_equal "(sample (key ?v#{oid}&:(ruby-call #{oid} ?v#{oid})))", cond.to_s
   end
   
@@ -85,8 +87,8 @@ class ConditionTest < Test::Unit::TestCase
   end
   
   def test_tests_are_formatted_to_receive_cast_assignments
-    t1, oid1 = setup_block
-    t2, oid2 = setup_block
+    t1 = lambda {}
+    t2 = lambda {}
     
     cond = Condition.intern("sample")
     cond.assign :a, :b
@@ -94,19 +96,17 @@ class ConditionTest < Test::Unit::TestCase
     callback2 = cond.test(&t2)
     
     assert_equal Clips::Callback, callback1.class
-    assert_equal t1, callback1.block
+    assert_equal t1, callback1.callback
     
     assert_equal Clips::Callback, callback2.class
-    assert_equal t2, callback2.block
+    assert_equal t2, callback2.callback
     
     assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{callback1.object_id} ?a ?b)) (test (ruby-call #{callback2.object_id} ?a ?b))", cond.to_s
   end
   
   def test_tests_do_not_need_assignments
-    t, oid = setup_block
-    
     cond = Condition.intern("sample")
-    callback = cond.test(&t)
+    callback = cond.test {}
     
     assert_equal "(sample) (test (ruby-call #{callback.object_id}))", cond.to_s
   end

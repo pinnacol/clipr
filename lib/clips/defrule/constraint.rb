@@ -8,7 +8,7 @@ module Clips
       def initialize(slot, terms=[], &predicate)
         @slot = slot
         @terms = terms
-        @predicate = predicate
+        @predicate = Callback.intern(&predicate)
       end
       
       def to_s

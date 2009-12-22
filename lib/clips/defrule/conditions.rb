@@ -44,7 +44,7 @@ module Clips
       
       # Same as match but evaluates the block as if interning a condition,
       # rather than as a test.
-      def cond(deftemplate, *assignments, &block)
+      def condition(deftemplate, *assignments, &block)
         cond = match(deftemplate, *assignments)
         cond.instance_eval(&block) if block
         cond

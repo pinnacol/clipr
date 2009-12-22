@@ -2,7 +2,6 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clips'
 
 class ConstraintTest < Test::Unit::TestCase
-  include BlockHelpers
   Constraint = Clips::Defrule::Constraint
   
   #
@@ -32,15 +31,21 @@ class ConstraintTest < Test::Unit::TestCase
     assert_equal "(key a&c|a&d|b&c|b&d)", c.to_s
   end
   
-  def test_to_s_adds_predicate_if_specified
-    p, oid = setup_block
-    c = Constraint.new("key", ["a"], &p)
+  def test_to_s_adds_predicate_callback_if_specified
+    block = lambda {}
+    c = Constraint.new("key", ["a"], &block)
+    
+    predicate = c.predicate
+    assert_equal block, predicate.callback
+    
+    oid = predicate.object_id
     assert_equal "(key ?v#{oid}&a&:(ruby-call #{oid} ?v#{oid}))", c.to_s
   end
   
   def test_to_s_adds_predicate_to_each_cross_product
-    p, oid = setup_block
-    c = Constraint.new("key", [["a", "b"], "c"], &p)
+    c = Constraint.new("key", [["a", "b"], "c"]) {}
+    
+    oid = c.predicate.object_id
     assert_equal "(key ?v#{oid}&a&c&:(ruby-call #{oid} ?v#{oid})|b&c&:(ruby-call #{oid} ?v#{oid}))", c.to_s
   end
 end

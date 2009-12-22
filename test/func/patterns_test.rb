@@ -25,17 +25,7 @@ class PatternsTest < Test::Unit::TestCase
     end
   end
   
-  #
-  # match pattern
-  #
-  
-  class MatchPattern < WasInBlockRule
-    lhs.match :example, :key => :value
-  end
-  
-  def test_match_pattern
-    env.build(MatchPattern)
-    
+  def assert_match
     env.facts.assert(:example, {:key => :alt})
     env.run
     
@@ -53,6 +43,19 @@ class PatternsTest < Test::Unit::TestCase
       "(example (key value))",
       "(was in block)"
     ], env.facts.list
+  end
+  
+  #
+  # match pattern
+  #
+  
+  class MatchPattern < WasInBlockRule
+    lhs.match :example, :key => :value
+  end
+  
+  def test_match_pattern
+    env.build(MatchPattern)
+    assert_match
   end
   
   #
@@ -67,23 +70,37 @@ class PatternsTest < Test::Unit::TestCase
   
   def test_block_match_pattern
     env.build(BlockMatchPattern)
-    
-    env.facts.assert(:example, {:key => :alt})
-    env.run
-    
-    assert_equal [
-      "(initial-fact)", 
-      "(example (key alt))"
-    ], env.facts.list
-    
-    env.facts.assert(:example, {:key => :value})
-    env.run
-    
-    assert_equal [
-      "(initial-fact)", 
-      "(example (key alt))",
-      "(example (key value))",
-      "(was in block)"
-    ], env.facts.list
+    assert_match
+  end
+  
+  
+  #
+  # slot match pattern
+  #
+  
+  class SlotMatchPattern < WasInBlockRule
+    lhs.condition :example do
+      slot :key, equal(:value)
+    end
+  end
+  
+  def test_slot_match_pattern
+    env.build(SlotMatchPattern)
+    assert_match
+  end
+  
+  #
+  # predicate match pattern
+  #
+  
+  class PredicateMatchPattern < WasInBlockRule
+    lhs.condition :example do
+      slot(:key) {|key| key == :value }
+    end
+  end
+  
+  def test_predicate_match_pattern
+    env.build(PredicateMatchPattern)
+    assert_match
   end
 end

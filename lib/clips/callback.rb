@@ -1,14 +1,20 @@
 module Clips
   class Callback
-    attr_reader :block
+    class << self
+      def intern(&block)
+        block ? new(block) : nil
+      end
+    end
     
-    def initialize(&block)
-      @block = block
+    attr_reader :callback
+    
+    def initialize(callback)
+      @callback = callback
     end
     
     def call(env, data_objects)
       data_objects.collect! {|obj| env.cast(obj) }
-      block.call(*data_objects)
+      callback.call(*data_objects)
     end
   end
 end
