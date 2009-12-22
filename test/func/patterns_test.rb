@@ -119,4 +119,84 @@ class PatternsTest < Test::Unit::TestCase
     env.build(TestMatchPattern)
     assert_match
   end
+  
+  #
+  # all match pattern
+  #
+  
+  class AllMatchPattern < WasInBlockRule
+    lhs.all do
+      match :example, :key => :value
+      match :example, :key => :alt
+    end
+  end
+  
+  def test_all_match_pattern
+    env.build(AllMatchPattern)
+    assert_match
+  end
+  
+  #
+  # any match pattern
+  #
+  
+  class AnyMatchPattern < WasInBlockRule
+    lhs.any do
+      match :example, :key => :value
+      match :example, :key => :alt
+    end
+  end
+  
+  def test_any_match_pattern
+    env.build(AnyMatchPattern)
+    
+    env.facts.assert(:example, {:key => :alt})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)", 
+      "(example (key alt))",
+      "(was in block)"
+    ], env.facts.list
+    
+    env.reset
+    env.facts.assert(:example, {:key => :value})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)", 
+      "(example (key value))",
+      "(was in block)"
+    ], env.facts.list
+  end
+  
+  #
+  # not match pattern
+  #
+  
+  class NotMatchPattern < WasInBlockRule
+    lhs.not_match :example, :key => :value
+  end
+  
+  def test_test_not_match_pattern
+    env.build(NotMatchPattern)
+    
+    env.facts.assert(:example, {:key => :alt})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)", 
+      "(example (key alt))",
+      "(was in block)"
+    ], env.facts.list
+    
+    env.reset
+    env.facts.assert(:example, {:key => :value})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)",
+      "(example (key value))"
+    ], env.facts.list
+  end
 end
