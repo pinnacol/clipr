@@ -1,5 +1,4 @@
 require 'clips/defrule/condition'
-require 'clips/defrule/check'
 
 module Clips
   class Defrule
@@ -37,7 +36,7 @@ module Clips
         cond = Condition.intern(deftemplate) do
           constraints.each {|name, value| slot(name, equal(value)) }
           assign(*assignments)
-          test(&block) if block_given?
+          test(*assignments, &block) if block_given?
         end
 
         add(cond)
@@ -61,9 +60,9 @@ module Clips
       def check(*vars, &block)
         return nil unless block
         
-        cond = Check.new(block, vars)
-        conditions << cond
-        cond
+        test = Test.new(block, vars)
+        conditions << test
+        test
       end
       
       # 

@@ -46,8 +46,8 @@ class ConditionsTest < Test::Unit::TestCase
     cond = conds.match "sample", :a, :b, &block
     test = cond.tests[0]
     
-    assert_equal block, test.callback
-    assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{test.object_id} ?a ?b))", conds.to_s
+    assert_equal block, test.callback.callback
+    assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{test.callback.object_id} ?a ?b))", conds.to_s
   end
   
   def test_condition_interns_condition

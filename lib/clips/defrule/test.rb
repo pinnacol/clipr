@@ -1,6 +1,6 @@
 module Clips
   class Defrule
-    class Check
+    class Test
       attr_accessor :callback
       attr_accessor :variables
       

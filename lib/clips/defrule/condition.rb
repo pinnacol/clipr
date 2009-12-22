@@ -1,4 +1,5 @@
 require 'clips/defrule/constraint'
+require 'clips/defrule/test'
 
 module Clips
   class Defrule
@@ -48,10 +49,10 @@ module Clips
         @assignments.concat(assignments)
       end
       
-      def test(&block)
-        callback = Callback.new(block)
-        @tests << callback
-        callback
+      def test(*vars, &block)
+        test = Test.new(block, vars)
+        @tests << test
+        test
       end
       
       def to_s
@@ -73,7 +74,7 @@ module Clips
         
         checks = [nil]
         tests.each do |test|
-          checks << "(test (ruby-call #{test.object_id}#{vars}))"
+          checks << test.to_s
         end
         
         assignment = variable ? "?#{variable} <- " : nil
