@@ -1,6 +1,7 @@
 require 'clips/api'
 require 'clips/utils'
 require 'clips/construct'
+require 'clips/callback'
 
 require 'clips/defrule'
 require 'clips/deftemplate'
@@ -31,10 +32,10 @@ module Clips
         end
       end
       
-      def lambda
+      def lambda(&block)
         Kernel.lambda do |env, data_objects|
           data_objects.collect! {|obj| env.cast(obj) }
-          yield(env, *data_objects)
+          block.call(env, *data_objects)
         end
       end
     end

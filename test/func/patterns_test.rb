@@ -29,14 +29,44 @@ class PatternsTest < Test::Unit::TestCase
   # match pattern
   #
   
-  class TemplateMatchPattern < WasInBlockRule
-    lhs do
-      match :example, :key => :value
+  class MatchPattern < WasInBlockRule
+    lhs.match :example, :key => :value
+  end
+  
+  def test_match_pattern
+    env.build(MatchPattern)
+    
+    env.facts.assert(:example, {:key => :alt})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)", 
+      "(example (key alt))"
+    ], env.facts.list
+    
+    env.facts.assert(:example, {:key => :value})
+    env.run
+    
+    assert_equal [
+      "(initial-fact)", 
+      "(example (key alt))",
+      "(example (key value))",
+      "(was in block)"
+    ], env.facts.list
+  end
+  
+  #
+  # block match pattern
+  #
+  
+  class BlockMatchPattern < WasInBlockRule
+    lhs.match :example, :key do |key|
+      key == :value
     end
   end
   
-  def test_template_match_pattern
-    env.build(TemplateMatchPattern)
+  def test_block_match_pattern
+    env.build(BlockMatchPattern)
     
     env.facts.assert(:example, {:key => :alt})
     env.run

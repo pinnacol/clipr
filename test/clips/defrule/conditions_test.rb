@@ -43,11 +43,13 @@ class ConditionsTest < Test::Unit::TestCase
   
   def test_match_sets_block_as_test
     t, oid = setup_block
-    conds = Conditions.intern do
-      match "sample", :a, :b, &t
-    end
     
-    assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{oid} ?a ?b))", conds.to_s
+    conds = Conditions.new
+    cond = conds.match "sample", :a, :b, &t
+    callback = cond.tests[0]
+    
+    assert_equal t, callback.block
+    assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{callback.object_id} ?a ?b))", conds.to_s
   end
   
   def test_cond_interns_condition

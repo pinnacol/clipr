@@ -84,26 +84,31 @@ class ConditionTest < Test::Unit::TestCase
     assert_equal "(sample (a ?a) (b ?alt))", cond.to_s
   end
   
-  def test_tests_are_formatted_to_receive_assignments
+  def test_tests_are_formatted_to_receive_cast_assignments
     t1, oid1 = setup_block
     t2, oid2 = setup_block
     
-    cond = Condition.intern("sample") do
-      assign :a, :b
-      test(&t1)
-      test(&t2)
-    end
+    cond = Condition.intern("sample")
+    cond.assign :a, :b
+    callback1 = cond.test(&t1)
+    callback2 = cond.test(&t2)
     
-    assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{oid1} ?a ?b)) (test (ruby-call #{oid2} ?a ?b))", cond.to_s
+    assert_equal Clips::Callback, callback1.class
+    assert_equal t1, callback1.block
+    
+    assert_equal Clips::Callback, callback2.class
+    assert_equal t2, callback2.block
+    
+    assert_equal "(sample (a ?a) (b ?b)) (test (ruby-call #{callback1.object_id} ?a ?b)) (test (ruby-call #{callback2.object_id} ?a ?b))", cond.to_s
   end
   
   def test_tests_do_not_need_assignments
     t, oid = setup_block
-    cond = Condition.intern("sample") do
-      test(&t)
-    end
     
-    assert_equal "(sample) (test (ruby-call #{oid}))", cond.to_s
+    cond = Condition.intern("sample")
+    callback = cond.test(&t)
+    
+    assert_equal "(sample) (test (ruby-call #{callback.object_id}))", cond.to_s
   end
   
   def test_conditions_are_assigned_to_variable
