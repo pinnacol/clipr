@@ -8,7 +8,7 @@ require 'rake/gempackagetask'
 #
 
 def gemspec
-  data = File.read('clips.gemspec')
+  data = File.read('clipr.gemspec')
   spec = nil
   Thread.new { spec = eval("$SAFE = 3\n#{data}") }.join
   spec
@@ -65,21 +65,21 @@ end
 # Compile tasks
 #
 
-require 'lib/clips/constants'
+require 'lib/clipr/constants'
 
 makefile = "src/Makefile"
 source_files = Dir.glob("src/*.c")
 
 file makefile => source_files do
-  pkg = File.basename(Clips::DYLIB).chomp(File.extname(Clips::DYLIB))
+  pkg = File.basename(Clipr::DYLIB).chomp(File.extname(Clipr::DYLIB))
   Dir.chdir("src") { sh("ruby extconf.rb") }
 end
 
-file Clips::DYLIB => makefile do
+file Clipr::DYLIB => makefile do
   Dir.chdir("src") { sh("make") }
 end
 
-ffi_files  = Dir.glob("lib/clips/api/**/*.rb.ffi")
+ffi_files  = Dir.glob("lib/clipr/api/**/*.rb.ffi")
 ruby_files = ffi_files.collect do |ffi_file|
   ruby_file = ffi_file.chomp(".ffi")
   file ruby_file => ffi_file do
@@ -95,7 +95,7 @@ ruby_files = ffi_files.collect do |ffi_file|
 end
 
 desc "compile the clips binary"
-task :compile => Clips::DYLIB
+task :compile => Clipr::DYLIB
 
 desc "generate FFI structs"
 task :ffi_generate => [:check_bundle, *ruby_files]
@@ -107,7 +107,7 @@ object_files = source_files.collect {|src| src.chomp(".c") + ".o"}
 issues_exes  = issues_files.collect do |src|
   obj = src.chomp(".c") + ".o"
   exe = src.chomp(".c") + ".test"
-  file(obj => [Clips::DYLIB, src]) { sh("gcc -Isrc -c #{src} -o #{obj}") }
+  file(obj => [Clipr::DYLIB, src]) { sh("gcc -Isrc -c #{src} -o #{obj}") }
   file(exe => obj) { sh("gcc -o '#{exe}' #{obj} #{object_files.join(' ')}") }
   exe
 end
@@ -123,14 +123,14 @@ desc 'Default: Run tests.'
 task :default => :test
 
 desc 'Run the tests'
-task :test => [Clips::DYLIB, :compile_issues, :check_bundle, :ffi_generate] do  
+task :test => [Clipr::DYLIB, :compile_issues, :check_bundle, :ffi_generate] do  
   tests = Dir.glob('test/**/*_test.rb')
   cmd = ['ruby', "-w", '-rvendor/gems/environment.rb', "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
 end
 
 desc 'Run the benchmarks'
-task :benchmark => [Clips::DYLIB, :check_bundle, :ffi_generate] do
+task :benchmark => [Clipr::DYLIB, :check_bundle, :ffi_generate] do
   unless ENV['BENCHMARK'] || ENV['BENCHMARK_TEST']
     ENV['BENCHMARK'] = 'TRUE'
   end

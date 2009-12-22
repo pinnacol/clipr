@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + "/../test_helper"
-require "clips/router"
+require "clipr/router"
 
 class RouterTest < Test::Unit::TestCase
-  Router = Clips::Router
+  Router = Clipr::Router
   
   attr_reader :device, :router
   

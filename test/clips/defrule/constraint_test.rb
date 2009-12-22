@@ -1,8 +1,8 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips'
+require 'clipr'
 
 class ConstraintTest < Test::Unit::TestCase
-  Constraint = Clips::Defrule::Constraint
+  Constraint = Clipr::Defrule::Constraint
   
   #
   # to_s test

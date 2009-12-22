@@ -1,0 +1,38 @@
+module Clipr
+  module Api
+    module Struct
+      # /************************************************************/
+      # /* integerHashNode STRUCTURE:                               */
+      # /************************************************************/
+      # struct integerHashNode
+      #   {
+      #    struct integerHashNode *next;
+      #    long count;
+      #    int depth;
+      #    unsigned int permanent : 1;
+      #    unsigned int markedEphemeral : 1;
+      #    unsigned int neededInteger : 1;
+      #    unsigned int bucket : 29;
+      #    long long contents;
+      #   };
+      #
+      class IntegerHashNode < FFI::Struct
+        @@@
+        struct do |s|
+          s.name 'struct integerHashNode'
+          s.include 'symbol.h'
+        
+          s.field :next, :pointer
+          s.field :count, :long 
+          s.field :depth, :int 
+          # s.field :permanent, :uint
+          # s.field :markedEphemeral, :uint
+          # s.field :neededInteger, :uint
+          # s.field :bucket, :uint
+          s.field :contents, :long_long
+        end
+        @@@
+      end
+    end
+  end
+end

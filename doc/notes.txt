@@ -280,8 +280,8 @@ Maybe block style for more complicated matches:
 
 == Use Cases
 
-Clips could be constructed as a dispatch. Rules represent gateways to code and
+Clipr could be constructed as a dispatch. Rules represent gateways to code and
 facts are conditions that trigger code.
 
-Clips could be used a polling engine. Rules represent ticks to a option and
+Clipr could be used a polling engine. Rules represent ticks to a option and
 effectively query facts for the winning option.

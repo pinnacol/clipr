@@ -1,10 +1,10 @@
 require File.dirname(__FILE__) + "/../test_helper"
-require "clips/env"
+require "clipr/env"
 
 class EnvFuncTest < Test::Unit::TestCase
   acts_as_file_test
   
-  Env = Clips::Env
+  Env = Clipr::Env
 
   attr_reader :env
   
@@ -13,7 +13,7 @@ class EnvFuncTest < Test::Unit::TestCase
     @env = Env.new
   end
   
-  class ExampleTemplate < Clips::Deftemplate
+  class ExampleTemplate < Clipr::Deftemplate
     deftemplate "example"
     slot :key, :value
   end
@@ -55,7 +55,7 @@ class EnvFuncTest < Test::Unit::TestCase
       fact = callback_env.cast(fact_data_object)
       
       assert_equal env.object_id, callback_env.object_id
-      assert_equal Clips::Deftemplate, fact.class
+      assert_equal Clipr::Deftemplate, fact.class
       assert_equal :alt, fact[:key]
       
       was_in_block = true
@@ -108,7 +108,7 @@ class EnvFuncTest < Test::Unit::TestCase
   # rules
   #
   
-  class ExampleRule < Clips::Defrule
+  class ExampleRule < Clipr::Defrule
     lhs do
       match :example, :key => :value
     end

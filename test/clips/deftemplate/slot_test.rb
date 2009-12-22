@@ -1,10 +1,10 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips'
+require 'clipr'
 
 class SlotTest < Test::Unit::TestCase
   include BlockHelpers
-  Deftemplate = Clips::Deftemplate
-  Slot = Clips::Deftemplate::Slot
+  Deftemplate = Clipr::Deftemplate
+  Slot = Clipr::Deftemplate::Slot
   
   def test_slot_formats_simple_slot
     slot = Slot.new("name")

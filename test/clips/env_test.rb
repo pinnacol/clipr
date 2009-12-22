@@ -1,11 +1,11 @@
 require File.dirname(__FILE__) + "/../test_helper"
-require "clips/env"
+require "clipr/env"
 
-class ClipsEnvTest < Test::Unit::TestCase
+class CliprEnvTest < Test::Unit::TestCase
   acts_as_file_test
-  Env = Clips::Env
-  DataObject = Clips::Api::DataObject
-  ApiError = Clips::ApiError
+  Env = Clipr::Env
+  DataObject = Clipr::Api::DataObject
+  ApiError = Clipr::ApiError
   
   attr_reader :env
   
@@ -50,7 +50,7 @@ class ClipsEnvTest < Test::Unit::TestCase
   def test_initialize_sets_up_default_router
     routers = env.routers
     assert routers.list.include?('default')
-    assert routers['default'].kind_of?(Clips::Router)
+    assert routers['default'].kind_of?(Clipr::Router)
   end
   
   #
@@ -225,7 +225,7 @@ class ClipsEnvTest < Test::Unit::TestCase
       assert_equal 1, args.length
       
       obj = args[0]
-      assert_equal Clips::Api::DataObject, obj.class
+      assert_equal Clipr::Api::DataObject, obj.class
       assert_equal :quack, e.cast(obj)[:sound]
       
       was_in_block = true

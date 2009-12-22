@@ -1,5 +1,5 @@
 require File.join(File.dirname(__FILE__), '../test_helper')
-require 'clips'
+require 'clipr'
 require 'benchmark'
 
 class RubycallBenchmark < Test::Unit::TestCase
@@ -10,7 +10,7 @@ class RubycallBenchmark < Test::Unit::TestCase
       n = 10
       block = lambda { }
       block_id = block.object_id.to_s
-      env = Clips::Env.new
+      env = Clipr::Env.new
       
       x.report("#{n}k call") do
         (n * 1000).times { block.call }
@@ -22,8 +22,8 @@ class RubycallBenchmark < Test::Unit::TestCase
       
       x.report("#{n}k EnvFunctionCall") do
         ptr = env.pointer
-        obj = Clips::Api::DataObject.new
-        api = Clips::Api::Environment
+        obj = Clipr::Api::DataObject.new
+        api = Clipr::Api::Environment
         
         (n * 1000).times { api::EnvFunctionCall(ptr, "ruby-call", block_id, obj) }
       end

@@ -1,10 +1,10 @@
 require 'tap/generator/base'
-require 'clips/constants'
+require 'clipr/constants'
 
 module Generators
   # :startdoc::generator generates the CLIPS API classes
-  class ClipsApi < Tap::Generator::Base
-    FUNCTIONS_FILE = "#{Clips::ROOT}/doc/functions.txt"
+  class CliprApi < Tap::Generator::Base
+    FUNCTIONS_FILE = "#{Clipr::ROOT}/doc/functions.txt"
     
     def manifest(m, *inputs)
       # make a directory

@@ -1,9 +1,9 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips'
+require 'clipr'
 
 class ActionsTest < Test::Unit::TestCase
   include BlockHelpers
-  Actions = Clips::Defrule::Actions
+  Actions = Clipr::Defrule::Actions
   
   def test_add_adds_string_action
     actions = Actions.intern do

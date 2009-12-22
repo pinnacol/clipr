@@ -1,21 +1,21 @@
 require File.dirname(__FILE__) + "/test_helper"
-require "clips"
+require "clipr"
 
 class ReadmeTest < Test::Unit::TestCase
-  include Clips::Api
+  include Clipr::Api
   
-  class Animal < Clips::Deftemplate
+  class Animal < Clipr::Deftemplate
     deftemplate "animal"
     slot :sound
   end
 
-  class Quack < Clips::Defrule
+  class Quack < Clipr::Defrule
     defrule "quack"
     lhs.match "animal", :sound => :quack
     rhs.assert "(sound-was quack)"
   end
   
-  class QuackCall < Clips::Defrule
+  class QuackCall < Clipr::Defrule
     defrule "quack_call"
     
     lhs.match("animal", :sound) do |sound|
@@ -40,13 +40,13 @@ class ReadmeTest < Test::Unit::TestCase
     
     ###
     
-    Clips::Env.open do |env|
+    Clipr::Env.open do |env|
       assert_equal false, env.call(">", "1 2").value
     end
     
     ###
     
-    env = Clips::Env.new
+    env = Clipr::Env.new
     facts = env.facts
     
     env.assert "(animal-is duck)"

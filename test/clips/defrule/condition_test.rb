@@ -1,9 +1,9 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips'
+require 'clipr'
 
 class ConditionTest < Test::Unit::TestCase
-  Condition = Clips::Defrule::Condition
-  Test = Clips::Defrule::Test
+  Condition = Clipr::Defrule::Condition
+  Test = Clipr::Defrule::Test
   
   #
   # slot test

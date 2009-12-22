@@ -1,8 +1,8 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips/api'
+require 'clipr/api'
 
 class ApiDataObjectTest < Test::Unit::TestCase
-  include Clips::Api
+  include Clipr::Api
   
   #
   # intern test

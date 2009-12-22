@@ -1,0 +1,92 @@
+
+module Clipr
+  module Api
+    
+    # see constant.h
+    class DataObject < FFI::Struct
+      class << self
+        
+        # Initializes a new DataObject with the specified attributes.
+        def intern(attrs={})
+          obj = new
+          attrs.each_pair {|key, value| obj[key] = value }
+          obj
+        end
+        
+        # Returns the string for the specified type.
+        def type_str(type)
+          constant = constants.find {|const| const_get(const) == type }
+          constant ? constant.to_s : nil
+        end
+      end
+      
+      @@@
+      struct do |s|
+        s.name 'struct dataObject'
+        s.include 'clips.h'
+        
+        s.field :supplementalInfo, :pointer
+        s.field :type,  :ushort
+        s.field :value, :pointer
+        s.field :begin, :long
+        s.field :end,   :long
+        s.field :next,  :pointer
+      end
+      @@@
+      
+      # Returns the type for self.
+      def type
+        self[:type]
+      end
+      
+      # Returns type converted to the corresponding type string, or nil for
+      # unknown types.
+      def type_str
+        DataObject.type_str(type)
+      end
+      
+      def contents
+        value = self[:value]
+        struct = CAST[self[:type]]
+        struct ? struct.new(value)[:contents] : value
+      end
+      
+      # Returns the value for self converted as follows:
+      #
+      # * primitive types are resolved into their corresponding objects
+      #   (FLOAT, INTEGER, SYMBOL, STRING)
+      # * other types are returned directly as FFI pointers
+      #   (FACT_ADDRESS, EXTERNAL_ADDRESS, INSTANCE_ADDRESS ... )
+      #
+      # By default value will duplicate SYMBOL and STRING outputs.  This
+      # behavior can be turned off by specifying dup = false, but be mindful
+      # of the consequences, as discussed in the apg:
+      #
+      #   Do not store the pointer returned by DOToString or DOPToString as part
+      #   of a permanent data structure. When CLIPS performs garbage collection
+      #   on symbols and strings, the pointer reference to the string may be
+      #   rendered invalid. To store a permanent reference to a string, allocate
+      #   storage for a copy of the string and then copy the string returned by
+      #   DOToString or DOPToString to the copy’s storage area.
+      #
+      def value
+        value = contents
+        
+        case type
+        when SYMBOL
+          case value
+          when "TRUE"  then true
+          when "FALSE" then false
+          else value.to_sym
+          end
+          
+        when STRING
+          value.dup
+          
+        else
+          value
+        end
+      end
+    end
+  end
+end

@@ -1,0 +1,35 @@
+module Clipr
+  module Api
+    module Struct
+      # /************************************************************/
+      # /* genericHashNode STRUCTURE:                               */
+      # /************************************************************/
+      # struct genericHashNode
+      #   {
+      #    struct genericHashNode *next;
+      #    long count;
+      #    int depth;
+      #    unsigned int permanent : 1;
+      #    unsigned int markedEphemeral : 1;
+      #    unsigned int needed : 1;
+      #    unsigned int bucket : 29;
+      #   };
+      class GenericHashNode < FFI::Struct
+        @@@
+        struct do |s|
+          s.name 'struct genericHashNode'
+          s.include 'symbol.h'
+        
+          s.field :next, :pointer
+          s.field :count, :long 
+          s.field :depth, :int 
+          # s.field :permanent, :uint
+          # s.field :markedEphemeral, :uint
+          # s.field :needed, :uint
+          # s.field :bucket, :uint
+        end
+        @@@
+      end
+    end
+  end
+end

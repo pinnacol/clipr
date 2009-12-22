@@ -1,0 +1,38 @@
+module Clipr
+  module Api
+    module Struct
+      # /************************************************************/
+      # /* floatHashNode STRUCTURE:                                  */
+      # /************************************************************/
+      # struct floatHashNode
+      #   {
+      #    struct floatHashNode *next;
+      #    long count;
+      #    int depth;
+      #    unsigned int permanent : 1;
+      #    unsigned int markedEphemeral : 1;
+      #    unsigned int neededFloat : 1;
+      #    unsigned int bucket : 29;
+      #    double contents;
+      #   };
+      #
+      class FloatHashNode < FFI::Struct
+        @@@
+        struct do |s|
+          s.name 'struct floatHashNode'
+          s.include 'symbol.h'
+        
+          s.field :next, :pointer
+          s.field :count, :long 
+          s.field :depth, :int 
+          # s.field :permanent, :uint
+          # s.field :markedEphemeral, :uint
+          # s.field :neededFloat, :uint
+          # s.field :bucket, :uint
+          s.field :contents, :double
+        end
+        @@@
+      end
+    end
+  end
+end

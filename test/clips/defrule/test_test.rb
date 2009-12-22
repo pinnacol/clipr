@@ -1,8 +1,8 @@
 require "#{File.dirname(__FILE__)}/../../test_helper.rb"
-require 'clips'
+require 'clipr'
 
 class TestTest < Test::Unit::TestCase
-  Test = Clips::Defrule::Test
+  Test = Clipr::Defrule::Test
   
   attr_reader :block
   

@@ -1,11 +1,11 @@
 require File.dirname(__FILE__) + "/../test_helper"
-require "clips/env"
+require "clipr/env"
 
 class IssuesTest < Test::Unit::TestCase
   acts_as_file_test
   acts_as_shell_test
   
-  Env = Clips::Env
+  Env = Clipr::Env
 
   attr_reader :env
   

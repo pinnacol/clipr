@@ -1,10 +1,10 @@
 require File.dirname(__FILE__) + "/../test_helper"
-require "clips/env"
+require "clipr/env"
 
 class RhsTest < Test::Unit::TestCase
   acts_as_file_test
   
-  Env = Clips::Env
+  Env = Clipr::Env
   attr_reader :env
   
   def setup
@@ -13,12 +13,12 @@ class RhsTest < Test::Unit::TestCase
     env.build(ExampleTemplate)
   end
   
-  class ExampleTemplate < Clips::Deftemplate
+  class ExampleTemplate < Clipr::Deftemplate
     deftemplate "example"
     slot :key, :value
   end
   
-  class AssignmentRule < Clips::Defrule
+  class AssignmentRule < Clipr::Defrule
     lhs.assign(:var, :example, :key => :value)
   end
   
