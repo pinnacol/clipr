@@ -17,12 +17,12 @@ class TestTest < Test::Unit::TestCase
   def test_to_s_formats_test_to_call_back_to_callback
     t = Test.new(block, [])
     
-    assert_equal block, t.callback.callback
-    assert_equal "(test (ruby-call #{t.callback.object_id}))", t.to_s
+    assert_equal block, t.callback
+    assert_equal "(test (ruby-call #{t.object_id}))", t.to_s
   end
   
   def test_to_s_adds_vars
     t = Test.new(block, [:a, :b])
-    assert_equal "(test (ruby-call #{t.callback.object_id} ?a ?b))", t.to_s
+    assert_equal "(test (ruby-call #{t.object_id} ?a ?b))", t.to_s
   end
 end

@@ -8,7 +8,12 @@ module Clips
       def initialize(slot, terms=[], &predicate)
         @slot = slot
         @terms = terms
-        @predicate = Callback.intern(&predicate)
+        @predicate = predicate
+      end
+      
+      def call(env, data_objects)
+        data_objects.collect! {|obj| env.cast(obj) }
+        predicate.call(*data_objects)
       end
       
       def to_s
@@ -17,8 +22,7 @@ module Clips
         end
         
         if predicate
-          oid = predicate.object_id
-          predicate_term = ":(ruby-call #{oid} ?v#{oid})"
+          predicate_term = ":(ruby-call #{object_id} ?v#{object_id})"
           cross_terms.each {|term| term << predicate_term }
         end
         
@@ -27,7 +31,7 @@ module Clips
         end.join("|")
         
         if predicate
-          condition = "?v#{oid}&#{condition}"
+          condition = "?v#{object_id}&#{condition}"
         end
         
         "(#{slot} #{condition})"

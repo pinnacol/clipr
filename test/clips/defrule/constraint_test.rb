@@ -35,17 +35,16 @@ class ConstraintTest < Test::Unit::TestCase
     block = lambda {}
     c = Constraint.new("key", ["a"], &block)
     
-    predicate = c.predicate
-    assert_equal block, predicate.callback
+    assert_equal block, c.predicate
     
-    oid = predicate.object_id
+    oid = c.object_id
     assert_equal "(key ?v#{oid}&a&:(ruby-call #{oid} ?v#{oid}))", c.to_s
   end
   
   def test_to_s_adds_predicate_to_each_cross_product
     c = Constraint.new("key", [["a", "b"], "c"]) {}
     
-    oid = c.predicate.object_id
+    oid = c.object_id
     assert_equal "(key ?v#{oid}&a&c&:(ruby-call #{oid} ?v#{oid})|b&c&:(ruby-call #{oid} ?v#{oid}))", c.to_s
   end
 end

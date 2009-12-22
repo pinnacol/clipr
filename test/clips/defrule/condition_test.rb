@@ -61,11 +61,9 @@ class ConditionTest < Test::Unit::TestCase
     block = lambda {}
     cond = Condition.new("sample")
     constraint = cond.slot(:key, &block)
+    assert_equal block, constraint.predicate
     
-    predicate = constraint.predicate
-    assert_equal block, predicate.callback
-    
-    oid = predicate.object_id
+    oid = constraint.object_id
     assert_equal "(sample (key ?v#{oid}&:(ruby-call #{oid} ?v#{oid})))", cond.to_s
   end
   
@@ -97,11 +95,11 @@ class ConditionTest < Test::Unit::TestCase
     test2 = cond.test(:b, :a, &t2)
     
     assert_equal Test, test1.class
-    assert_equal t1, test1.callback.callback
+    assert_equal t1, test1.callback
     assert_equal [:a], test1.variables
     
     assert_equal Test, test2.class
-    assert_equal t2, test2.callback.callback
+    assert_equal t2, test2.callback
     assert_equal [:b, :a], test2.variables
     
     assert_equal "(sample (a ?a) (b ?b)) #{test1} #{test2}", cond.to_s

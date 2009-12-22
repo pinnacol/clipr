@@ -47,7 +47,7 @@ class ConditionsTest < Test::Unit::TestCase
     cond = conds.match("sample", :a, :b, &block)
     test = cond.tests[0]
     
-    assert_equal block, test.callback.callback
+    assert_equal block, test.callback
     assert_equal "(sample (a ?a) (b ?b)) #{test}", conds.to_s
   end
   
@@ -176,11 +176,11 @@ class ConditionsTest < Test::Unit::TestCase
     end
     
     assert_equal Test, test1.class
-    assert_equal block1, test1.callback.callback
+    assert_equal block1, test1.callback
     assert_equal [:a, :b], test1.variables
     
     assert_equal Test, test2.class
-    assert_equal block2, test2.callback.callback
+    assert_equal block2, test2.callback
     assert_equal [:b, :c], test2.variables
     
     assert_equal "?a <- (one) (not (and ?b <- (two) #{test1})) ?c <- (three) #{test2}", conds.to_s
