@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
-  s.name = "clips"
-  s.version = "0.1.0"
+  s.name = "clipr"
+  s.version = "0.2.0"
   s.author = "Simon Chiang"
   s.email = "simon.chiang@pinnacol.com"
   s.homepage = ""
@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
     src/classini.h
     src/classpsr.c
     src/classpsr.h
-    src/clipr.h
+    src/clips.h
     src/clsltpsr.c
     src/clsltpsr.h
     src/cmptblty.h
@@ -140,8 +140,6 @@ Gem::Specification.new do |s|
     src/extconf.rb
     src/extnfunc.c
     src/extnfunc.h
-    src/extnruby.c
-    src/extnruby.h
     src/factbin.c
     src/factbin.h
     src/factbld.c
@@ -404,6 +402,7 @@ Gem::Specification.new do |s|
     lib/clipr/api/struct/symbol_hash_node.rb
     lib/clipr/api/struct/symbol_hash_node.rb.ffi
     lib/clipr/api_error.rb
+    lib/clipr/callback.rb
     lib/clipr/constants.rb
     lib/clipr/construct.rb
     lib/clipr/defglobals.rb
@@ -413,6 +412,7 @@ Gem::Specification.new do |s|
     lib/clipr/defrule/condition.rb
     lib/clipr/defrule/conditions.rb
     lib/clipr/defrule/constraint.rb
+    lib/clipr/defrule/test.rb
     lib/clipr/deftemplate.rb
     lib/clipr/deftemplate/slot.rb
     lib/clipr/deftemplates.rb
