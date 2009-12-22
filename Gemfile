@@ -1,4 +1,4 @@
-gemspec('clips.gemspec')
+gemspec('clipr.gemspec')
 
 if ENV['BUNDLE_CC'] == "true"
   clear_sources
@@ -6,10 +6,10 @@ if ENV['BUNDLE_CC'] == "true"
   directory cc_dir, :glob => "projects/*/work/*.gemspec"
   directory cc_dir, :glob => "gems/gems/*/*.gemspec"
 else
-  source "http://gems.github.com"
-  directory File.dirname(__FILE__), :glob => "clips.gemspec"
+  directory File.dirname(__FILE__), :glob => "clipr.gemspec"
   directory File.dirname(__FILE__), :glob => "vendor/*/*.gemspec"
 end
 
 bin_path "vendor/gems/bin"
 disable_system_gems
+

@@ -2,8 +2,6 @@ require File.dirname(__FILE__) + "/../test_helper"
 require "clipr/env"
 
 class RhsTest < Test::Unit::TestCase
-  acts_as_file_test
-  
   Env = Clipr::Env
   attr_reader :env
   

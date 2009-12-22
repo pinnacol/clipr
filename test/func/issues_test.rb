@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/../test_helper"
 require "clipr/env"
 
 class IssuesTest < Test::Unit::TestCase
-  acts_as_file_test
+  acts_as_file_test :cleanup_dirs => []
   acts_as_shell_test
   
   Env = Clipr::Env
