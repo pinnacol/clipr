@@ -2,7 +2,6 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clipr'
 
 class ActionsTest < Test::Unit::TestCase
-  include BlockHelpers
   Actions = Clipr::Defrule::Actions
   
   def test_add_adds_string_action
@@ -36,10 +35,6 @@ class ActionsTest < Test::Unit::TestCase
   #
   
   def test_duplicates_do_not_add_actions_to_one_another
-    t1, oid1 = setup_block
-    t2, oid2 = setup_block
-    t3, oid3 = setup_block
-    
     a = Actions.new
     action1 = a.callback {}
     b = a.dup

@@ -2,7 +2,6 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clipr'
 
 class SlotTest < Test::Unit::TestCase
-  include BlockHelpers
   Deftemplate = Clipr::Deftemplate
   Slot = Clipr::Deftemplate::Slot
   

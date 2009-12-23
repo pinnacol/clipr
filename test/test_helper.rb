@@ -12,11 +12,3 @@ module WarnFilter
 end unless Object.const_defined?(:WarnFilter)
 
 require 'tap/test/unit'
-
-module BlockHelpers
-  def setup_block
-    block = lambda {}
-    oid = block.object_id
-    [block, oid]
-  end
-end unless Object.const_defined?(:BlockHelpers)
