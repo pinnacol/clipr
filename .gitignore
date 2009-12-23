@@ -7,7 +7,7 @@ src/Makefile
 src/clips.bundle
 src/clips.so
 src/clips.dll
-lib/clips/api/data_object.rb
-lib/clips/api/struct/*.rb
+lib/clipr/api/data_object.rb
+lib/clipr/api/struct/*.rb
 test/func/issues/**/*.o
 test/func/issues/**/*.test
