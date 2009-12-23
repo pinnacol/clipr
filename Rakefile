@@ -125,7 +125,7 @@ task :default => :test
 desc 'Run the tests'
 task :test => [Clipr::DYLIB, :compile_issues, :check_bundle, :ffi_generate] do  
   tests = Dir.glob('test/**/*_test.rb')
-  cmd = ['ruby', "-w", '-rvendor/gems/environment.rb', "-e", "ARGV.dup.each {|test| load test}"] + tests
+  cmd = ["ruby", "-Ilib", "-w", "-rvendor/gems/environment.rb", "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
 end
 
@@ -136,7 +136,7 @@ task :benchmark => [Clipr::DYLIB, :check_bundle, :ffi_generate] do
   end
   
   tests = Dir.glob('test/benchmark/*_benchmark.rb')
-  cmd = ['ruby', "-w", '-rvendor/gems/environment.rb', "-e", "ARGV.dup.each {|test| load test}"] + tests
+  cmd = ["ruby", "-Ilib", "-w", "-rvendor/gems/environment.rb", "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
 end
 

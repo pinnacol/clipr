@@ -1,4 +1,5 @@
-gemspec('clipr.gemspec')
+gem("ffi", "= 0.5.0")
+gem("tap-test", ">= 0.3.0", :only => :test)
 
 if ENV['BUNDLE_CC'] == "true"
   clear_sources
