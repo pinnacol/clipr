@@ -22,9 +22,9 @@ module Clipr
           s.name 'struct integerHashNode'
           s.include 'symbol.h'
         
-          s.field :next, :pointer
-          s.field :count, :long 
-          s.field :depth, :int 
+          # s.field :next, :pointer
+          # s.field :count, :long 
+          # s.field :depth, :int 
           # s.field :permanent, :uint
           # s.field :markedEphemeral, :uint
           # s.field :neededInteger, :uint

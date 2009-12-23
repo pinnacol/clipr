@@ -107,8 +107,7 @@ module Clipr
       FLOAT => Struct::FloatHashNode,
       INTEGER => Struct::IntegerHashNode,
       SYMBOL => Struct::SymbolHashNode,
-      STRING => Struct::SymbolHashNode,
-      EXTERNAL_ADDRESS => Struct::ExternalAddressHashNode
+      STRING => Struct::SymbolHashNode
     }
     
     callback :callback, [], :int
