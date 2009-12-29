@@ -26,11 +26,11 @@ module Clipr
     def parse_fact_list(str)
       facts = []
       split(str).each do |line|
-        unless line =~ /\Af-(\d+)\s+(.*)\z/
+        unless line =~ /\Af-\d+\s+(.*)\z/
           raise "unknown fact format: #{line}"
         end
         
-        facts[$1.to_i] = $2
+        facts << $1
       end
       
       facts

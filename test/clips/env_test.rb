@@ -283,6 +283,17 @@ ERROR:
   # assert test
   #
   
+  def test_assert_documentation
+    env.assert "(a)"
+    env.assert "(b)"
+    env.assert "(c)"
+    assert_equal ["(initial-fact)", "(a)", "(b)", "(c)"], env.facts.to_a
+  
+    env.clear
+    env.assert "(a) (b) (c)"
+    assert_equal ["(initial-fact)", "(a)"], env.facts.to_a
+  end
+  
   def test_assert_asserts_fact_string
     env.assert("(goodnight moon)")
     assert_equal ["(initial-fact)", "(goodnight moon)"], env.facts.list

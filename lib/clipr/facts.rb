@@ -33,12 +33,24 @@ module Clipr
         :end => -1,
         :max => -1
       }.merge!(options)
-
-      str = env.capture(options) do |ptr, logical_name, module_ptr|
-        EnvFacts(ptr, logical_name, module_ptr, options[:start], options[:end], options[:max])
+      
+      to_a(options[:start], options[:end], options[:max])
+    end
+    
+    def to_a(start_index=-1, end_index=-1, max=-1)
+      str = env.capture do |ptr, logical_name, module_ptr|
+        EnvFacts(ptr, logical_name, module_ptr, start_index, end_index, max)
       end
       
       parse_fact_list(str)
+    end
+    
+    def eql?(another)
+      super || to_a.eql?(another)
+    end
+    
+    def ==(another)
+      super || to_a.eql?(another)
     end
   end
 end

@@ -58,9 +58,16 @@ module Clipr
     # The external function in CLIPS for callbacks to Ruby.
     CALLBACK = "ruby-call"
     
+    # Returns the Defglobals for self.
     attr_reader :defglobals
+    
+    # Returns the Deftemplates for self.
     attr_reader :deftemplates
+    
+    # Returns the Facts for self.
     attr_reader :facts
+    
+    # Returns the Routers for self.
     attr_reader :routers
     
     # Initializes a new Env.
@@ -261,6 +268,17 @@ module Clipr
     # functionality to:
     #
     #   CLIPS> (assert (str...))
+    #
+    # Note that only a single fact can be asserted at a time.
+    #
+    #   env.assert "(a)"
+    #   env.assert "(b)"
+    #   env.assert "(c)"
+    #   env.facts.to_a             # => ["(initial-fact)", "(a)", "(b)", "(c)"]
+    #
+    #   env.clear
+    #   env.assert "(a) (b) (c)"
+    #   env.facts.to_a             # => ["(initial-fact)", "(a)"]
     #
     def assert(str)
       Fact::EnvAssertString(pointer, str)
