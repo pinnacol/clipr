@@ -6,8 +6,8 @@
 
 The Clipr gem provides {FFI}[http://github.com/ffi/ffi] bindings to the CLIPS
 API, and a set of classes which act as wrappers for the various CLIPS
-constructs. Clipr allows callbacks to Ruby from CLIPS so that procedural logic
-and rules logic may be kept separate.
+constructs. Clipr allows callbacks to Ruby from CLIPS so that application
+logic and rules logic may be kept separate.
 
 ==== Notes
 

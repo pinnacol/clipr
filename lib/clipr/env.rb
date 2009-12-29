@@ -78,10 +78,7 @@ module Clipr
       @deftemplates = Deftemplates.new(self)
       @facts = Facts.new(self)
       @routers = Routers.new(self)
-      
-      unless @routers.has?(DEFAULT_ROUTER)
-        @routers.add(DEFAULT_ROUTER, Router.new)
-      end
+      @routers.add(DEFAULT_ROUTER, Router.new(Router.strio_devices))
       
       # note this reference to callback must be maintained
       # to ensure the Proc isn't gc'ed.
@@ -186,6 +183,14 @@ module Clipr
       end
     end
     
+    def werrors
+      device = router[:werror]
+      errors = device.string
+      device.string = ""
+      
+      errors.empty? && block_given? ? yield : errors
+    end
+    
     def cast(data_object)
       if data_object[:type] == FACT_ADDRESS
         fact_ptr = data_object[:value]
@@ -233,12 +238,9 @@ module Clipr
     def call(function, arguments=nil)
       check_callback do
         get do |ptr, obj|
-          router.capture('werror') do |device|
-            if EnvFunctionCall(ptr, function, arguments, obj) == 1
-              msg = device.string
-              msg = "error in function: #{function}" if msg.empty?
-              raise ApiError.new(:Environment, :EnvFunctionCall, msg)
-            end
+          if EnvFunctionCall(ptr, function, arguments, obj) == 1
+            msg = werrors { "error in function: #{function}" }
+            raise ApiError.new(:Environment, :EnvFunctionCall, msg)
           end
         end
       end
@@ -253,12 +255,9 @@ module Clipr
     # method (to assert fact strings see assert).
     def build(construct)
       str = construct.respond_to?(:str) ? construct.str : construct.to_s
-      router.capture('werror') do |device|
-        if EnvBuild(pointer, str) == 0
-          msg = device.string
-          msg = "could not build: #{str}" if msg.empty?
-          raise ApiError.new(:Environment, :EnvBuild, msg)
-        end
+      if EnvBuild(pointer, str) == 0
+        msg = werrors { "could not build: #{str}" }
+        raise ApiError.new(:Environment, :EnvBuild, msg)
       end
       
       self
@@ -281,11 +280,9 @@ module Clipr
     #   env.facts.to_a             # => ["(initial-fact)", "(a)"]
     #
     def assert(str)
-      router.capture('werror') do |device|
-        if getptr {|ptr| Fact::EnvAssertString(ptr, str) }.nil?
-          msg = device.string.strip
-          raise ApiError.new(:Fact, :EnvAssertString, msg) unless msg.empty?
-        end
+      if getptr {|ptr| Fact::EnvAssertString(ptr, str) }.nil?
+        msg = werrors
+        raise ApiError.new(:Fact, :EnvAssertString, msg) unless msg.empty?
       end
       
       self

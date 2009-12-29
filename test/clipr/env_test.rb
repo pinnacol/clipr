@@ -308,13 +308,19 @@ ERROR:
   
   def test_assertion_of_invalid_facts_raises_error
     err = assert_raises(ApiError) { env.assert("invalid") }
-    assert_equal "[PRNTUTIL2] Syntax Error:  Check appropriate syntax for RHS patterns.", err.message
+    assert_equal %q{
+[PRNTUTIL2] Syntax Error:  Check appropriate syntax for RHS patterns.
+}, err.message
     
     err = assert_raises(ApiError) { env.assert("(\"not a symbol\")") }
-    assert_equal "[PRNTUTIL2] Syntax Error:  Check appropriate syntax for first field of a RHS pattern.", err.message
-    
+    assert_equal %q{
+[PRNTUTIL2] Syntax Error:  Check appropriate syntax for first field of a RHS pattern.
+}, err.message
+
     err = assert_raises(ApiError) { env.assert("(1)") }
-    assert_equal "[PRNTUTIL2] Syntax Error:  Check appropriate syntax for first field of a RHS pattern.", err.message
+    assert_equal %q{
+[PRNTUTIL2] Syntax Error:  Check appropriate syntax for first field of a RHS pattern.
+}, err.message
   end
   
   #

@@ -29,4 +29,19 @@ class RubycallBenchmark < Test::Unit::TestCase
       end
     end
   end
+  
+  def test_assertion
+    benchmark_test(20) do |x|
+      n = 10
+      env = Clipr::Env.new
+      
+      x.report("#{n}k overhead") do
+        1.upto(n * 1000) {|i| "(fact #{i})" }
+      end
+      
+      x.report("#{n}k assert") do
+        1.upto(n * 1000) {|i| env.assert("(fact #{i})")}
+      end
+    end
+  end
 end

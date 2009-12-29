@@ -132,7 +132,7 @@ end
 desc 'Run the benchmarks'
 task :benchmark => [Clipr::DYLIB, :check_bundle, :ffi_generate] do
   unless ENV['BENCHMARK'] || ENV['BENCHMARK_TEST']
-    ENV['BENCHMARK'] = 'TRUE'
+    ENV['BENCHMARK'] = 'true'
   end
   
   tests = Dir.glob('test/benchmark/*_benchmark.rb')
