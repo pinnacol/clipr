@@ -1,0 +1,13 @@
+--- 
+at: 14362e22814fb7a1c4c246b33f25f35e628977d5
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1262105620.76508
+state: open
+title: Standardize/optimize redirection
+type: issue
+--- 
+Many env methods tail the werror using:
+
+  router.capture('werror') do |device|
+
+Surely there is a faster way to do this... to say hook up an array buffer that receives werror by default.  Unless otherwise specified werror will go there, eliminating the need to setup a temporary StringIO.
