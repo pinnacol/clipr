@@ -166,7 +166,7 @@ module Clipr
       obj
     end
     
-    def find
+    def getptr
       ptr = yield(pointer)
       ptr.address == 0 ? nil : ptr
     end
@@ -281,7 +281,13 @@ module Clipr
     #   env.facts.to_a             # => ["(initial-fact)", "(a)"]
     #
     def assert(str)
-      Fact::EnvAssertString(pointer, str)
+      router.capture('werror') do |device|
+        if getptr {|ptr| Fact::EnvAssertString(ptr, str) }.nil?
+          msg = device.string.strip
+          raise ApiError.new(:Fact, :EnvAssertString, msg) unless msg.empty?
+        end
+      end
+      
       self
     end
     

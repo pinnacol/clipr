@@ -4,15 +4,14 @@ require "clipr/env"
 class Chapter1Test < Test::Unit::TestCase
   Env = Clipr::Env
 
-  attr_reader :env
+  attr_reader :env, :facts
   
   def setup
     @env = Env.new
+    @facts = env.facts
   end
   
   def test_assert_facts_and_clear
-    facts = env.facts
-    
     env.assert "(duck)"
     assert_equal [
       "(initial-fact)",
@@ -62,5 +61,47 @@ class Chapter1Test < Test::Unit::TestCase
       "(a)",
       "(b)"
     ], facts.to_a(1, 3, 2)
+  end
+  
+  def test_various_inputs
+    env.assert "(duck)"
+    env.assert "(duck1)"
+    env.assert "(duck_soup)"
+    env.assert "(duck-soup)"
+    env.assert "(duck1-1_soup-soup)"
+    env.assert "(d!?#%^)"
+    
+    env.assert "(number 1)"
+    env.assert "(x 1.5)"
+    env.assert "(y -1)"
+    env.assert "(z 65)"
+    env.assert "(distance 3.5e5)"
+    env.assert "(coordinates 1 3 2)"
+    
+    env.assert '(The duck says "Quack")'
+    env.assert '(The     duck      says     "Quack"  )'
+    env.assert '(
+    The
+    duck
+    says
+    "Quack" 
+    )'
+    
+    assert_equal [
+      "(initial-fact)",
+      "(duck)",
+      "(duck1)",
+      "(duck_soup)",
+      "(duck-soup)",
+      "(duck1-1_soup-soup)",
+      "(d!?#%^)",
+      "(number 1)",
+      "(x 1.5)",
+      "(y -1)",
+      "(z 65)",
+      "(distance 350000.0)",
+      "(coordinates 1 3 2)",
+      '(The duck says "Quack")'
+    ], facts.to_a
   end
 end

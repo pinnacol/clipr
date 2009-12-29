@@ -22,7 +22,7 @@ module Clipr
       env.build(deftemplate.str)
       
       name = deftemplate.name
-      ptr = env.find {|ptr| EnvFindDeftemplate(ptr, name) }
+      ptr = env.getptr {|ptr| EnvFindDeftemplate(ptr, name) }
       
       casts[ptr.address] = deftemplate
       pointers[name.to_sym] = ptr
@@ -36,7 +36,7 @@ module Clipr
     
     def ptr(name)
       pointers[name.to_sym] ||= begin
-        ptr = env.find {|ptr| EnvFindDeftemplate(ptr, name.to_s) } 
+        ptr = env.getptr {|ptr| EnvFindDeftemplate(ptr, name.to_s) } 
         ptr or raise("no such deftemplate: #{name}")
       end
     end
