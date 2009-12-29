@@ -12,6 +12,27 @@ require 'clipr/router'
 require 'clipr/routers'
 
 module Clipr
+  
+  # ==== Error Checking
+  #
+  # Most Api methods will write to werror when they fail, so typically this
+  # pattern will report the relevant error message:
+  #
+  #   if Api::ModuleName::FunctionName == :fail
+  #     raise ApiError.new(:ModuleName, :FunctionName, env.werrors)
+  #   end
+  #
+  # It is possible for this pattern to report error messages from previous,
+  # unchecked failures.  A slower but more reliable pattern for capturing
+  # error messages is:
+  #
+  #   env.router.capture('werror') do |device|
+  #     if Api::ModuleName::FunctionName == :fail
+  #       raise ApiError.new(:ModuleName, :FunctionName, device.string)
+  #     end
+  #   end
+  #
+  # Clipr generally uses the first, quicker pattern.
   class Env
     class << self
       
@@ -170,9 +191,9 @@ module Clipr
     
     # Captures output for Api printing methods.  Printing methods have a
     # signature like this (ex EnvListDefglobals):
-    #    
+    # 
     #   EnvDoSomething(theEnv, logicalName, theModule)
-    #    
+    # 
     # Capture will yield these three arguments to the block and return
     # whatever gets printed to the device.  Capture does not perform error
     # checking.
@@ -183,12 +204,13 @@ module Clipr
       end
     end
     
-    def werrors
+    # Returns the content of the werrors device on the default router, and
+    # clears if specified.
+    def werrors(clear=true)
       device = router[:werror]
       errors = device.string
-      device.string = ""
-      
-      errors.empty? && block_given? ? yield : errors
+      device.string = "" if clear
+      errors
     end
     
     def cast(data_object)
@@ -239,8 +261,7 @@ module Clipr
       check_callback do
         get do |ptr, obj|
           if EnvFunctionCall(ptr, function, arguments, obj) == 1
-            msg = werrors { "error in function: #{function}" }
-            raise ApiError.new(:Environment, :EnvFunctionCall, msg)
+            raise ApiError.new(:Environment, :EnvFunctionCall, werrors) { "error in function: #{function}" }
           end
         end
       end
@@ -256,8 +277,7 @@ module Clipr
     def build(construct)
       str = construct.respond_to?(:str) ? construct.str : construct.to_s
       if EnvBuild(pointer, str) == 0
-        msg = werrors { "could not build: #{str}" }
-        raise ApiError.new(:Environment, :EnvBuild, msg)
+        raise ApiError.new(:Environment, :EnvBuild, werrors) { "could not build: #{str}" } 
       end
       
       self
@@ -281,8 +301,9 @@ module Clipr
     #
     def assert(str)
       if getptr {|ptr| Fact::EnvAssertString(ptr, str) }.nil?
-        msg = werrors
-        raise ApiError.new(:Fact, :EnvAssertString, msg) unless msg.empty?
+        unless werrors(false).empty?
+          raise ApiError.new(:Fact, :EnvAssertString, werrors)
+        end
       end
       
       self
