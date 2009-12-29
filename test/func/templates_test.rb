@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + "/../test_helper"
 require "clipr/env"
 
-class EnvFuncTest < Test::Unit::TestCase
+class TemplatesTest < Test::Unit::TestCase
   Env = Clipr::Env
 
   attr_reader :env
@@ -100,44 +100,5 @@ class EnvFuncTest < Test::Unit::TestCase
     env.run
     
     assert_equal true, was_in_block
-  end
-  
-  #
-  # rules
-  #
-  
-  class ExampleRule < Clipr::Defrule
-    lhs do
-      match :example, :key => :value
-    end
-    
-    rhs.register(self)
-    
-    def call(env)
-      env.assert "(was in block)"
-    end
-  end
-  
-  def test_callback_to_rule
-    env.build(ExampleTemplate.str)
-    env.build(ExampleRule.str)
-    
-    env.facts.assert(:example, {:key => :alt})
-    env.run
-    
-    assert_equal [
-      "(initial-fact)", 
-      "(example (key alt))"
-    ], env.facts.list
-    
-    env.facts.assert(:example, {:key => :value})
-    env.run
-    
-    assert_equal [
-      "(initial-fact)", 
-      "(example (key alt))",
-      "(example (key value))",
-      "(was in block)"
-    ], env.facts.list
   end
 end
