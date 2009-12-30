@@ -79,26 +79,8 @@ file Clipr::DYLIB => makefile do
   Dir.chdir("src") { sh("make") }
 end
 
-ffi_files  = Dir.glob("lib/clipr/api/**/*.rb.ffi")
-ruby_files = ffi_files.collect do |ffi_file|
-  ruby_file = ffi_file.chomp(".ffi")
-  file ruby_file => ffi_file do
-    require 'vendor/gems/environment'
-    require 'ffi'
-    require 'ffi/tools/generator'
-    require 'ffi/tools/struct_generator'
-    
-    puts "generating: #{ffi_file} => #{ruby_file}"
-    FFI::Generator.new ffi_file, ruby_file, :cflags => "-Isrc"
-  end
-  ruby_file
-end
-
 desc "compile the clips binary"
 task :compile => Clipr::DYLIB
-
-desc "generate FFI structs"
-task :ffi_generate => [:check_bundle, *ruby_files]
 
 #
 issues_files = Dir.glob("test/func/issues/**/*.c")
@@ -123,14 +105,14 @@ desc 'Default: Run tests.'
 task :default => :test
 
 desc 'Run the tests'
-task :test => [Clipr::DYLIB, :compile_issues, :check_bundle, :ffi_generate] do  
+task :test => [Clipr::DYLIB, :compile_issues, :check_bundle] do  
   tests = Dir.glob('test/**/*_test.rb')
   cmd = ["ruby", "-Ilib", "-w", "-rvendor/gems/environment.rb", "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
 end
 
 desc 'Run the benchmarks'
-task :benchmark => [Clipr::DYLIB, :check_bundle, :ffi_generate] do
+task :benchmark => [Clipr::DYLIB, :check_bundle] do
   unless ENV['BENCHMARK'] || ENV['BENCHMARK_TEST']
     ENV['BENCHMARK'] = 'true'
   end

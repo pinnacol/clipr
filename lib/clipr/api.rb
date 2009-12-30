@@ -89,6 +89,7 @@ module Clipr
     extend FFI::Library
     ffi_lib DYLIB
     
+    # see constant.h
     EXACTLY      = 0
     AT_LEAST     = 1
     NO_MORE_THAN = 2

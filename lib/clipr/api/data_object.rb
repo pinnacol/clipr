@@ -1,8 +1,5 @@
-
 module Clipr
   module Api
-    
-    # see constant.h
     class DataObject < FFI::Struct
       class << self
         
@@ -20,19 +17,12 @@ module Clipr
         end
       end
       
-      @@@
-      struct do |s|
-        s.name 'struct dataObject'
-        s.include 'clips.h'
-        
-        s.field :supplementalInfo, :pointer
-        s.field :type,  :ushort
-        s.field :value, :pointer
-        s.field :begin, :long
-        s.field :end,   :long
-        s.field :next,  :pointer
-      end
-      @@@
+      layout :supplementalInfo, :pointer,
+             :type, :ushort,
+             :value, :pointer,
+             :begin, :long,
+             :end, :long,
+             :next, :pointer
       
       # Returns the type for self.
       def type

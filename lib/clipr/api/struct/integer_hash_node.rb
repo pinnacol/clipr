@@ -17,21 +17,11 @@ module Clipr
       #   };
       #
       class IntegerHashNode < FFI::Struct
-        @@@
-        struct do |s|
-          s.name 'struct integerHashNode'
-          s.include 'symbol.h'
-        
-          # s.field :next, :pointer
-          # s.field :count, :long 
-          # s.field :depth, :int 
-          # s.field :permanent, :uint
-          # s.field :markedEphemeral, :uint
-          # s.field :neededInteger, :uint
-          # s.field :bucket, :uint
-          s.field :contents, :long_long
-        end
-        @@@
+        layout :next, :pointer,
+               :count, :long,
+               :depth, :int,
+               :bits, :uint32,
+               :contents, :long_long
       end
     end
   end

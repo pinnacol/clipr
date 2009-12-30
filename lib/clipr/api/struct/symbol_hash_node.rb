@@ -17,21 +17,11 @@ module Clipr
       #   };
       #
       class SymbolHashNode < FFI::Struct
-        @@@
-        struct do |s|
-          s.name 'struct symbolHashNode'
-          s.include 'symbol.h'
-        
-          # s.field :next, :pointer
-          # s.field :count, :long 
-          # s.field :depth, :int 
-          # s.field :permanent, :uint
-          # s.field :markedEphemeral, :uint
-          # s.field :neededSymbol, :uint
-          # s.field :bucket, :uint
-          s.field :contents, :string
-        end
-        @@@
+        layout :next, :pointer,
+               :count, :long,
+               :depth, :int,
+               :bits, :uint32,
+               :contents, :string
       end
     end
   end

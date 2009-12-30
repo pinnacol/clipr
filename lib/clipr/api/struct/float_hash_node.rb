@@ -2,7 +2,7 @@ module Clipr
   module Api
     module Struct
       # /************************************************************/
-      # /* floatHashNode STRUCTURE:                                  */
+      # /* floatHashNode STRUCTURE:                                 */
       # /************************************************************/
       # struct floatHashNode
       #   {
@@ -17,21 +17,11 @@ module Clipr
       #   };
       #
       class FloatHashNode < FFI::Struct
-        @@@
-        struct do |s|
-          s.name 'struct floatHashNode'
-          s.include 'symbol.h'
-        
-          # s.field :next, :pointer
-          # s.field :count, :long 
-          # s.field :depth, :int 
-          # s.field :permanent, :uint
-          # s.field :markedEphemeral, :uint
-          # s.field :neededFloat, :uint
-          # s.field :bucket, :uint
-          s.field :contents, :double
-        end
-        @@@
+        layout :next, :pointer,
+               :count, :long,
+               :depth, :int,
+               :bits, :uint32,
+               :contents, :double
       end
     end
   end
