@@ -105,7 +105,9 @@ module Clipr
       # to ensure the Proc isn't gc'ed.
       @callback = method(:callback)
       @callback_error = nil
-      EnvDefineFunction2(pointer, CALLBACK, ?b, @callback, "EnvCallback", "1*ui")
+      unless EnvDefineFunction2(pointer, CALLBACK, ?b, @callback, "EnvCallback", "1*ui") == 1
+        raise ApiError.new(:Api, :EnvDefineFunction2, "could not register ruby callback")
+      end
     end
     
     # Returns the pointer to the internal Environment wrapped by self.  Raises

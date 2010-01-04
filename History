@@ -1,3 +1,28 @@
+==
+
+Updated ffi to the unreleased 0.6.0, but note that this actually breaks the
+code due to a compile-flag bug (http://github.com/ffi/ffi/issues/#issue/26).
+This was fixed against 610fedd9de7a748221f43a6e94485c23a29f5dff as described
+in the issue and packaged locally ffi-0.6.1. The working version is not
+publicly available.
+
+To package:
+
+  % git checkout git://github.com/ffi/ffi.git
+  % cd ffi
+  % git checkout 610fedd9de7a748221f43a6e94485c23a29f5dff
+
+Then add '-DHAVE_RAW_API' as in the issue, and bump the gem version in
+Rakefile to '0.6.1'.  Then:
+
+  % rake gem
+
+And copy 'pkg/ffi-0.6.1' into the vendor/gems/cache directory. Then, in the
+clipr directory run:
+
+  % gem bundle
+  % rake test
+
 == 0.2.0 2009-12-22
 
 Initial release.

@@ -11,8 +11,7 @@ Gem::Specification.new do |s|
   s.extensions << "src/extconf.rb"
   
   # add dependencies
-  s.add_dependency("ffi", "= 0.5.0")
-  s.add_dependency("tap-test", ">= 0.3.0")
+  s.add_dependency("ffi", ">= 0.6.0")
   
   s.has_rdoc = true
   s.rdoc_options.concat %W{--main README -S -N --title Clipr}
