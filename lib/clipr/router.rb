@@ -1,3 +1,4 @@
+require 'clipr/router/exit_error'
 autoload(:StringIO, 'stringio')
 
 module Clipr
@@ -116,11 +117,17 @@ module Clipr
     
     # Closes all the devices.  Accepts an exit code.
     def exit(ptr, code)
-      devices.each_value do |device|
+      @devices.each_value do |device|
         device.close
       end
       
-      return 1
+      unless code == 0
+        # Abnormal exit codes can indicate a CLIPS SYSTEM ERROR
+        # This gives developers a chance to catch debugging information
+        raise ExitError.new(code)
+      end
+      
+      code
     end
     
     protected

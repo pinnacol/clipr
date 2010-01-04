@@ -48,6 +48,8 @@ module Clipr
         
         begin
           yield(env)
+        rescue(Router::ExitError)
+          raise "unexpected router exit (#{$!.code})#{env.werrors}"
         ensure
           env.close
         end
@@ -157,6 +159,11 @@ module Clipr
       obj
     end
     
+    def getptr
+      ptr = yield(pointer)
+      ptr.address == 0 ? nil : ptr
+    end
+    
     # Sets up a DataObject for the value, for use with Api set methods.  Set
     # methods have a signature like this (ex EnvSetDefglobalValue):
     #
@@ -185,11 +192,6 @@ module Clipr
       obj = DataObject.intern(attributes)
       yield(pointer, obj)
       obj
-    end
-    
-    def getptr
-      ptr = yield(pointer)
-      ptr.address == 0 ? nil : ptr
     end
     
     # Captures output for Api printing methods.  Printing methods have a

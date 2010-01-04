@@ -55,6 +55,15 @@ class RouterTest < Test::Unit::TestCase
   end
   
   #
+  # exit test
+  #
+  
+  def test_exit_raises_error_for_non_zero_exit_code
+    err = assert_raises(Router::ExitError) { router.exit(:ptr, 1) }
+    assert_equal "router exit: 1", err.message
+  end
+  
+  #
   # extend test
   #
   
