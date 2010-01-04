@@ -2,6 +2,7 @@ module Clipr
   class Facts
     include Api::Fact
     include Utils
+    include Enumerable
     
     attr_reader :env
     
@@ -23,6 +24,19 @@ module Clipr
       EnvAssignFactSlotDefaults(env_ptr, fact_ptr)
       EnvAssert(env_ptr, fact_ptr)
       self
+    end
+    
+    # Returns a pointer to the specified fact.
+    def get(index)
+      current = get_next
+      index.times { current = get_next(current) }
+      current
+    end
+    
+    # Returns the fact at the specified index, cast into an appropriate
+    # Deftemplate.
+    def [](index)
+      cast get(index)
     end
     
     # Returns facts as an array, essentially by calling (facts) and parsing
@@ -51,6 +65,17 @@ module Clipr
     
     def ==(another)
       super || to_a.eql?(another)
+    end
+    
+    private
+    
+    def get_next(current=nil) # :nodoc:
+      env.getptr {|ptr| EnvGetNextFact(ptr, current) }
+    end
+    
+    def cast(fact_ptr) # :nodoc:
+      template_ptr = env.getptr {|ptr| EnvFactDeftemplate(ptr, fact_ptr) }
+      env.deftemplates.deftemplate(template_ptr).new(env, fact_ptr)
     end
   end
 end

@@ -54,21 +54,31 @@ module Clipr
     include Api::Fact
     
     attr_reader :env
-    attr_reader :pointer
+    attr_reader :fact_ptr
     
-    def initialize(env, pointer)
+    def initialize(env, fact_ptr)
       @env = env
-      @pointer = pointer
+      @fact_ptr = fact_ptr
+    end
+    
+    def template_ptr
+      env.getptr {|ptr| EnvFactDeftemplate(ptr, fact_ptr) }
+    end
+    
+    def name
+      Api::GetConstructNameString(template_ptr)
     end
     
     def get(slot)
-      env.get do |ptr, obj|
-        EnvGetFactSlot(ptr, pointer, slot.to_s, obj)
-      end
+      env.get {|ptr, obj| EnvGetFactSlot(ptr, fact_ptr, slot.nil? ? nil :  slot.to_s, obj) }
     end
     
     def [](slot)
       get(slot).value
+    end
+    
+    def slots
+      env.get {|ptr, obj| EnvFactSlotNames(ptr, fact_ptr, obj) }.contents
     end
   end
 end

@@ -104,5 +104,8 @@ module Clipr
     attach_function :EnvRtnArgCount, [:pointer], :int
     attach_function :EnvArgCountCheck, [:pointer, :string, :int, :int], :int
     attach_function :EnvRtnUnknown, [:pointer, :int, :pointer], :pointer
+    
+    # see cstrcom.h
+    attach_function :GetConstructNameString, [:pointer], :string
   end
 end

@@ -18,7 +18,7 @@ module Clipr
       # attach_function :EnvDeftemplateSlotTypes, [:pointer], :void 
       attach_function :EnvFindDeftemplate, [:pointer, :string], :pointer 
       # attach_function :EnvGetDeftemplateList, [:pointer], :void 
-      # attach_function :EnvGetDeftemplateName, [:pointer], :void 
+      # attach_function :EnvGetDeftemplateName, [:pointer], :void # see GetConstructNameString
       # attach_function :EnvGetDeftemplatePPForm, [:pointer], :void 
       # attach_function :EnvGetDeftemplateWatch, [:pointer], :void 
       # attach_function :EnvGetNextDeftemplate, [:pointer], :void 
