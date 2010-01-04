@@ -104,4 +104,47 @@ class Chapter1Test < Test::Unit::TestCase
       '(The duck says "Quack")'
     ], facts.to_a
   end
+  
+  def test_retract_a_fact
+    env.assert "(animal-is duck)"
+    env.assert "(animal-sound quack)"
+    env.assert '(The duck says "Quack")'
+    
+    assert_equal [
+      "(initial-fact)",
+      "(animal-is duck)",
+      "(animal-sound quack)",
+      '(The duck says "Quack")'
+    ], facts.to_a
+    
+    env.retract(3)
+    assert_equal [
+      "(initial-fact)",
+      "(animal-is duck)",
+      "(animal-sound quack)"
+    ], facts.to_a
+    
+    err = assert_raises(ApiError) { env.retract(3) }
+    assert_equal "[PRNTUTIL1] Unable to find fact f-3.", err.message
+    
+    env.clear
+    env.assert "(animal-is duck)"
+    env.assert "(animal-sound quack)"
+    env.assert '(The duck says "Quack")'
+    env.retract(1, 3)
+    assert_equal [
+      "(initial-fact)",
+      "(animal-sound quack)"
+    ], facts.to_a
+    
+    env.clear
+    env.assert "(animal-is duck)"
+    env.assert "(animal-sound quack)"
+    env.assert '(The duck says "Quack")'
+    env.retract
+    assert_equal [
+      "(initial-fact)"
+    ], facts.to_a
+  end
+  
 end
