@@ -14,20 +14,20 @@ module Clipr
       # attach_function :EnvFactExistp, [:pointer], :void 
       # attach_function :EnvFactIndex, [:pointer], :void 
       attach_function :EnvFacts, [:pointer, :string, :pointer, :long_long, :long_long, :long_long], :void 
-      # attach_function :EnvFactSlotNames, [:pointer], :void 
+      attach_function :EnvFactSlotNames, [:pointer, :pointer, :pointer], :void 
       # attach_function :EnvGetFactDuplication, [:pointer], :void 
       # attach_function :EnvGetFactList, [:pointer], :void 
       # attach_function :EnvGetFactListChanged, [:pointer], :void 
       # attach_function :EnvGetFactPPForm, [:pointer], :void 
       attach_function :EnvGetFactSlot, [:pointer, :pointer, :string, :pointer], :int 
-      # attach_function :EnvGetNextFact, [:pointer], :void 
+      attach_function :EnvGetNextFact, [:pointer, :pointer], :pointer 
       # attach_function :EnvGetNextFactInTemplate, [:pointer], :void 
       # attach_function :EnvIncrementFactCount, [:pointer], :void 
       # attach_function :EnvLoadFacts, [:pointer], :void 
       # attach_function :EnvLoadFactsFromString, [:pointer], :void 
       # attach_function :EnvPPFact, [:pointer], :void 
       attach_function :EnvPutFactSlot, [:pointer, :pointer, :string, :pointer], :void 
-      # attach_function :EnvRetract, [:pointer], :void 
+      attach_function :EnvRetract, [:pointer, :pointer], :int 
       attach_function :EnvSaveFacts, [:pointer, :string, :int, :pointer], :int
       # attach_function :EnvSetFactDuplication, [:pointer], :void 
       # attach_function :EnvSetFactListChanged, [:pointer], :void 

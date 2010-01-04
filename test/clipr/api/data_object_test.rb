@@ -11,8 +11,8 @@ class ApiDataObjectTest < Test::Unit::TestCase
   def test_intern_creates_new_data_object_with_types_and_values
     value = FFI::MemoryPointer.new :double
     
-    o = DataObject.intern(:type => FLOAT, :value => value)
-    assert_equal FLOAT, o[:type]
+    o = DataObject.intern(:type => Types::FLOAT, :value => value)
+    assert_equal Types::FLOAT, o[:type]
     assert_equal value, o[:value]
   end
   

@@ -63,6 +63,7 @@ module Clipr
     
     include Api
     include Api::Environment
+    include Api::Types
     
     # The default router.
     DEFAULT_ROUTER = 'default'

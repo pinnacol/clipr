@@ -1,5 +1,22 @@
+require 'clipr/api/struct'
+require 'clipr/api/types'
+
 module Clipr
   module Api
+    
+    # ==== Definition
+    #
+    #   [evaluatn.h]
+    #   struct dataObject
+    #     {
+    #      void *supplementalInfo;
+    #      unsigned short type;
+    #      void *value;
+    #      long begin;
+    #      long end;
+    #      struct dataObject *next;
+    #     };
+    #
     class DataObject < FFI::Struct
       class << self
         
@@ -8,12 +25,6 @@ module Clipr
           obj = new
           attrs.each_pair {|key, value| obj[key] = value }
           obj
-        end
-        
-        # Returns the string for the specified type.
-        def type_str(type)
-          constant = constants.find {|const| const_get(const) == type }
-          constant ? constant.to_s : nil
         end
       end
       
@@ -32,13 +43,11 @@ module Clipr
       # Returns type converted to the corresponding type string, or nil for
       # unknown types.
       def type_str
-        DataObject.type_str(type)
+        Types.type_str(type)
       end
       
       def contents
-        value = self[:value]
-        struct = CAST[self[:type]]
-        struct ? struct.new(value)[:contents] : value
+        Struct.contents(self)
       end
       
       # Returns the value for self converted as follows:
@@ -60,22 +69,7 @@ module Clipr
       #   DOToString or DOPToString to the copy’s storage area.
       #
       def value
-        value = contents
-        
-        case type
-        when SYMBOL
-          case value
-          when "TRUE"  then true
-          when "FALSE" then false
-          else value.to_sym
-          end
-          
-        when STRING
-          value.dup
-          
-        else
-          value
-        end
+        Struct.value(self)
       end
     end
   end

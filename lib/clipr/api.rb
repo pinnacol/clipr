@@ -2,12 +2,12 @@ require 'ffi'
 require 'clipr/api_error'
 require 'clipr/constants'
 
-Dir.glob("#{File.dirname(__FILE__)}/api/struct/*.rb").each do |struct_file|
-  require struct_file
-end
+# Enforces the use of relative require paths to prevents warnings
+lib_dir = File.dirname(File.dirname(__FILE__))
+start = lib_dir.length + 1
 
-Dir.glob("#{File.dirname(__FILE__)}/api/*.rb").each do |api_file|
-  require api_file
+Dir.glob("#{lib_dir}/clipr/api/*.rb").each do |api_file|
+  require api_file[start..-1]
 end
 
 module Clipr
@@ -89,27 +89,9 @@ module Clipr
     extend FFI::Library
     ffi_lib DYLIB
     
-    # see constant.h
     EXACTLY      = 0
     AT_LEAST     = 1
     NO_MORE_THAN = 2
-    
-    FLOAT            = 0
-    INTEGER          = 1
-    SYMBOL           = 2
-    STRING           = 3
-    MULTIFIELD       = 4
-    EXTERNAL_ADDRESS = 5
-    FACT_ADDRESS     = 6
-    INSTANCE_ADDRESS = 7
-    INSTANCE_NAME    = 8
-    
-    CAST = {
-      FLOAT => Struct::FloatHashNode,
-      INTEGER => Struct::IntegerHashNode,
-      SYMBOL => Struct::SymbolHashNode,
-      STRING => Struct::SymbolHashNode
-    }
     
     callback :callback, [], :int
     attach_function :DefineFunction,[:string, :char, :callback, :string], :int
