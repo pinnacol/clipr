@@ -25,10 +25,19 @@ module Clipr
           def value(obj)
             value = contents(obj)
             
-            case value
-            when "TRUE"  then true
-            when "FALSE" then false
-            else value.to_sym
+            case obj[:type]
+            when Types::SYMBOL
+              case value
+              when "TRUE"  then true
+              when "FALSE" then false
+              else value.to_sym
+              end
+              
+            when Types::STRING
+              value.dup
+              
+            else
+              raise "SymbolHashNode cannot get value for objects of type: #{Types.type_str(obj[:type])}"
             end
           end
         end

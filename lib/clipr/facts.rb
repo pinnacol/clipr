@@ -39,6 +39,17 @@ module Clipr
       cast get(index)
     end
     
+    def each
+      current = nil
+      loop do
+        current = get_next(current)
+        break if current.nil?
+        yield cast(current)
+      end
+      
+      self
+    end
+    
     # Returns facts as an array, essentially by calling (facts) and parsing
     # the result.
     def list(options={})

@@ -42,7 +42,12 @@ module Clipr
                :depth, :short,
                :multifieldLength, :long,
                :next, :pointer,
-               :theFields, [Field, 1]
+               :theFields, [Field, 100000]
+        
+        # Note theFields needs a large index because FFI 0.6.0 does range
+        # checking -- if it is set to 1 then IndexErrors result. Apparently
+        # CLIPS is being tricky in that it declares theFields as an array of
+        # length 1 but manages storage to put multiple fields in the array.
       end
     end
   end

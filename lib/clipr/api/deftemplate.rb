@@ -12,7 +12,7 @@ module Clipr
       # attach_function :EnvDeftemplateSlotDefaultValue, [:pointer], :void 
       # attach_function :EnvDeftemplateSlotExistP, [:pointer], :void 
       # attach_function :EnvDeftemplateSlotMultiP, [:pointer], :void 
-      # attach_function :EnvDeftemplateSlotNames, [:pointer], :void 
+      attach_function :EnvDeftemplateSlotNames, [:pointer, :pointer, :pointer], :void 
       # attach_function :EnvDeftemplateSlotRange, [:pointer], :void 
       # attach_function :EnvDeftemplateSlotSingleP, [:pointer], :void 
       # attach_function :EnvDeftemplateSlotTypes, [:pointer], :void 

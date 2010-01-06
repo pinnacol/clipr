@@ -69,16 +69,22 @@ module Clipr
       Api::GetConstructNameString(template_ptr)
     end
     
+    def slots
+      env.get {|ptr, obj| EnvFactSlotNames(ptr, fact_ptr, obj) }.value
+    end
+    
     def get(slot)
-      env.get {|ptr, obj| EnvGetFactSlot(ptr, fact_ptr, slot.nil? ? nil :  slot.to_s, obj) }
+      env.get {|ptr, obj| EnvGetFactSlot(ptr, fact_ptr, slot.to_s, obj) }
     end
     
     def [](slot)
       get(slot).value
     end
     
-    def slots
-      env.get {|ptr, obj| EnvFactSlotNames(ptr, fact_ptr, obj) }.contents
+    def each_pair
+      slots.each do |slot|
+        yield(slot, self[slot])
+      end
     end
   end
 end

@@ -1,3 +1,5 @@
+require 'clipr/deftemplates/ordered_fact'
+
 module Clipr
   class Deftemplates
     include Api::Deftemplate
@@ -30,14 +32,14 @@ module Clipr
       ptr
     end
     
-    def deftemplate(ptr)
-      casts[ptr.address] || Deftemplate
+    def deftemplate(template_ptr)
+      casts[template_ptr.address] || (implied?(template_ptr) ? OrderedFact : Deftemplate)
     end
     
     def ptr(name)
       pointers[name.to_sym] ||= begin
-        ptr = env.getptr {|ptr| EnvFindDeftemplate(ptr, name.to_s) } 
-        ptr or raise("no such deftemplate: #{name}")
+        template_ptr = env.getptr {|ptr| EnvFindDeftemplate(ptr, name.to_s) } 
+        template_ptr or raise("no such deftemplate: #{name}")
       end
     end
     
@@ -47,6 +49,15 @@ module Clipr
       end
       
       parse_module_list(str)
+    end
+    
+    private
+    
+    # Determines if the template_ptr points to an implied deftemplate by
+    # checking that the slot names are [:implied]
+    def implied?(template_ptr) # :nodoc:
+      slot_names = env.get {|ptr, obj| EnvDeftemplateSlotNames(ptr, template_ptr, obj) }
+      slot_names.type == Api::Types::MULTIFIELD && slot_names.value == [:implied]
     end
   end
 end
