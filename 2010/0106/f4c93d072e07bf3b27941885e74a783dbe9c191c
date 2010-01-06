@@ -1,0 +1,14 @@
+--- 
+at: 33d8377c8fe86846682a5a0e450a16bcc7b3c30e
+author: Simon Chiang <simon.chiang@pinnacol.com>
+date: 1262794899.43638
+state: open
+title: Improper casting to an ordered_fact?
+type: issue
+--- 
+The logic used to determine whether or not a fact is an ordered fact is a little suspect.  Ordered facts have an implied deftemplate with a single :implied slot.  Right now the check is just for the :implied slot:
+
+      slot_names = env.get {|ptr, obj| EnvDeftemplateSlotNames(ptr, template_ptr, obj) }
+      slot_names.type == Api::Types::MULTIFIELD && slot_names.value == [:implied]
+
+This seems problematic because what if you created a deftemplate that has a single implied multislot?  Is there a way to check for an implied deftemplate directly or is this even an issue?
