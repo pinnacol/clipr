@@ -3,7 +3,7 @@ require "clipr/env"
 
 class FactsTest < Test::Unit::TestCase
   Env = Clipr::Env
-  OrderedFact = Clipr::Deftemplates::OrderedFact
+  OrderedFact = Clipr::OrderedFact
   Fact = Clipr::Fact
   
   attr_reader :env, :facts
@@ -37,7 +37,7 @@ class FactsTest < Test::Unit::TestCase
     env.assert "(c)"
     env.assert "(animal (sound quack))"
     
-    assert_equal ["initial-fact", "a", "b", "c", "animal"], facts.collect {|fact| fact.name }
+    assert_equal ["initial-fact", "a", "b", "c", "animal"], facts.collect {|fact| fact.deftemplate.name }
   end
   
   #

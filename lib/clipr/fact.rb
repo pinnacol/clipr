@@ -61,12 +61,10 @@ module Clipr
       @fact_ptr = fact_ptr
     end
     
-    def template_ptr
-      env.getptr {|env_ptr| EnvFactDeftemplate(env_ptr, fact_ptr) }
-    end
-    
-    def name
-      Api::GetConstructNameString(template_ptr)
+    def deftemplate
+      env_ptr = env.env_ptr
+      deft_ptr = EnvFactDeftemplate(env_ptr, fact_ptr)
+      Deftemplate.new(env_ptr, deft_ptr)
     end
     
     def slots

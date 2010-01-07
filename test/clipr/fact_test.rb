@@ -14,21 +14,21 @@ class FactTest < Test::Unit::TestCase
   end
   
   #
-  # name test
+  # deftemplate test
   #
   
-  def test_name_returns_defined_deftemplate_name
+  def test_deftemplate_returns_a_deftemplate_for_self
     env.build "(deftemplate animal (slot sound))"
     env.assert "(animal (sound quack))"
     
-    dt = Fact.new(env, env.facts.get(1))
-    assert_equal "animal", dt.name
+    fact = Fact.new(env, env.facts.get(1))
+    assert_equal "animal", fact.deftemplate.name
   end
   
-  def test_name_returns_implied_deftemplate_name
+  def test_deftemplate_works_for_implied_deftemplates
     env.assert "(a b c)"
     
-    dt = Fact.new(env, env.facts.get(1))
-    assert_equal "a", dt.name
+    fact = Fact.new(env, env.facts.get(1))
+    assert_equal "a", fact.deftemplate.name
   end
 end

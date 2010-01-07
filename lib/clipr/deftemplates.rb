@@ -1,5 +1,3 @@
-require 'clipr/deftemplates/ordered_fact'
-
 module Clipr
   class Deftemplates
     include Api::Deftemplate
