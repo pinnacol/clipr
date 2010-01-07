@@ -18,21 +18,46 @@ module Clipr
       class Multifield < FFI::Struct
         class << self
           def contents(obj)
-            fields(obj) {|field| Struct.contents(field) }
+            fields(obj) {|field| field.contents }
           end
           
           def value(obj)
-            fields(obj) {|field| Struct.value(field) }
+            fields(obj) {|field| field.value }
           end
           
           private
           
+          # Yields each field in the object to the block.
+          #
+          # === Implementation Notes
+          #
+          # CLIPS uses a trick with multifields where theFields array is
+          # declared as being of length 1, but hold an arbitrary number of
+          # Fields.  This works in C because there is no range checking on an
+          # array, however it breaks in FFI where range checking does occur.
+          #
+          # One solution is to set theFields extent to a large number, ie:
+          #
+          #   layout :theFields, [Field, 1000]
+          #
+          #   # breaks for i > 1000
+          #   def fields(obj)
+          #     fields = new(obj[:value])[:theFields]
+          #     obj[:begin].upto(obj[:end]) do |i|
+          #       yield(fields[i])
+          #     end
+          #   end
+          #
+          # A slower but more robust approach is what is done here, where the
+          # iterator manually increments the field pointer.
           def fields(obj) # :nodoc:
-            fields = new(obj[:value])[:theFields]
+            offest = new(obj[:value])[:theFields].pointer.address
+            size = Field.size
             
             values = []
             obj[:begin].upto(obj[:end]) do |i|
-              values << yield(fields[i])
+              pointer = FFI::Pointer.new(offest + i * size)
+              values << yield(Field.new(pointer))
             end
             values
           end
@@ -42,12 +67,7 @@ module Clipr
                :depth, :short,
                :multifieldLength, :long,
                :next, :pointer,
-               :theFields, [Field, 100000]
-        
-        # Note theFields needs a large index because FFI 0.6.0 does range
-        # checking -- if it is set to 1 then IndexErrors result. Apparently
-        # CLIPS is being tricky in that it declares theFields as an array of
-        # length 1 but manages storage to put multiple fields in the array.
+               :theFields, Field
       end
     end
   end
