@@ -3,7 +3,7 @@ module Clipr
     class OrderedFact < Fact
       def initialize(env, fact_ptr)
         super
-        @data = env.get {|ptr, obj| EnvGetFactSlot(ptr, fact_ptr, nil, obj) }.value
+        @data = env.get {|env_ptr, obj| EnvGetFactSlot(env_ptr, fact_ptr, nil, obj) }.value
         @data.unshift(name.to_sym)
       end
       

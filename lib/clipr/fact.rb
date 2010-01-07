@@ -62,7 +62,7 @@ module Clipr
     end
     
     def template_ptr
-      env.getptr {|ptr| EnvFactDeftemplate(ptr, fact_ptr) }
+      env.getptr {|env_ptr| EnvFactDeftemplate(env_ptr, fact_ptr) }
     end
     
     def name
@@ -70,11 +70,11 @@ module Clipr
     end
     
     def slots
-      env.get {|ptr, obj| EnvFactSlotNames(ptr, fact_ptr, obj) }.value
+      env.get {|env_ptr, obj| EnvFactSlotNames(env_ptr, fact_ptr, obj) }.value
     end
     
     def get(slot)
-      env.get {|ptr, obj| EnvGetFactSlot(ptr, fact_ptr, slot.to_s, obj) }
+      env.get {|env_ptr, obj| EnvGetFactSlot(env_ptr, fact_ptr, slot.to_s, obj) }
     end
     
     def [](slot)

@@ -73,12 +73,12 @@ class CliprEnvTest < Test::Unit::TestCase
   # close test
   #
   
-  def test_close_unassigns_pointer
-    env.pointer
+  def test_close_unassigns_env_ptr
+    env.env_ptr # nothing raised
     
     assert_equal true, env.close
     
-    err = assert_raises(RuntimeError) { env.pointer }
+    err = assert_raises(RuntimeError) { env.env_ptr }
     assert_equal "closed env", err.message
   end
   

@@ -10,8 +10,8 @@ module Clipr
     end
     
     def get(name)
-      env.get do |ptr, obj|
-        if EnvGetDefglobalValue(ptr, name, obj) == 0
+      env.get do |env_ptr, obj|
+        if EnvGetDefglobalValue(env_ptr, name, obj) == 0
           return nil
         end
       end
@@ -20,16 +20,16 @@ module Clipr
     def set(name, value)
       env.build("(defglobal ?*#{name}* = 0)")
       
-      env.set(value) do |ptr, obj|
-        if EnvSetDefglobalValue(ptr, name, obj) == 0
+      env.set(value) do |env_ptr, obj|
+        if EnvSetDefglobalValue(env_ptr, name, obj) == 0
           raise ApiError.new(:Defglobal, :EnvSetDefglobalValue, "cannot set: #{name} (global does not exist)")
         end
       end
     end
     
     def list(options={})
-      str = env.capture(options) do |ptr, logical_name, module_ptr|
-        EnvListDefglobals(ptr, logical_name, module_ptr)
+      str = env.capture(options) do |env_ptr, logical_name, module_ptr|
+        EnvListDefglobals(env_ptr, logical_name, module_ptr)
       end
       
       list = {}

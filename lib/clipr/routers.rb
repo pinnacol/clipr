@@ -2,6 +2,8 @@ module Clipr
   class Routers
     include Api::Router
     
+    attr_reader :env
+    
     def initialize(env)
       @env = env
       @routers = {}
@@ -29,7 +31,7 @@ module Clipr
       name = name.to_s
       raise "router already exists: #{name}" if @routers.has_key?(name)
       
-      if EnvAddRouter(@env.pointer, name, priority, *router.functions) == 0
+      if EnvAddRouter(env.env_ptr, name, priority, *router.functions) == 0
         raise ApiError(:Router, :EnvAddRouter, "could not add router: #{name}")
       end
       
@@ -40,7 +42,7 @@ module Clipr
     
     def rm(name)
       name = name.to_s
-      EnvDeleteRouter(@env.pointer, name)
+      EnvDeleteRouter(env.env_ptr, name)
       @routers.delete(name)
       self
     end

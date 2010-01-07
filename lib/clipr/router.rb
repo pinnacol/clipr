@@ -96,27 +96,27 @@ module Clipr
     
     # Returns either 1 or 0 depending upon whether this router recognizes the
     # logical name.
-    def query(ptr, name)
+    def query(env_ptr, name)
       self[name] ? 1 : 0
     end
     
     # Prints the string to the device specified by the logical name.
-    def print(ptr, name, str)
+    def print(env_ptr, name, str)
       device(name).print(str)
     end
     
     # Gets a char from the device specified by the logical name.
-    def getc(ptr, name)
+    def getc(env_ptr, name)
       device(name).getc
     end
     
     # Ungets the char onto the device specified by the logical name.
-    def ungetc(ptr, c, name)
+    def ungetc(env_ptr, c, name)
       device(name).ungetc(c)
     end
     
     # Closes all the devices.  Accepts an exit code.
-    def exit(ptr, code)
+    def exit(env_ptr, code)
       @devices.each_value do |device|
         device.close
       end

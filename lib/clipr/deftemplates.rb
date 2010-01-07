@@ -24,7 +24,7 @@ module Clipr
       env.build(deftemplate)
       
       name = deftemplate.name
-      ptr = env.getptr {|ptr| EnvFindDeftemplate(ptr, name) }
+      ptr = env.getptr {|env_ptr| EnvFindDeftemplate(env_ptr, name) }
       
       casts[ptr.address] = deftemplate
       pointers[name.to_sym] = ptr
@@ -38,14 +38,14 @@ module Clipr
     
     def ptr(name)
       pointers[name.to_sym] ||= begin
-        template_ptr = env.getptr {|ptr| EnvFindDeftemplate(ptr, name.to_s) } 
+        template_ptr = env.getptr {|env_ptr| EnvFindDeftemplate(env_ptr, name.to_s) } 
         template_ptr or raise("no such deftemplate: #{name}")
       end
     end
     
     def list(options={})
-      str = env.capture(options) do |ptr, logical_name, module_ptr|
-        EnvListDeftemplates(ptr, logical_name, module_ptr)
+      str = env.capture(options) do |env_ptr, logical_name, module_ptr|
+        EnvListDeftemplates(env_ptr, logical_name, module_ptr)
       end
       
       parse_module_list(str)
@@ -56,7 +56,7 @@ module Clipr
     # Determines if the template_ptr points to an implied deftemplate by
     # checking that the slot names are [:implied]
     def implied?(template_ptr) # :nodoc:
-      slot_names = env.get {|ptr, obj| EnvDeftemplateSlotNames(ptr, template_ptr, obj) }
+      slot_names = env.get {|env_ptr, obj| EnvDeftemplateSlotNames(env_ptr, template_ptr, obj) }
       slot_names.type == Api::Types::MULTIFIELD && slot_names.value == [:implied]
     end
   end

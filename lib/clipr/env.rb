@@ -97,7 +97,7 @@ module Clipr
     
     # Initializes a new Env.
     def initialize(options={})
-      @pointer = CreateEnvironment()
+      @env_ptr = CreateEnvironment()
       
       @defglobals = Defglobals.new(self)
       @deftemplates = Deftemplates.new(self)
@@ -109,20 +109,20 @@ module Clipr
       # to ensure the Proc isn't gc'ed.
       @callback = method(:callback)
       @callback_error = nil
-      unless EnvDefineFunction2(pointer, CALLBACK, ?b, @callback, "EnvCallback", "1*ui") == 1
+      unless EnvDefineFunction2(env_ptr, CALLBACK, ?b, @callback, "EnvCallback", "1*ui") == 1
         raise ApiError.new(:Api, :EnvDefineFunction2, "could not register ruby callback")
       end
     end
     
     # Returns the pointer to the internal Environment wrapped by self.  Raises
     # an error if the pointer is unset (ie the env was closed).
-    def pointer
-      @pointer or raise("closed env")
+    def env_ptr
+      @env_ptr or raise("closed env")
     end
     
     # Returns the index for the environment.
     def index
-      GetEnvironmentIndex(pointer)
+      GetEnvironmentIndex(env_ptr)
     end
     
     # Returns the specified router; raises an error if no such router exists.
@@ -134,64 +134,59 @@ module Clipr
     def close
       return false if closed?
       
-      unless DestroyEnvironment(@pointer)
+      unless DestroyEnvironment(@env_ptr)
         raise ApiError.new(:Environment, :DestroyEnvironment, "could not close environment")
       end
       
-      @pointer = nil
+      @env_ptr = nil
       true
     end
     
-    # Returns true if self has been closed (ie the pointer is unset).
+    # Returns true if self has been closed (ie env_ptr is unset).
     def closed?
-      @pointer.nil?
+      @env_ptr.nil?
     end
     
-    # Gets a DataObject from Api get methods.  Get methods have a signature
-    # like this (ex GetDefglobalValue):
-    #
-    #   EnvGetSomething(theEnv, ..., &data_object)
-    #
-    # Get will yield the env and data object to the block.  Returns the data
-    # object.
-    def get # :yields: env_ptr, data_object
-      obj = DataObject.new
-      yield(pointer, obj)
-      obj
-    end
-    
+    # A helper for Api methods that return a pointer.  This method yields
+    # env_ptr to the block and returns the resulting pointer, or nil for the
+    # NULL pointer (ie the pointer address == 0).
     def getptr
-      ptr = yield(pointer)
+      ptr = yield(env_ptr)
       ptr.address == 0 ? nil : ptr
     end
     
-    # Sets up a DataObject for the value, for use with Api set methods.  Set
-    # methods have a signature like this (ex EnvSetDefglobalValue):
-    #
-    #   EnvSetSomething(theEnv, ..., &data_object)
-    #
-    # Set will yield the env and data object to the block, where the data
-    # object will be setup with the specified value.  Returns the data object.
+    # A helper for Api methods that write information into a data object. This
+    # method yields env_ptr and a DataObject to the block and returns the
+    # DataObject.
+    def get # :yields: env_ptr, data_object
+      obj = DataObject.new
+      yield(env_ptr, obj)
+      obj
+    end
+    
+    # A helper for Api methods that set information from a data object.  This
+    # method writes the value into a new DataObject and yield the env_ptr and
+    # the DataObject to the block.  Returns the DataObject.
     def set(value) # :yields: env_ptr, data_object
       attributes = case value
       when Symbol
         { :type  => SYMBOL, 
-          :value => EnvAddSymbol(pointer, value.to_s)}
+          :value => EnvAddSymbol(env_ptr, value.to_s)}
       when String
         { :type  => STRING,   
-          :value => EnvAddSymbol(pointer, value)}
+          :value => EnvAddSymbol(env_ptr, value)}
       when Fixnum
         { :type  => INTEGER, 
-          :value => EnvAddLong(pointer, value)}
+          :value => EnvAddLong(env_ptr, value)}
       when Float
         { :type  => FLOAT,   
-          :value => EnvAddDouble(pointer, value)}
+          :value => EnvAddDouble(env_ptr, value)}
       else
         raise "non-primitive values are not supported yet!"
       end
       
       obj = DataObject.intern(attributes)
-      yield(pointer, obj)
+      yield(env_ptr, obj)
       obj
     end
     
@@ -205,7 +200,7 @@ module Clipr
     # checking.
     def capture(options={}) # :yields: env_ptr, logical_name, module_name
       router.capture(DEFAULT_DEVICE) do |device|
-        yield(pointer, DEFAULT_DEVICE, nil)
+        yield(env_ptr, DEFAULT_DEVICE, nil)
         device.string
       end
     end
@@ -222,7 +217,7 @@ module Clipr
     def cast(data_object)
       if data_object[:type] == FACT_ADDRESS
         fact_ptr = data_object[:value]
-        deft_ptr = EnvFactDeftemplate(pointer, fact_ptr)
+        deft_ptr = EnvFactDeftemplate(env_ptr, fact_ptr)
         deftemplates.deftemplate(deft_ptr).new(self, fact_ptr)
       else
         data_object.value
@@ -240,19 +235,19 @@ module Clipr
     ########## API ##########
     
     def clear
-      EnvClear(pointer)
+      EnvClear(env_ptr)
       deftemplates.clear
       self
     end
     
     def reset
-      EnvReset(pointer)
+      EnvReset(env_ptr)
       self
     end
     
     def run(n=-1)
       check_callback do
-        Agenda::EnvRun(pointer, n)
+        Agenda::EnvRun(env_ptr, n)
       end
     end
     
@@ -265,8 +260,8 @@ module Clipr
     # assert for building constructs and asserting facts from strings).
     def call(function, arguments=nil)
       check_callback do
-        get do |ptr, obj|
-          if EnvFunctionCall(ptr, function, arguments, obj) == 1
+        get do |env_ptr, obj|
+          if EnvFunctionCall(env_ptr, function, arguments, obj) == 1
             raise ApiError.new(:Environment, :EnvFunctionCall, werrors) { "error in function: #{function}" }
           end
         end
@@ -285,7 +280,7 @@ module Clipr
         construct = construct.construct_str
       end
       
-      if EnvBuild(pointer, construct) == 0
+      if EnvBuild(env_ptr, construct) == 0
         raise ApiError.new(:Environment, :EnvBuild, werrors) { "could not build: #{construct}" } 
       end
       
@@ -309,7 +304,7 @@ module Clipr
     #   env.facts.to_a             # => ["(initial-fact)", "(a)"]
     #
     def assert(str)
-      if getptr {|ptr| EnvAssertString(ptr, str) }.nil?
+      if getptr {|env_ptr| EnvAssertString(env_ptr, str) }.nil?
         unless werrors(false).empty?
           raise ApiError.new(:Fact, :EnvAssertString, werrors)
         end
@@ -319,7 +314,7 @@ module Clipr
     end
     
     def save(file)
-      EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
+      EnvSaveFacts(env_ptr, file, LOCAL_SAVE, nil)
     end
     
     private
@@ -338,7 +333,7 @@ module Clipr
     
     # Callback recieves inputs sent to the ruby-call external function that
     # Clipr registers with the CLIPS runtime.  The input is a pointer to the
-    # calling env (equal to self.pointer) and is provided by CLIPS.
+    # calling env (equal to env_ptr) and is provided by CLIPS.
     #
     # The ruby-call function takes the object id of a callable object as its
     # first argument.  Subsequent arguments can be any variable; they will be
@@ -348,20 +343,20 @@ module Clipr
     #   object.call(env, data_objects)
     #
     # Returns 1 if call returns truthy, or 0 otherwise (for false/nil).
-    def callback(ptr)
-      n = EnvRtnArgCount(ptr)
+    def callback(env_ptr)
+      n = EnvRtnArgCount(env_ptr)
       raise(ArgumentError, "no block id given") if n < 1
     
       # lookup block
       obj = DataObject.new
-      EnvRtnUnknown(ptr, 1, obj)
+      EnvRtnUnknown(env_ptr, 1, obj)
       block = ObjectSpace._id2ref(obj.contents)
     
       # collect args
       args = []
       2.upto(n) do |i|
         obj = DataObject.new
-        EnvRtnUnknown(ptr, i, obj)
+        EnvRtnUnknown(env_ptr, i, obj)
         args << obj
       end
     

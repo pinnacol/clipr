@@ -11,13 +11,13 @@ module Clipr
     end
     
     def assert(deftemplate, data={})
-      env_ptr = env.pointer
+      env_ptr = env.env_ptr
       deftemplate_ptr = env.deftemplates.ptr(deftemplate)
       fact_ptr = EnvCreateFact(env_ptr, deftemplate_ptr)
       
       data.each_pair do |slot, value|
-        env.set(value) do |ptr, obj|
-          EnvPutFactSlot(ptr, fact_ptr, slot.to_s, obj)
+        env.set(value) do |env_ptr, obj|
+          EnvPutFactSlot(env_ptr, fact_ptr, slot.to_s, obj)
         end
       end
       
@@ -63,8 +63,8 @@ module Clipr
     end
     
     def to_a(start_index=-1, end_index=-1, max=-1)
-      str = env.capture do |ptr, logical_name, module_ptr|
-        EnvFacts(ptr, logical_name, module_ptr, start_index, end_index, max)
+      str = env.capture do |env_ptr, logical_name, module_ptr|
+        EnvFacts(env_ptr, logical_name, module_ptr, start_index, end_index, max)
       end
       
       parse_fact_list(str)
@@ -81,11 +81,11 @@ module Clipr
     private
     
     def get_next(current=nil) # :nodoc:
-      env.getptr {|ptr| EnvGetNextFact(ptr, current) }
+      env.getptr {|env_ptr| EnvGetNextFact(env_ptr, current) }
     end
     
     def cast(fact_ptr) # :nodoc:
-      template_ptr = env.getptr {|ptr| EnvFactDeftemplate(ptr, fact_ptr) }
+      template_ptr = env.getptr {|env_ptr| EnvFactDeftemplate(env_ptr, fact_ptr) }
       env.deftemplates.deftemplate(template_ptr).new(env, fact_ptr)
     end
   end
