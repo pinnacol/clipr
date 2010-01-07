@@ -11,12 +11,12 @@ class RhsTest < Test::Unit::TestCase
     env.build(ExampleTemplate)
   end
   
-  class ExampleTemplate < Clipr::Deftemplate
+  class ExampleTemplate < Clipr::Fact
     deftemplate "example"
     slot :key, :value
   end
   
-  class AssignmentRule < Clipr::Defrule
+  class AssignmentRule < Clipr::Rule
     lhs.assign(:var, :example, :key => :value)
   end
   

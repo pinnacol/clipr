@@ -1,5 +1,5 @@
 module Clipr
-  class Defrule
+  class Rule
     class Constraint
       attr_accessor :slot
       attr_accessor :terms

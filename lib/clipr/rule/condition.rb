@@ -1,8 +1,8 @@
-require 'clipr/defrule/constraint'
-require 'clipr/defrule/test'
+require 'clipr/rule/constraint'
+require 'clipr/rule/test'
 
 module Clipr
-  class Defrule
+  class Rule
     
     # Condition.new 'sample', :constraints => [Constraint ...], :assignments => [[:key, :var], :key, :key]
     class Condition

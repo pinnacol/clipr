@@ -2,8 +2,8 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clipr'
 
 class ConditionsTest < Test::Unit::TestCase
-  Conditions = Clipr::Defrule::Conditions
-  Test = Clipr::Defrule::Test
+  Conditions = Clipr::Rule::Conditions
+  Test = Clipr::Rule::Test
   
   def test_add_adds_a_literal_condition
     conds = Conditions.intern do

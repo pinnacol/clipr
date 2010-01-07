@@ -2,7 +2,7 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clipr'
 
 class TestTest < Test::Unit::TestCase
-  Test = Clipr::Defrule::Test
+  Test = Clipr::Rule::Test
   
   attr_reader :block
   

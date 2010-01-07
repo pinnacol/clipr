@@ -2,8 +2,8 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clipr'
 
 class SlotTest < Test::Unit::TestCase
-  Deftemplate = Clipr::Deftemplate
-  Slot = Clipr::Deftemplate::Slot
+  Fact = Clipr::Fact
+  Slot = Clipr::Fact::Slot
   
   def test_slot_formats_simple_slot
     slot = Slot.new("name")
@@ -25,17 +25,17 @@ class SlotTest < Test::Unit::TestCase
   end
   
   def test_slot_provides_no_default_for_OPTIONAL_default
-    slot = Slot.new("name", Deftemplate::OPTIONAL)
+    slot = Slot.new("name", Fact::OPTIONAL)
     assert_equal "(slot name)", slot.to_s
   end
   
   def test_slot_provides_none_for_NONE_default
-    slot = Slot.new("name", Deftemplate::NONE)
+    slot = Slot.new("name", Fact::NONE)
     assert_equal "(slot name (default ?NONE))", slot.to_s
   end
   
   def test_slot_provides_derive_for_DERIVE_default
-    slot = Slot.new("name", Deftemplate::DERIVE)
+    slot = Slot.new("name", Fact::DERIVE)
     assert_equal "(slot name (default ?DERIVE))", slot.to_s
   end
   

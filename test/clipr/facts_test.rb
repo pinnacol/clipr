@@ -4,7 +4,7 @@ require "clipr/env"
 class FactsTest < Test::Unit::TestCase
   Env = Clipr::Env
   OrderedFact = Clipr::Deftemplates::OrderedFact
-  Deftemplate = Clipr::Deftemplate
+  Fact = Clipr::Fact
   
   attr_reader :env, :facts
   

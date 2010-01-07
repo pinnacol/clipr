@@ -1,8 +1,7 @@
-require 'clipr/defrule/condition'
+require 'clipr/rule/condition'
 
 module Clipr
-  class Defrule
-    
+  class Rule
     class Conditions
       class << self
         def intern(modifier=nil, &block)

@@ -4,18 +4,18 @@ require "clipr"
 class ReadmeTest < Test::Unit::TestCase
   include Clipr::Api
   
-  class Animal < Clipr::Deftemplate
+  class Animal < Clipr::Fact
     deftemplate "animal"
     slot :sound
   end
 
-  class Quack < Clipr::Defrule
+  class Quack < Clipr::Rule
     defrule "quack"
     lhs.match "animal", :sound => :quack
     rhs.assert "(sound-was quack)"
   end
   
-  class QuackCall < Clipr::Defrule
+  class QuackCall < Clipr::Rule
     defrule "quack_call"
     
     lhs.match("animal", :sound) do |sound|

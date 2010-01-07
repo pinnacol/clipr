@@ -11,12 +11,12 @@ class LhsTest < Test::Unit::TestCase
     env.build(ExampleTemplate)
   end
   
-  class ExampleTemplate < Clipr::Deftemplate
+  class ExampleTemplate < Clipr::Fact
     deftemplate "example"
     slot :key, :value
   end
   
-  class WasInBlockRule < Clipr::Defrule
+  class WasInBlockRule < Clipr::Rule
     rhs.register(self)
     def call(env)
       env.assert "(was in block)"

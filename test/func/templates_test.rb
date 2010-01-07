@@ -11,7 +11,7 @@ class TemplatesTest < Test::Unit::TestCase
     @env = Env.new
   end
   
-  class ExampleTemplate < Clipr::Deftemplate
+  class ExampleTemplate < Clipr::Fact
     deftemplate "example"
     slot :key, :value
   end
@@ -53,7 +53,7 @@ class TemplatesTest < Test::Unit::TestCase
       fact = callback_env.cast(fact_data_object)
       
       assert_equal env.object_id, callback_env.object_id
-      assert_equal Clipr::Deftemplate, fact.class
+      assert_equal Clipr::Fact, fact.class
       assert_equal :alt, fact[:key]
       
       was_in_block = true

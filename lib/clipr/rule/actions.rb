@@ -1,7 +1,7 @@
-require 'clipr/defrule/action'
+require 'clipr/rule/action'
 
 module Clipr
-  class Defrule
+  class Rule
     class Actions
       class << self
         def intern(&block)

@@ -2,7 +2,7 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clipr'
 
 class ConstraintTest < Test::Unit::TestCase
-  Constraint = Clipr::Defrule::Constraint
+  Constraint = Clipr::Rule::Constraint
   
   #
   # to_s test

@@ -405,16 +405,16 @@ Gem::Specification.new do |s|
     lib/clipr/constants.rb
     lib/clipr/construct.rb
     lib/clipr/defglobals.rb
-    lib/clipr/defrule.rb
-    lib/clipr/defrule/action.rb
-    lib/clipr/defrule/actions.rb
-    lib/clipr/defrule/condition.rb
-    lib/clipr/defrule/conditions.rb
-    lib/clipr/defrule/constraint.rb
-    lib/clipr/defrule/test.rb
-    lib/clipr/deftemplate.rb
-    lib/clipr/deftemplate/slot.rb
-    lib/clipr/deftemplates.rb
+    lib/clipr/rule.rb
+    lib/clipr/rule/action.rb
+    lib/clipr/rule/actions.rb
+    lib/clipr/rule/condition.rb
+    lib/clipr/rule/conditions.rb
+    lib/clipr/rule/constraint.rb
+    lib/clipr/rule/test.rb
+    lib/clipr/fact.rb
+    lib/clipr/fact/slot.rb
+    lib/clipr/facts.rb
     lib/clipr/env.rb
     lib/clipr/facts.rb
     lib/clipr/router.rb

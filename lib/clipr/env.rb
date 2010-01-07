@@ -3,11 +3,11 @@ require 'clipr/utils'
 require 'clipr/construct'
 require 'clipr/callback'
 
-require 'clipr/defrule'
-require 'clipr/deftemplate'
-require 'clipr/deftemplates'
-require 'clipr/defglobals'
+require 'clipr/rule'
+require 'clipr/fact'
 require 'clipr/facts'
+require 'clipr/defglobals'
+require 'clipr/deftemplates'
 require 'clipr/router'
 require 'clipr/routers'
 
@@ -65,6 +65,7 @@ module Clipr
     
     include Api
     include Api::Environment
+    include Api::Fact
     include Api::Types
     
     # The default router.
@@ -221,7 +222,7 @@ module Clipr
     def cast(data_object)
       if data_object[:type] == FACT_ADDRESS
         fact_ptr = data_object[:value]
-        deft_ptr = Fact::EnvFactDeftemplate(pointer, fact_ptr)
+        deft_ptr = EnvFactDeftemplate(pointer, fact_ptr)
         deftemplates.deftemplate(deft_ptr).new(self, fact_ptr)
       else
         data_object.value
@@ -229,11 +230,11 @@ module Clipr
     end
     
     def template(name=nil, desc=nil, &block)
-      build Deftemplate.intern(name, desc, &block).str
+      build Fact.intern(name, desc, &block).str
     end
     
     def rule(name=nil, desc=nil, &block)
-      build Defrule.intern(name, desc, &block).str
+      build Rule.intern(name, desc, &block).str
     end
     
     ########## API ##########
@@ -305,7 +306,7 @@ module Clipr
     #   env.facts.to_a             # => ["(initial-fact)", "(a)"]
     #
     def assert(str)
-      if getptr {|ptr| Fact::EnvAssertString(ptr, str) }.nil?
+      if getptr {|ptr| EnvAssertString(ptr, str) }.nil?
         unless werrors(false).empty?
           raise ApiError.new(:Fact, :EnvAssertString, werrors)
         end
@@ -315,7 +316,7 @@ module Clipr
     end
     
     def save(file)
-      Fact::EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
+      EnvSaveFacts(pointer, file, LOCAL_SAVE, nil)
     end
     
     private

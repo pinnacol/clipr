@@ -34,7 +34,7 @@ module Clipr
     end
     
     # Returns the fact at the specified index, cast into an appropriate
-    # Deftemplate.
+    # Fact.
     def [](index)
       cast get(index)
     end

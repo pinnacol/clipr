@@ -33,7 +33,7 @@ module Clipr
     end
     
     def deftemplate(template_ptr)
-      casts[template_ptr.address] || (implied?(template_ptr) ? OrderedFact : Deftemplate)
+      casts[template_ptr.address] || (implied?(template_ptr) ? OrderedFact : Fact)
     end
     
     def ptr(name)

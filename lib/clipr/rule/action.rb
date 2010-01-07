@@ -1,5 +1,5 @@
 module Clipr
-  class Defrule
+  class Rule
     class Action < Callback
       def call(env, data_objects)
         data_objects.collect! {|obj| env.cast(obj) }

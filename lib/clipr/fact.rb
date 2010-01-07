@@ -1,7 +1,7 @@
-require 'clipr/deftemplate/slot'
+require 'clipr/fact/slot'
 
 module Clipr
-  class Deftemplate
+  class Fact
     class << self
       include Construct
       

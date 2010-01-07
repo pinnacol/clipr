@@ -1,9 +1,9 @@
-require 'clipr/defrule/actions'
-require 'clipr/defrule/conditions'
+require 'clipr/rule/actions'
+require 'clipr/rule/conditions'
 
 module Clipr
   
-  # class QuackRetract < Clipr::Defrule
+  # class QuackRetract < Clipr::Rule
   #   lhs.assign :duck, "animal", :sound => :quack
   #   lhs.assign :cow,  "animal", :sound => :moo
   # 
@@ -25,7 +25,7 @@ module Clipr
   #   end
   # end
   #
-  class Defrule
+  class Rule
     class << self
       include Construct
       

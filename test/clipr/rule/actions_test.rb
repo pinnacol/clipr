@@ -2,7 +2,7 @@ require "#{File.dirname(__FILE__)}/../../test_helper.rb"
 require 'clipr'
 
 class ActionsTest < Test::Unit::TestCase
-  Actions = Clipr::Defrule::Actions
+  Actions = Clipr::Rule::Actions
   
   def test_add_adds_string_action
     actions = Actions.intern do

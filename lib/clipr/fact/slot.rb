@@ -1,5 +1,5 @@
 module Clipr
-  class Deftemplate
+  class Fact
     # Indicates no default when used in a slot definition.
     OPTIONAL = nil
     

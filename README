@@ -76,13 +76,13 @@ Basic usage is similar to the console:
 
 More complex constructs can be defined in Ruby:
 
-  class Animal < Clipr::Deftemplate
+  class Animal < Clipr::Fact
     deftemplate "animal"
     slot :sound
   end
   Animal.str  # => "(deftemplate animal (slot sound))"
 
-  class Quack < Clipr::Defrule
+  class Quack < Clipr::Rule
     defrule "quack"
     lhs.match "animal", :sound => :quack
     rhs.assert "(sound-was quack)"
@@ -101,7 +101,7 @@ Clipr provides a callback system that lets CLIPS use blocks written in Ruby.
 This is a way of writing an equivalent quack rule (albeit with a very
 different CLIPS construct):
 
-  class QuackCall < Clipr::Defrule
+  class QuackCall < Clipr::Rule
     defrule "quack_call"
     
     lhs.match "animal", :sound do |sound|
@@ -122,5 +122,5 @@ different CLIPS construct):
   env.run
   facts.list     # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
 
-Deftemplates and Defrules are flexible enough to represent almost all CLIPS
+The Fact and Rule DSLs are flexible enough to define almost all CLIPS
 constructs.
