@@ -80,14 +80,14 @@ More complex constructs can be defined in Ruby:
     deftemplate "animal"
     slot :sound
   end
-  Animal.str  # => "(deftemplate animal (slot sound))"
+  Animal.construct_str  # => "(deftemplate animal (slot sound))"
 
   class Quack < Clipr::Rule
     defrule "quack"
     lhs.match "animal", :sound => :quack
     rhs.assert "(sound-was quack)"
   end
-  Quack.str   # => "(defrule quack (animal (sound quack)) => (assert (sound-was quack)))"
+  Quack.construct_str   # => "(defrule quack (animal (sound quack)) => (assert (sound-was quack)))"
   
   env.clear
   env.build(Animal)
@@ -95,7 +95,7 @@ More complex constructs can be defined in Ruby:
   
   facts.assert(:animal, {:sound => :quack})
   env.run
-  facts.list  # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
+  facts.list            # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
 
 Clipr provides a callback system that lets CLIPS use blocks written in Ruby.
 This is a way of writing an equivalent quack rule (albeit with a very
@@ -112,7 +112,7 @@ different CLIPS construct):
       env.assert "(sound-was quack)"
     end
   end
-  QuackCall.str  # => "(defrule quack_call (animal (sound ?sound)) (test (ruby-call ... ?sound)) => (ruby-call ...))"
+  QuackCall.construct_str  # => "(defrule quack_call (animal (sound ?sound)) (test (ruby-call ... ?sound)) => (ruby-call ...))"
 
   env.clear
   env.build(Animal)
@@ -120,7 +120,7 @@ different CLIPS construct):
   
   facts.assert(:animal, {:sound => :quack})
   env.run
-  facts.list     # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
+  facts.list               # => ["(initial-fact)", "(animal (sound quack))", "(sound-was quack)"]
 
 The Fact and Rule DSLs are flexible enough to define almost all CLIPS
 constructs.

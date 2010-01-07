@@ -230,11 +230,11 @@ module Clipr
     end
     
     def template(name=nil, desc=nil, &block)
-      build Fact.intern(name, desc, &block).str
+      build Fact.intern(name, desc, &block).construct_str
     end
     
     def rule(name=nil, desc=nil, &block)
-      build Rule.intern(name, desc, &block).str
+      build Rule.intern(name, desc, &block).construct_str
     end
     
     ########## API ##########
@@ -281,9 +281,12 @@ module Clipr
     # Only constructs like deftemplate or defrule can be built through this
     # method (to assert fact strings see assert).
     def build(construct)
-      str = construct.respond_to?(:str) ? construct.str : construct.to_s
-      if EnvBuild(pointer, str) == 0
-        raise ApiError.new(:Environment, :EnvBuild, werrors) { "could not build: #{str}" } 
+      if construct.respond_to?(:construct_str)
+        construct = construct.construct_str
+      end
+      
+      if EnvBuild(pointer, construct) == 0
+        raise ApiError.new(:Environment, :EnvBuild, werrors) { "could not build: #{construct}" } 
       end
       
       self

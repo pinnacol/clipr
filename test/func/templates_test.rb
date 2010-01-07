@@ -11,7 +11,7 @@ class TemplatesTest < Test::Unit::TestCase
     @env = Env.new
   end
   
-  class ExampleTemplate < Clipr::Fact
+  class Example < Clipr::Fact
     deftemplate "example"
     slot :key, :value
   end
@@ -21,7 +21,7 @@ class TemplatesTest < Test::Unit::TestCase
   #
   
   def test_assertion_of_facts_from_template
-    env.deftemplates.build(ExampleTemplate)
+    env.deftemplates.build(Example)
     env.facts.assert(:example, {})
     env.facts.assert(:example, {:key => :alt})
     env.facts.assert(:example, {:key => 'alt'})
@@ -68,11 +68,11 @@ class TemplatesTest < Test::Unit::TestCase
   end
   
   def test_casting_callback_with_deftemplate_class
-    env.deftemplates.build(ExampleTemplate)
+    env.deftemplates.build(Example)
     
     was_in_block = false
     block = Env.lambda do |callback_env, fact|
-      assert_equal ExampleTemplate, fact.class
+      assert_equal Example, fact.class
       assert_equal :alt, fact[:key]
       
       was_in_block = true

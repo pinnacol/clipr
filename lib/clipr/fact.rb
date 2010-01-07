@@ -7,7 +7,7 @@ module Clipr
       
       attr_reader :slots
       
-      def str
+      def construct_str
         slot_defs = slots.values.collect {|slot| slot.to_s }
         desc = description.empty? ? description : " \"#{description}\""
         "(deftemplate #{name}#{desc} #{slot_defs.join(' ')})"

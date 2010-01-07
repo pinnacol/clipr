@@ -61,8 +61,8 @@ class ReadmeTest < Test::Unit::TestCase
     
     ###
     
-    assert_equal "(deftemplate animal (slot sound))", Animal.str
-    assert_equal "(defrule quack (animal (sound quack)) => (assert (sound-was quack)))", Quack.str
+    assert_equal "(deftemplate animal (slot sound))", Animal.construct_str
+    assert_equal "(defrule quack (animal (sound quack)) => (assert (sound-was quack)))", Quack.construct_str
 
     env.clear
     env.build(Animal)
@@ -76,7 +76,7 @@ class ReadmeTest < Test::Unit::TestCase
     
     lhs_block = QuackCall.conditions.conditions[0].tests[0]
     rhs_block = QuackCall.actions.actions[0]
-    assert_equal "(defrule quack_call (animal (sound ?sound)) (test (ruby-call #{lhs_block.object_id} ?sound)) => (ruby-call #{rhs_block.object_id}))", QuackCall.str
+    assert_equal "(defrule quack_call (animal (sound ?sound)) (test (ruby-call #{lhs_block.object_id} ?sound)) => (ruby-call #{rhs_block.object_id}))", QuackCall.construct_str
 
     env.clear
     env.build(Animal)

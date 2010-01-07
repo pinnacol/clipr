@@ -32,7 +32,7 @@ module Clipr
       attr_reader :actions
       attr_reader :conditions
       
-      def str
+      def construct_str
         desc = description.to_s.empty? ? " " : " \"#{description}\" "
         "(defrule #{name}#{desc}#{conditions.to_s} => #{actions.to_s})"
       end

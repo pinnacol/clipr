@@ -8,10 +8,10 @@ class RhsTest < Test::Unit::TestCase
   def setup
     super
     @env = Env.new
-    env.build(ExampleTemplate)
+    env.build(Example)
   end
   
-  class ExampleTemplate < Clipr::Fact
+  class Example < Clipr::Fact
     deftemplate "example"
     slot :key, :value
   end

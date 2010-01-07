@@ -21,7 +21,7 @@ module Clipr
     end
     
     def build(deftemplate)
-      env.build(deftemplate.str)
+      env.build(deftemplate)
       
       name = deftemplate.name
       ptr = env.getptr {|ptr| EnvFindDeftemplate(ptr, name) }
