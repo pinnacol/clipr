@@ -3,12 +3,14 @@ require 'rake/testtask'
 require 'rake/rdoctask'
 require 'rake/gempackagetask'
 
+ENV['GEMSPEC'] = 'clipr.gemspec'
+
 #
 # Gem specification
 #
 
 def gemspec
-  data = File.read('clipr.gemspec')
+  data = File.read(ENV['GEMSPEC'])
   spec = nil
   Thread.new { spec = eval("$SAFE = 3\n#{data}") }.join
   spec
@@ -42,6 +44,35 @@ task :print_manifest do
   # sort and output the results
   files.values.sort_by {|exists, file| file }.each do |entry| 
     puts "%-5s %s" % entry
+  end
+end
+
+#
+# Bundler tasks
+#
+
+desc "Bundle depenencies for the current wcis_env"
+task :bundle => "vendor/gems/environment.rb"
+
+file "vendor/gems/environment.rb" => ["Gemfile", ENV['GEMSPEC']] do
+  cmd = "gem bundle"
+  
+  if system(cmd)
+    # success -- remove the circular symlink to the pwd
+    # if it exists (note this doesn't affect bundler)
+    spec = gemspec
+    pattern = File.join("vendor/gems/**/gems", spec.full_name)
+    Dir.glob(pattern).each {|install_path| FileUtils.rm_r(install_path) }
+    
+  else
+    # failure -- missing bundler?
+    puts %Q{
+Bundle fail! Are you sure bundler is installed?
+
+  % gem install bundler
+
+}
+    exit(1)
   end
 end
 
@@ -105,43 +136,19 @@ desc 'Default: Run tests.'
 task :default => :test
 
 desc 'Run the tests'
-task :test => [Clipr::DYLIB, :compile_issues, :check_bundle] do  
+task :test => [Clipr::DYLIB, :compile_issues, :bundle] do  
   tests = Dir.glob('test/**/*_test.rb')
-  cmd = ["ruby", "-Ilib", "-w", "-rvendor/gems/environment.rb", "-e", "ARGV.dup.each {|test| load test}"] + tests
+  cmd = ["ruby", "-Ilib", "-w", "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
 end
 
 desc 'Run the benchmarks'
-task :benchmark => [Clipr::DYLIB, :check_bundle] do
+task :benchmark => [Clipr::DYLIB, :bundle] do
   unless ENV['BENCHMARK'] || ENV['BENCHMARK_TEST']
     ENV['BENCHMARK'] = 'true'
   end
   
   tests = Dir.glob('test/benchmark/*_benchmark.rb')
-  cmd = ["ruby", "-Ilib", "-w", "-rvendor/gems/environment.rb", "-e", "ARGV.dup.each {|test| load test}"] + tests
+  cmd = ["ruby", "-Ilib", "-w", "-e", "ARGV.dup.each {|test| load test}"] + tests
   sh(*cmd)
 end
-
-task :check_bundle do
-  unless File.exists?("vendor/gems/environment.rb")
-    puts %Q{
-Tests cannot be run until the dependencies have been
-bundled.  Use these commands and try again:
-
-  % git submodule init
-  % git submodule update
-  % gem bundle
-
-}
-    exit(1)
-  end
-end
-
-desc "Update bundle for CruiseControl"
-task :cc_bundle do
-  FileUtils.rm_r("vendor/gems") if File.exists?("vendor/gems")
-  system("BUNDLE_CC='true' gem bundle")
-end
-
-desc 'Run the cc tests'
-task :cc => [:cc_bundle, :test]

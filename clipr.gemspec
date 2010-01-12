@@ -2,7 +2,7 @@ Gem::Specification.new do |s|
   s.name = "clipr"
   s.version = "0.2.0"
   s.author = "Simon Chiang"
-  s.email = "simon.chiang@pinnacol.com"
+  s.email = "simon.a.chiang@gmail.com"
   s.homepage = ""
   s.platform = Gem::Platform::RUBY
   s.summary = ""
@@ -11,7 +11,8 @@ Gem::Specification.new do |s|
   s.extensions << "src/extconf.rb"
   
   # add dependencies
-  s.add_dependency("ffi", ">= 0.6.0")
+  s.add_dependency("ffi", "= 0.6.1")
+  s.add_development_dependency("tap-test", ">= 0.4.0")
   
   s.has_rdoc = true
   s.rdoc_options.concat %W{--main README -S -N --title Clipr}

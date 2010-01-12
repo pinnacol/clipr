@@ -124,3 +124,8 @@ different CLIPS construct):
 
 The Fact and Rule DSLs are flexible enough to define almost all CLIPS
 constructs.
+
+== Info 
+
+Developer:: {Simon Chiang}[http://bahuvrihi.wordpress.com]
+License:: {MIT-Style}[link:files/License_txt.html]
